@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEvolution 2.0 | Electrical & Electronics Engineering</title>
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/desktop-style.css">
+    <link rel="stylesheet" href="styles/mobile-style.css" media="(max-width: 768px)">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <header class="header">
+        <div class="logo">EEvolution <span class="highlight">2.0</span></div>
+        <nav class="nav">
+            <a href="#home">Home</a>
+            <a href="#resources">Resources</a>
+            <a href="#notices">Notices</a>
+            <a href="#blogs">Blogs</a>
+            <a href="#moments">Moments</a>
+        </nav>
+        <button class="cta-btn">Join Community</button>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content scroll-reveal">
+                <h1>Powering the <span class="gradient-text">Future</span> <br> of Engineering</h1>
+                <p>The official hub for Electrical and Electronics Engineering students of HIT. Connect, learn, and grow
+                    together.</p>
+                <div class="hero-buttons">
+                    <a href="#resources" class="btn primary">Explore Resources</a>
+                    <a href="#blogs" class="btn secondary">Read Blogs</a>
+                </div>
+            </div>
+            <!-- Visual is handled by canvas now, but we keep a decorative element -->
+            <div class="hero-visual scroll-reveal delay-1">
+                <div class="glowing-orb"></div>
+            </div>
+        </section>
+
+        <section class="stats-section scroll-reveal">
+            <div class="stat-item">
+                <span class="stat-number">500+</span>
+                <span class="stat-label">Students</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">1000+</span>
+                <span class="stat-label">Resources</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">50+</span>
+                <span class="stat-label">Events</span>
+            </div>
+        </section>
+
+        <section class="welcome-section scroll-reveal">
+            <div class="welcome-content">
+                <h2>Welcome to the <span class="highlight">Evolution</span></h2>
+                <div class="welcome-grid">
+                    <div class="welcome-card new-visitor">
+                        <div class="welcome-icon">🚀</div>
+                        <h3>New Here?</h3>
+                        <p>Start your journey with our curated roadmap. Explore resources, join the community, and get
+                            ready to electrify your potential.</p>
+                    </div>
+                    <div class="welcome-card regular-visitor">
+                        <div class="welcome-icon">⚡</div>
+                        <h3>Welcome Back!</h3>
+                        <p>Check out the latest notices, new blog posts, and contribute to the growing repository of
+                            knowledge.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="section-header scroll-reveal">
+                <h2>Everything You Need</h2>
+                <p>Curated tools to supercharge your academic journey.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card scroll-reveal delay-1" data-tilt>
+                    <div class="card-glow"></div>
+                    <div class="icon">📚</div>
+                    <h3>Resources</h3>
+                    <p>Access curated notes, previous year papers, and essential study materials.</p>
+                </div>
+                <div class="feature-card scroll-reveal delay-2" data-tilt>
+                    <div class="card-glow"></div>
+                    <div class="icon">📢</div>
+                    <h3>Notices</h3>
+                    <p>Stay updated with the latest department announcements and event schedules.</p>
+                </div>
+                <div class="feature-card scroll-reveal delay-3" data-tilt>
+                    <div class="card-glow"></div>
+                    <div class="icon">✍️</div>
+                    <h3>Class Blogs</h3>
+                    <p>Share knowledge, experiences, and technical articles with peers.</p>
+                </div>
+                <div class="feature-card scroll-reveal delay-4" data-tilt>
+                    <div class="card-glow"></div>
+                    <div class="icon">📸</div>
+                    <h3>Moments</h3>
+                    <p>A gallery of memories from departmental events and gatherings.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 EEvolution 2.0. Built for HIT Students.</p>
+    </footer>
+
+    <script src="script/script.js"></script>
+</body>
+
+</html>
