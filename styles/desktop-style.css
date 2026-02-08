@@ -571,6 +571,15 @@ footer {
     box-shadow: 0 0 10px var(--primary-glow);
 }
 
+/* Icon Styles for Font Awesome */
+.icon i,
+.welcome-icon i,
+.setting-icon i,
+.resource-icon-wrapper i {
+    font-style: normal;
+    display: inline-block;
+}
+
 /* Resources Section Specifics */
 #resources-grid {
     display: grid;

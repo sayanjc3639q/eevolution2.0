@@ -85,9 +85,9 @@ async function loadResources(semesterFolder) {
             const card = document.createElement('div');
             card.className = 'resource-card scroll-reveal';
 
-            // Icon mapping
-            let icon = '📘';
-            if (sub.type === 'Lab') icon = '🧪';
+            // Icon mapping - Font Awesome
+            let icon = '<i class="fas fa-book"></i>';
+            if (sub.type === 'Lab') icon = '<i class="fas fa-flask"></i>';
 
             card.innerHTML = `
                 <div class="resource-icon-wrapper">
