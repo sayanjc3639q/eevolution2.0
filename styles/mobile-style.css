@@ -206,6 +206,41 @@ body.nav-open::before {
     grid-template-columns: 1fr;
 }
 
-.setting-group {
-    padding: 1.5rem;
+/* Resources Section Mobile */
+@media (max-width: 768px) {
+    #resources-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+        gap: 1.5rem;
+    }
+
+    .resource-card {
+        padding: 1.5rem;
+        gap: 1.2rem;
+        border-radius: 16px;
+    }
+
+    .resource-icon-wrapper {
+        width: 55px;
+        height: 55px;
+        font-size: 1.6rem;
+    }
+
+    .resource-info h3 {
+        font-size: 1.1rem;
+    }
+
+    .meta-tags {
+        gap: 0.5rem;
+    }
+
+    .meta-tag {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.7rem;
+    }
+
+    .btn-arrow {
+        width: 42px;
+        height: 42px;
+    }
 }

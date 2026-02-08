@@ -83,29 +83,32 @@ async function loadResources(semesterFolder) {
 
         subjects.forEach(sub => {
             const card = document.createElement('div');
-            card.className = 'feature-card scroll-reveal';
-            // Add tilt data attribute for effect re-init
-            card.setAttribute('data-tilt', '');
+            card.className = 'resource-card scroll-reveal';
 
             // Icon mapping
             let icon = '📘';
             if (sub.type === 'Lab') icon = '🧪';
 
             card.innerHTML = `
-                <div class="card-glow"></div>
-                <div class="icon" style="font-size: 2rem; margin-bottom: 0.5rem;">${icon}</div>
-                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${sub.name}</h3>
-                <p style="font-size: 0.85rem; color: var(--primary); margin-bottom: 0.25rem;">${sub.code}</p>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">${sub.type} Course</p>
-                <button class="btn secondary small" style="width: 100%; margin-top: 1rem; padding: 0.5rem;">View Materials</button>
+                <div class="resource-icon-wrapper">
+                    ${icon}
+                </div>
+                <div class="resource-info">
+                    <h3>${sub.name}</h3>
+                    <div class="meta-tags">
+                        <span class="meta-tag code">${sub.code}</span>
+                        <span class="meta-tag">${sub.type}</span>
+                    </div>
+                </div>
+                <div class="resource-action">
+                    <button class="btn-arrow">➔</button>
+                </div>
             `;
             grid.appendChild(card);
         });
 
-        // Re-initialize effects for new elements
-        // We use a short timeout to ensure DOM is ready
+        // Re-initialize scroll reveal for new elements
         setTimeout(() => {
-            initTiltEffect();
             const reveals = grid.querySelectorAll('.scroll-reveal');
             reveals.forEach(el => el.classList.add('visible'));
         }, 100);
