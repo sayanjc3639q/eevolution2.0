@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('EEvolution 2.0 Landing Page Loaded');
+
+    // Global state for notices
+    window.currentSemesterNotices = [];
+
     initBackgroundCanvas();
     initScrollReveal();
     initTiltEffect();
@@ -12,7 +16,145 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial Load - Default to first sem
     loadResources('first-semister');
+    loadNotices('first-semister');
 });
+
+// Toast Function
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Load Notices Function
+async function loadNotices(semesterFolder = 'first-semister') {
+    const container = document.getElementById('notices-grid');
+    if (!container) return;
+
+    // Show loading
+    container.innerHTML = '<div class="loading-spinner">Loading notices...</div>';
+
+    try {
+        // Fetch from specific semester folder with cache busting
+        const response = await fetch(`data/${semesterFolder}/notices.json?t=${new Date().getTime()}`);
+
+        // Handle 404 gracefully
+        if (!response.ok) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">No notices for this semester.</div>';
+            return;
+        }
+
+        const notices = await response.json();
+        window.currentSemesterNotices = notices; // Store for detail view
+        container.innerHTML = ''; // Clear loading
+
+        if (!notices || notices.length === 0) {
+            console.warn('Notices data is empty or null for', semesterFolder);
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">No notices available.</div>';
+            return;
+        }
+
+        notices.forEach(notice => {
+            const card = document.createElement('div');
+            card.className = 'notice-card scroll-reveal';
+
+            let imageHtml = '';
+            if (notice.hasImage && notice.imageUrl) {
+                imageHtml = `
+                    <div class="notice-image-header" style="background-image: url('${notice.imageUrl}');">
+                        <div class="notice-overlay"></div>
+                    </div>
+                `;
+            }
+
+            let pdfBtnHtml = '';
+            if (notice.hasPdf) {
+                pdfBtnHtml = `
+                    <a href="${notice.pdfLink}" class="btn-action-icon" title="Download PDF">
+                        <i class="fas fa-file-download"></i>
+                    </a>
+                `;
+            }
+
+            card.innerHTML = `
+                ${imageHtml}
+                <div class="notice-body">
+                    <div class="notice-meta">
+                        <span class="notice-date">
+                            <i class="far fa-calendar-alt"></i> ${notice.date}
+                        </span>
+                        <div class="notice-options">
+                            ${pdfBtnHtml}
+                            <button class="btn-action-icon" onclick="shareNotice('${notice.id}')" title="Share Link">
+                                <i class="fas fa-share-nodes"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <h3 class="notice-title">${notice.title}</h3>
+                    <p class="notice-content">${notice.content}</p>
+                    
+                    <div class="notice-footer">
+                        <button onclick="openNoticeDetail('${notice.id}')" class="read-more-link" style="background:none; border:none; padding:0; cursor:pointer;">Read full notice <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Re-init reveal
+        setTimeout(() => {
+            const reveals = container.querySelectorAll('.scroll-reveal');
+            reveals.forEach(el => el.classList.add('visible'));
+        }, 100);
+
+    } catch (error) {
+        console.error(error);
+        container.innerHTML = '<div style="text-align: center; color: #ff4444; padding: 2rem;">Error loading notices.</div>';
+    }
+}
+
+// Open Detail View
+window.openNoticeDetail = function (id) {
+    const notice = window.currentSemesterNotices.find(n => n.id === id);
+    if (!notice) return;
+
+    // Populate Details
+    document.getElementById('detail-title').innerText = notice.title;
+    document.getElementById('detail-date').innerHTML = `<i class="far fa-calendar-alt"></i> ${notice.date}`;
+    document.getElementById('detail-content').innerHTML = notice.content; // Render HTML
+
+    // Handle PDF Action in Detail View
+    const actionsContainer = document.getElementById('detail-actions');
+    if (actionsContainer) {
+        actionsContainer.innerHTML = '';
+        if (notice.hasPdf) {
+            actionsContainer.innerHTML = `
+            <a href="${notice.pdfLink}" class="btn primary" target="_blank" style="display:inline-flex; align-items:center; gap:0.5rem; margin-top:2rem;">
+                <i class="fas fa-file-download"></i> Download PDF
+            </a>
+        `;
+        }
+    }
+
+    // Switch View
+    switchSection('notice-view');
+};
+
+// Share Function
+window.shareNotice = function (id) {
+    const link = `https://ny-ee-upgrad.com/notices/${id}`;
+    navigator.clipboard.writeText(link).then(() => {
+        showToast("Link Copied!");
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        showToast("Failed to copy link");
+    });
+};
 
 // Settings Interactions
 function initSettings() {
@@ -42,6 +184,7 @@ function initSettings() {
 
                 // Reload Resources
                 loadResources(semFolder);
+                loadNotices(semFolder); // Reload Notices
             }
         });
     });
@@ -69,7 +212,7 @@ async function loadResources(semesterFolder) {
     grid.innerHTML = '<div class="loading-spinner" style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">Loading subjects...</div>';
 
     try {
-        const response = await fetch(`data/${semesterFolder}/subject.json`);
+        const response = await fetch(`data/${semesterFolder}/subject.json?t=${new Date().getTime()}`);
         if (!response.ok) throw new Error('Failed to load subjects');
 
         const subjects = await response.json();

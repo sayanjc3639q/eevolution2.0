@@ -243,4 +243,27 @@ body.nav-open::before {
         width: 42px;
         height: 42px;
     }
+
+    /* Notices Section Mobile */
+    .notices-container {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+        gap: 1.5rem;
+    }
+
+    .notice-card {
+        border-radius: 16px;
+    }
+
+    .notice-image-header {
+        height: 150px;
+    }
+
+    .notice-body {
+        padding: 1.25rem;
+    }
+
+    .notice-title {
+        font-size: 1.2rem;
+    }
 }

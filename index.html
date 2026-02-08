@@ -157,11 +157,41 @@
                 <h2>Notice Board</h2>
                 <p>Latest announcements and updates.</p>
             </div>
-            <!-- Content to be added -->
-            <div style="text-align: center; padding: 5rem;">
-                <h3>No new notices.</h3>
+
+            <div id="notices-grid" class="notices-container">
+                <!-- Javascript will populate this -->
+                <div class="loading-spinner">Loading notices...</div>
             </div>
         </section>
+
+        <!-- Notice View Section (Hidden by default) -->
+        <section id="notice-view" class="page-section">
+            <div class="notice-view-container">
+                <button class="btn-back" onclick="switchSection('notices')">
+                    <i class="fas fa-arrow-left"></i> Back to Notices
+                </button>
+
+                <div class="notice-detail-card">
+                    <div class="notice-detail-header">
+                        <h1 id="detail-title">Notice Title</h1>
+                        <span id="detail-date" class="notice-date">
+                            <i class="far fa-calendar-alt"></i> <span>Date</span>
+                        </span>
+                    </div>
+
+                    <div id="detail-content" class="notice-detail-content">
+                        <!-- Rich HTML Content goes here -->
+                    </div>
+
+                    <div id="detail-actions" class="notice-detail-actions">
+                        <!-- Dynamic actions like PDF download -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast">Link Copied!</div>
 
         <!-- Blogs Section -->
         <section id="blogs" class="page-section">

@@ -1,0 +1,22 @@
+[
+    {
+        "id": "first-sem-welcome",
+        "hasImage": false,
+        "imageUrl": "",
+        "hasPdf": false,
+        "pdfLink": "",
+        "date": "Sep 15, 2025",
+        "title": "Welcome to EEvolution 2.0",
+        "content": "<p>A warm welcome to all first-semester students! Explore the resources section for your study materials and stay tuned for upcoming events.</p>"
+    },
+    {
+        "id": "first-sem-ia1",
+        "hasImage": false,
+        "imageUrl": "",
+        "hasPdf": true,
+        "pdfLink": "resources/IA1_Schedule.pdf",
+        "date": "Oct 10, 2025",
+        "title": "First Internal Assessment Schedule",
+        "content": "<p>The schedule for the first internal assessment has been released.</p><br><p><strong>Exam Timings:</strong></p><table class='notice-table'><thead><tr><th>Subject</th><th>Date</th><th>Time</th></tr></thead><tbody><tr><td>Calculus</td><td>Oct 15</td><td>10:00 AM</td></tr><tr><td>Physics</td><td>Oct 17</td><td>10:00 AM</td></tr><tr><td>Basic Electrical</td><td>Oct 19</td><td>10:00 AM</td></tr></tbody></table><br><p><i>Please ensure you carry your ID cards.</i></p>"
+    }
+]

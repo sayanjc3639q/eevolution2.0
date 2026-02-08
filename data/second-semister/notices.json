@@ -1,0 +1,22 @@
+[
+    {
+        "id": "second-sem-lab",
+        "hasImage": false,
+        "imageUrl": "",
+        "hasPdf": false,
+        "pdfLink": "",
+        "date": "Mar 05, 2026",
+        "title": "Updated Lab Schedule",
+        "content": "Please note that the Analog Electronics lab timings have been shifted to Thursday afternoon for batch B2."
+    },
+    {
+        "id": "second-sem-project",
+        "hasImage": false,
+        "imageUrl": "",
+        "hasPdf": true,
+        "pdfLink": "resources/Project_Guidelines.pdf",
+        "date": "Apr 20, 2026",
+        "title": "Mini Project Submission Deadline",
+        "content": "The deadline for the mini-project submission is approaching. Ensure your reports are formatted according to the guidelines."
+    }
+]
