@@ -1,0 +1,17 @@
+[
+    {
+        "id": "q1",
+        "question": "How do I contribute to EEvolution?",
+        "answer": "You can verify your student ID and start uploading notes directly. For code contributions, check our GitHub repository linked in the footer!"
+    },
+    {
+        "id": "q2",
+        "question": "Is this platform open to other departments?",
+        "answer": "Currently, EEvolution is tailored for the Electrical Engineering department, but we plan to expand to other branches soon."
+    },
+    {
+        "id": "q3",
+        "question": "How are Evo Coins calculated?",
+        "answer": "Evo Coins are awarded based on the quality and frequency of your contributions. Verified notes earn more than general uploads."
+    }
+]

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EEvolution App</title>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- App Styles -->
+    <link rel="stylesheet" href="styles/mobile-index-style.css">
+</head>
+
+<body>
+
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <img src="graphics/logo.png" alt="Logo" class="app-logo" onerror="this.style.display='none'">
+            <h1>EEvolution</h1>
+        </div>
+        <div class="header-right">
+            <button class="icon-btn"><i class="far fa-bell"></i></button>
+            <button class="icon-btn profile-btn"><img
+                    src="https://ui-avatars.com/api/?name=User&background=00f2ff&color=fff" alt="User"></button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-content">
+
+        <!-- HOME VIEW -->
+        <section id="view-home" class="app-view active">
+            <!-- Greeting -->
+            <div class="welcome-card">
+                <h2>Hello, <span class="highlight">Engineer</span> 👋</h2>
+                <p>Ready to evolve today?</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="stats-row">
+                <div class="stat-bubble">
+                    <span class="stat-val">2</span>
+                    <span class="stat-label">Notices</span>
+                </div>
+                <div class="stat-bubble">
+                    <span class="stat-val">50</span>
+                    <span class="stat-label">Coins</span>
+                </div>
+                <div class="stat-bubble">
+                    <span class="stat-val">12</span>
+                    <span class="stat-label">Res.</span>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <h3 class="section-heading">Quick Actions</h3>
+            <div class="action-grid">
+                <div class="action-card" onclick="switchView('resources')">
+                    <div class="icon-box" style="background: rgba(0, 242, 255, 0.1); color: #00f2ff;"><i
+                            class="fas fa-book"></i></div>
+                    <span>Resources</span>
+                </div>
+                <div class="action-card" onclick="switchView('notices')">
+                    <div class="icon-box" style="background: rgba(255, 215, 0, 0.1); color: #ffd700;"><i
+                            class="fas fa-bullhorn"></i></div>
+                    <span>Notices</span>
+                </div>
+                <div class="action-card" onclick="switchView('blogs')">
+                    <div class="icon-box" style="background: rgba(112, 0, 255, 0.1); color: #7000ff;"><i
+                            class="fas fa-pen-nib"></i></div>
+                    <span>Blogs</span>
+                </div>
+                <div class="action-card" onclick="switchView('settings')">
+                    <div class="icon-box" style="background: rgba(255, 255, 255, 0.1); color: #fff;"><i
+                            class="fas fa-cog"></i></div>
+                    <span>Settings</span>
+                </div>
+            </div>
+
+            <!-- Recent Notices Preview -->
+            <div class="header-row">
+                <h3 class="section-heading">Latest Notices</h3>
+                <a href="#" class="see-all" onclick="switchView('notices')">See All</a>
+            </div>
+            <div id="home-notices-list" class="horizontal-scroll-list">
+                <!-- Populated via JS -->
+                <div class="loading-skeleton"></div>
+            </div>
+
+            <!-- Moments Gallery (Horizontal Slider) -->
+            <h3 class="section-heading">Moments</h3>
+            <div id="mobile-moments-slider" class="horizontal-scroll-list moments-scroll">
+                <!-- Populated via JS -->
+                <div class="loading-skeleton" style="width: 200px; height: 120px;"></div>
+                <div class="loading-skeleton" style="width: 200px; height: 120px;"></div>
+            </div>
+
+            <!-- Evo Coins Promo -->
+            <div class="evo-promo-card">
+                <div class="evo-content">
+                    <h4>Earn Evo Coins</h4>
+                    <p>Contribute notes, write blogs, and win rewards!</p>
+                    <button class="btn-xs-primary">View Rewards</button>
+                </div>
+                <div class="evo-visual">
+                    <i class="fas fa-coins"></i>
+                </div>
+            </div>
+
+            <!-- Trending Resources -->
+            <h3 class="section-heading">Trending Resources</h3>
+            <div id="trending-resources-list">
+                <!-- Populated via JS -->
+            </div>
+
+            <!-- Hall of Fame -->
+            <h3 class="section-heading">Hall of Fame</h3>
+            <div class="hof-section-mobile">
+                <h4>Top Contributors</h4>
+                <div id="mobile-contributors" class="horizontal-scroll-list avatar-list">
+                    <!-- Populated via JS -->
+                </div>
+                <h4 style="margin-top: 1rem;">Top Donators</h4>
+                <div id="mobile-donators" class="horizontal-scroll-list avatar-list">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <!-- Student Voices -->
+            <h3 class="section-heading">Student Voices</h3>
+            <div class="horizontal-scroll-list voices-scroll">
+                <div class="loading-skeleton" style="width: 280px; height: 150px;"></div>
+                <div class="loading-skeleton" style="width: 280px; height: 150px;"></div>
+            </div>
+
+            <!-- FAQ -->
+            <h3 class="section-heading">FAQ</h3>
+            <div class="mobile-faq-container">
+                <div class="loading-skeleton" style="height: 50px;"></div>
+                <div class="loading-skeleton" style="height: 50px;"></div>
+            </div>
+
+            <!-- Spacer for bottom nav -->
+            <div style="height: 20px;"></div>
+        </section>
+
+        <!-- RESOURCES VIEW -->
+        <section id="view-resources" class="app-view">
+            <h2 class="view-title">Resources Library</h2>
+            <div class="semester-pill" id="current-sem-pill">First Semester</div>
+            <div id="resources-list" class="vertical-list">
+                <!-- JS Populated -->
+            </div>
+        </section>
+
+        <!-- NOTICES VIEW -->
+        <section id="view-notices" class="app-view">
+            <h2 class="view-title">Notice Board</h2>
+            <div id="notices-list-full" class="vertical-list">
+                <!-- JS Populated -->
+            </div>
+        </section>
+
+        <!-- BLOGS VIEW -->
+        <section id="view-blogs" class="app-view">
+            <h2 class="view-title">Class Blogs</h2>
+            <div id="blogs-list" class="vertical-list">
+                <!-- JS Populated -->
+            </div>
+        </section>
+
+        <!-- SETTINGS VIEW -->
+        <section id="view-settings" class="app-view">
+            <h2 class="view-title">Settings</h2>
+            <div class="settings-group">
+                <h3>Academic Session</h3>
+                <div class="radio-option active" onclick="setSemester('first-semister', this)">
+                    <span>1st Semester</span>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="radio-option" onclick="setSemester('second-semister', this)">
+                    <span>2nd Semester</span>
+                    <i class="fas fa-circle"></i>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" onclick="switchView('home')" data-target="home">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item" onclick="switchView('resources')" data-target="resources">
+            <i class="fas fa-book-open"></i>
+            <span>Learn</span>
+        </a>
+        <div class="nav-fab" onclick="showUploadModal()">
+            <i class="fas fa-plus"></i>
+        </div>
+        <a href="#" class="nav-item" onclick="switchView('notices')" data-target="notices">
+            <i class="fas fa-bell"></i>
+            <span>Alerts</span>
+        </a>
+        <a href="#" class="nav-item" onclick="switchView('blogs')" data-target="blogs">
+            <i class="fas fa-feather-alt"></i>
+            <span>Blogs</span>
+        </a>
+    </nav>
+
+    <script src="script/mobile-index-script.js"></script>
+</body>
+
+</html>

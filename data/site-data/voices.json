@@ -1,0 +1,23 @@
+[
+    {
+        "id": "v1",
+        "name": "Ananya Roy",
+        "role": "3rd Year, EE",
+        "avatar": "https://avataaars.io/?avatarStyle=Transparent&topType=LongHairBun&accessoriesType=Blank&hairColor=Black&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Happy&eyebrowType=Default&mouthType=Smile&skinColor=Light",
+        "quote": "EEvolution saved me during finals! The 'Last Minute Notes' feature is an absolute lifesaver. Plus, connecting with seniors has been invaluable."
+    },
+    {
+        "id": "v2",
+        "name": "Rahul Das",
+        "role": "2nd Year, EE",
+        "avatar": "https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortFlat&accessoriesType=Prescription02&hairColor=Black&facialHairType=BeardLight&clotheType=Hoodie&clotheColor=PastelBlue&eyeType=Happy&eyebrowType=Default&mouthType=Smile&skinColor=Light",
+        "quote": "I love writing technical blogs here. It's a great way to showcase what I'm learning, and getting feedback from peers helps me grow."
+    },
+    {
+        "id": "v3",
+        "name": "Priya Singh",
+        "role": "4th Year, EE",
+        "avatar": "https://avataaars.io/?avatarStyle=Transparent&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=ShirtCrewNeck&clotheColor=Pink&eyeType=Default&eyebrowType=Default&mouthType=Smile&skinColor=DarkBrown",
+        "quote": "The UI is so sleek and modern! It feels like using a premium app. Very proud that this was built by our own department students."
+    }
+]

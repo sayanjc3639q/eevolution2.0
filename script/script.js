@@ -21,7 +21,91 @@ document.addEventListener('DOMContentLoaded', () => {
     loadBlogs('first-semister');
     loadMoments();
     loadHallOfFame();
+    loadVoices();
+    loadFAQ();
 });
+
+// Toast Function
+// ... (rest of the file)
+
+// Load Voices Function
+async function loadVoices() {
+    const container = document.querySelector('.voices-grid');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`data/site-data/voices.json?t=${new Date().getTime()}`);
+        if (!response.ok) return;
+
+        const voices = await response.json();
+        container.innerHTML = '';
+
+        voices.forEach(voice => {
+            const card = document.createElement('div');
+            card.className = 'voice-card scroll-reveal';
+            card.innerHTML = `
+                <i class="fas fa-quote-left quote-icon"></i>
+                <p class="voice-text">"${voice.quote}"</p>
+                <div class="voice-author">
+                    <img src="${voice.avatar}" alt="${voice.name}">
+                    <div>
+                        <h4>${voice.name}</h4>
+                        <span>${voice.role}</span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Trigger reveal
+        setTimeout(() => {
+            const reveals = container.querySelectorAll('.scroll-reveal');
+            reveals.forEach(el => el.classList.add('visible'));
+        }, 100);
+
+    } catch (error) {
+        console.error("Error loading Voices:", error);
+    }
+}
+
+// Load FAQ Function
+async function loadFAQ() {
+    const container = document.querySelector('.faq-container');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`data/site-data/faq.json?t=${new Date().getTime()}`);
+        if (!response.ok) return;
+
+        const faqs = await response.json();
+        container.innerHTML = '';
+
+        faqs.forEach(faq => {
+            const item = document.createElement('div');
+            item.className = 'faq-item scroll-reveal';
+            item.onclick = function () { toggleFaq(this); };
+            item.innerHTML = `
+                <div class="faq-question">
+                    <h3>${faq.question}</h3>
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>${faq.answer}</p>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+
+        // Trigger reveal
+        setTimeout(() => {
+            const reveals = container.querySelectorAll('.scroll-reveal');
+            reveals.forEach(el => el.classList.add('visible'));
+        }, 100);
+
+    } catch (error) {
+        console.error("Error loading FAQ:", error);
+    }
+}
 
 // Toast Function
 function showToast(message) {
