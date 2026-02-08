@@ -94,6 +94,7 @@ body.nav-open::before {
     padding: 6rem 1rem 3rem 1rem;
     text-align: center;
     justify-content: center;
+    align-items: center;
     min-height: auto;
 }
 

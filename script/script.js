@@ -178,7 +178,7 @@ async function loadBlogs(semesterFolder) {
     // Feature Check: Only availble for 2nd Sem+
     if (semesterFolder === 'first-semister') {
         container.innerHTML = `
-            <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+            <div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
                 <i class="fas fa-rocket" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary);"></i>
                 <h3>Feature Coming Soon</h3>
                 <p>Class Blogs are available from <strong>Second Semester</strong> onwards.</p>
