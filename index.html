@@ -20,11 +20,12 @@
     <header class="header">
         <div class="logo">EEvolution <span class="highlight">2.0</span></div>
         <nav class="nav">
-            <a href="#home">Home</a>
-            <a href="#resources">Resources</a>
-            <a href="#notices">Notices</a>
-            <a href="#blogs">Blogs</a>
-            <a href="#moments">Moments</a>
+            <a href="#" class="nav-link active" data-target="home">Home</a>
+            <a href="#" class="nav-link" data-target="resources">Resources</a>
+            <a href="#" class="nav-link" data-target="notices">Notices</a>
+            <a href="#" class="nav-link" data-target="blogs">Blogs</a>
+            <a href="#" class="nav-link" data-target="moments">Moments</a>
+            <a href="#" class="nav-link" data-target="settings">Settings</a>
         </nav>
         <button class="cta-btn">Join Community</button>
         <div class="hamburger">
@@ -35,86 +36,226 @@
     </header>
 
     <main>
-        <section id="home" class="hero">
-            <div class="hero-content scroll-reveal">
-                <h1>Powering the <span class="gradient-text">Future</span> <br> of Engineering</h1>
-                <p>The official hub for Electrical and Electronics Engineering students of HIT. Connect, learn, and grow
-                    together.</p>
-                <div class="hero-buttons">
-                    <a href="#resources" class="btn primary">Explore Resources</a>
-                    <a href="#blogs" class="btn secondary">Read Blogs</a>
-                </div>
-            </div>
-            <!-- Visual is handled by canvas now, but we keep a decorative element -->
-            <div class="hero-visual scroll-reveal delay-1">
-                <div class="glowing-orb"></div>
-            </div>
-        </section>
-
-        <section class="stats-section scroll-reveal">
-            <div class="stat-item">
-                <span class="stat-number">60+</span>
-                <span class="stat-label">Students</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">100+</span>
-                <span class="stat-label">Resources</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">5+</span>
-                <span class="stat-label">Events</span>
-            </div>
-        </section>
-
-        <section class="welcome-section scroll-reveal">
-            <div class="welcome-content">
-                <h2>Welcome to the <span class="highlight">Evolution</span></h2>
-                <div class="welcome-grid">
-                    <div class="welcome-card new-visitor">
-                        <div class="welcome-icon">🚀</div>
-                        <h3>New Here?</h3>
-                        <p>Start your journey with our curated roadmap. Explore resources, join the community, and get
-                            ready to electrify your potential.</p>
-                    </div>
-                    <div class="welcome-card regular-visitor">
-                        <div class="welcome-icon">⚡</div>
-                        <h3>Welcome Back!</h3>
-                        <p>Check out the latest notices, new blog posts, and contribute to the growing repository of
-                            knowledge.</p>
+        <!-- Home Section -->
+        <section id="home" class="page-section active">
+            <div class="hero">
+                <div class="hero-content scroll-reveal">
+                    <h1>Powering the <span class="gradient-text">Future</span> <br> of Engineering</h1>
+                    <p>The official hub for Electrical and Electronics Engineering students of HIT. Connect, learn, and
+                        grow
+                        together.</p>
+                    <div class="hero-buttons">
+                        <a href="#resources" class="btn primary nav-link" data-target="resources">Explore Resources</a>
+                        <a href="#blogs" class="btn secondary nav-link" data-target="blogs">Read Blogs</a>
                     </div>
                 </div>
+                <!-- Visual is handled by canvas now, but we keep a decorative element -->
+                <div class="hero-visual scroll-reveal delay-1">
+                    <div class="glowing-orb"></div>
+                </div>
+            </div>
+
+            <section class="stats-section scroll-reveal">
+                <div class="stat-item">
+                    <span class="stat-number">60+</span>
+                    <span class="stat-label">Students</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <span class="stat-label">Resources</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5+</span>
+                    <span class="stat-label">Events</span>
+                </div>
+            </section>
+
+            <section class="welcome-section scroll-reveal">
+                <div class="welcome-content">
+                    <h2>Welcome to the <span class="highlight">Evolution</span></h2>
+                    <div class="welcome-grid">
+                        <div class="welcome-card new-visitor">
+                            <div class="welcome-icon">🚀</div>
+                            <h3>New Here?</h3>
+                            <p>Start your journey with our curated roadmap. Explore resources, join the community, and
+                                get
+                                ready to electrify your potential.</p>
+                        </div>
+                        <div class="welcome-card regular-visitor">
+                            <div class="welcome-icon">⚡</div>
+                            <h3>Welcome Back!</h3>
+                            <p>Check out the latest notices, new blog posts, and contribute to the growing repository of
+                                knowledge.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features">
+                <div class="section-header scroll-reveal">
+                    <h2>Everything You Need</h2>
+                    <p>Curated tools to supercharge your academic journey.</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card scroll-reveal delay-1" data-tilt onclick="switchSection('resources')">
+                        <div class="card-glow"></div>
+                        <div class="icon">📚</div>
+                        <h3>Resources</h3>
+                        <p>Access curated notes, previous year papers, and essential study materials.</p>
+                    </div>
+                    <div class="feature-card scroll-reveal delay-2" data-tilt onclick="switchSection('notices')">
+                        <div class="card-glow"></div>
+                        <div class="icon">📢</div>
+                        <h3>Notices</h3>
+                        <p>Stay updated with the latest department announcements and event schedules.</p>
+                    </div>
+                    <div class="feature-card scroll-reveal delay-3" data-tilt onclick="switchSection('blogs')">
+                        <div class="card-glow"></div>
+                        <div class="icon">✍️</div>
+                        <h3>Class Blogs</h3>
+                        <p>Share knowledge, experiences, and technical articles with peers.</p>
+                    </div>
+                    <div class="feature-card scroll-reveal delay-4" data-tilt onclick="switchSection('moments')">
+                        <div class="card-glow"></div>
+                        <div class="icon">📸</div>
+                        <h3>Moments</h3>
+                        <p>A gallery of memories from departmental events and gatherings.</p>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" class="page-section">
+            <div class="section-header">
+                <h2>Resources Hub</h2>
+                <p>Curated notes and papers for every semester.</p>
+            </div>
+            <!-- Content to be added -->
+            <div style="text-align: center; padding: 5rem;">
+                <h3>Coming Soon...</h3>
             </div>
         </section>
 
-        <section id="features" class="features">
-            <div class="section-header scroll-reveal">
-                <h2>Everything You Need</h2>
-                <p>Curated tools to supercharge your academic journey.</p>
+        <!-- Notices Section -->
+        <section id="notices" class="page-section">
+            <div class="section-header">
+                <h2>Notice Board</h2>
+                <p>Latest announcements and updates.</p>
             </div>
-            <div class="features-grid">
-                <div class="feature-card scroll-reveal delay-1" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon">📚</div>
-                    <h3>Resources</h3>
-                    <p>Access curated notes, previous year papers, and essential study materials.</p>
+            <!-- Content to be added -->
+            <div style="text-align: center; padding: 5rem;">
+                <h3>No new notices.</h3>
+            </div>
+        </section>
+
+        <!-- Blogs Section -->
+        <section id="blogs" class="page-section">
+            <div class="section-header">
+                <h2>Class Blogs</h2>
+                <p>Read about student experiences and tech articles.</p>
+            </div>
+            <!-- Content to be added -->
+            <div style="text-align: center; padding: 5rem;">
+                <h3>Start writing today!</h3>
+            </div>
+        </section>
+
+        <!-- Moments Section -->
+        <section id="moments" class="page-section">
+            <div class="section-header">
+                <h2>Moments Gallery</h2>
+                <p>Capturing the best memories of our department.</p>
+            </div>
+            <!-- Content to be added -->
+            <div style="text-align: center; padding: 5rem;">
+                <h3>Gallery is empty.</h3>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="page-section">
+            <div class="section-header">
+                <h2>Settings</h2>
+                <p>Customize your EEvolution experience.</p>
+            </div>
+
+            <div class="settings-container">
+                <!-- Academic Settings -->
+                <div class="setting-group">
+                    <h3>Academic Session</h3>
+                    <div class="semester-selector">
+                        <label class="semester-option active">
+                            <input type="radio" name="semester" checked>
+                            <span class="sem-name">First Semester</span>
+                            <span class="sem-date">Sep 2025 - Feb 2026</span>
+                        </label>
+                        <label class="semester-option">
+                            <input type="radio" name="semester">
+                            <span class="sem-name">Second Semester</span>
+                            <span class="sem-date">Mar 2026 - July 2026</span>
+                        </label>
+                        <label class="semester-option disabled">
+                            <input type="radio" name="semester" disabled>
+                            <span class="sem-name">Third Semester</span>
+                            <span class="sem-date">Coming Soon</span>
+                        </label>
+                    </div>
                 </div>
-                <div class="feature-card scroll-reveal delay-2" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon">📢</div>
-                    <h3>Notices</h3>
-                    <p>Stay updated with the latest department announcements and event schedules.</p>
+
+                <!-- Account & Rewards -->
+                <div class="setting-group">
+                    <h3>Account & Evo Coins</h3>
+                    <div class="settings-grid">
+                        <div class="setting-card">
+                            <div class="setting-icon">🔗</div>
+                            <h4>Connect Account</h4>
+                            <button class="btn secondary small">Connect</button>
+                        </div>
+                        <div class="setting-card">
+                            <div class="setting-icon">🪙</div>
+                            <h4>My Evo Coins</h4>
+                            <div class="coin-balance">0 EC</div>
+                        </div>
+                        <div class="setting-card">
+                            <div class="setting-icon">❓</div>
+                            <h4>How to Collect</h4>
+                            <p class="small-text">Participate in events and contribute resources.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="feature-card scroll-reveal delay-3" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon">✍️</div>
-                    <h3>Class Blogs</h3>
-                    <p>Share knowledge, experiences, and technical articles with peers.</p>
+
+                <!-- Support -->
+                <div class="setting-group">
+                    <h3>Support Us</h3>
+                    <div class="settings-grid">
+                        <div class="setting-card highlight-card">
+                            <div class="setting-icon">❤️</div>
+                            <h4>Donate</h4>
+                            <p class="small-text">Help us keep the lights on.</p>
+                            <button class="btn primary small">Donate Now</button>
+                        </div>
+                        <div class="setting-card">
+                            <div class="setting-icon">🙏</div>
+                            <h4>Wall of Fame</h4>
+                            <p class="small-text">Thanks to <strong>Alex</strong> for donating!</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="feature-card scroll-reveal delay-4" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon">📸</div>
-                    <h3>Moments</h3>
-                    <p>A gallery of memories from departmental events and gatherings.</p>
+
+                <!-- Experimental -->
+                <div class="setting-group">
+                    <h3>Advanced</h3>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <h4>Experimental Mode</h4>
+                            <p>Enable command-line interface for power users.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="experimental-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </section>

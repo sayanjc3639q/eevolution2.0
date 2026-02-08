@@ -3,8 +3,112 @@ document.addEventListener('DOMContentLoaded', () => {
     initBackgroundCanvas();
     initScrollReveal();
     initTiltEffect();
+    initBackgroundCanvas();
+    initScrollReveal();
+    initTiltEffect();
     initMobileMenu();
+    initNavigation();
+    initSettings();
 });
+
+// Settings Interactions
+function initSettings() {
+    // Semester Selection
+    const semesterOptions = document.querySelectorAll('.semester-option:not(.disabled)');
+
+    semesterOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove active class from all
+            semesterOptions.forEach(opt => opt.classList.remove('active'));
+            // Add to clicked
+            option.classList.add('active');
+            // Check the hidden radio
+            const radio = option.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+        });
+    });
+
+    // Experimental Toggle
+    const expToggle = document.getElementById('experimental-toggle');
+    if (expToggle) {
+        expToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                console.log("Experimental Mode Enabled: Command Interface Loading...");
+                alert("Experimental Mode Enabled. (Command Interface coming soon!)");
+            } else {
+                console.log("Experimental Mode Disabled");
+            }
+        });
+    }
+}
+
+// Navigation & Section Switching
+function initNavigation() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.page-section');
+
+    window.switchSection = function (targetId) {
+        console.log("Attempting switch to:", targetId);
+
+        // Update Nav Links
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('data-target') === targetId) {
+                link.classList.add('active');
+            }
+        });
+
+        // Update Sections
+        sections.forEach(section => {
+            // First, hide everything and remove active class
+            section.classList.remove('active');
+
+            if (section.id === targetId) {
+                // For the target, make it active
+                // We use a small timeout to allow display:none to be unset by the class change if needed,
+                // but relying on CSS class 'active' to handle display:block is cleaner if CSS is correct.
+                // However, let's force a reflow just in case animations are stuck.
+                section.classList.add('active');
+
+                // Re-trigger scroll reveal
+                setTimeout(() => {
+                    const reveals = section.querySelectorAll('.scroll-reveal');
+                    reveals.forEach(el => el.classList.add('visible'));
+                }, 50);
+            }
+        });
+
+        window.scrollTo(0, 0);
+    };
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = link.getAttribute('data-target');
+            // Update fragment without scrolling
+            if (history.pushState) {
+                history.pushState(null, null, '#' + target);
+            } else {
+                location.hash = target;
+            }
+            switchSection(target);
+        });
+    });
+
+    // Handle Deep Linking / Refresh
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+        // Check if it's a valid section
+        const targetSection = document.getElementById(hash);
+        if (targetSection && targetSection.classList.contains('page-section')) {
+            switchSection(hash);
+        } else {
+            switchSection('home');
+        }
+    } else {
+        switchSection('home');
+    }
+}
 
 // Mobile Menu Toggle
 function initMobileMenu() {

@@ -31,6 +31,33 @@ body {
     line-height: 1.6;
 }
 
+/* Page Section Logic */
+.page-section {
+    display: none;
+    padding-top: var(--nav-height);
+    min-height: 100vh;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.page-section.active {
+    display: block;
+    opacity: 1;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 #bg-canvas {
     position: fixed;
     top: 0;
@@ -548,4 +575,176 @@ footer {
 html {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) var(--bg-dark);
+}
+
+/* Settings Section Styles */
+.settings-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+.setting-group {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.setting-group h3 {
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.5rem;
+}
+
+/* Semester Selector */
+.semester-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.semester-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.semester-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.semester-option.active {
+    border-color: var(--primary);
+    background: rgba(0, 242, 255, 0.05);
+}
+
+.semester-option input {
+    display: none;
+}
+
+.semester-option .sem-name {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.semester-option .sem-date {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.semester-option.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Settings Grid */
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.setting-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: transform 0.2s;
+}
+
+.setting-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--card-border);
+}
+
+.setting-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.coin-balance {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffd700;
+    /* Gold */
+    margin: 0.5rem 0;
+}
+
+.small-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.btn.small {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+}
+
+/* Toggle Switch */
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: var(--primary);
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }
