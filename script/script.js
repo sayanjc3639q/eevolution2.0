@@ -486,6 +486,25 @@ async function loadHallOfFame() {
     }
 }
 
+
+
+// Toggle FAQ Item
+window.toggleFaq = function (element) {
+    const answer = element.querySelector('.faq-answer');
+    const isActive = element.classList.contains('active');
+
+    // Close all others
+    document.querySelectorAll('.faq-item').forEach(item => {
+        item.classList.remove('active');
+        item.querySelector('.faq-answer').style.maxHeight = null;
+    });
+
+    if (!isActive) {
+        element.classList.add('active');
+        answer.style.maxHeight = answer.scrollHeight + "px";
+    }
+};
+
 // Settings Interactions
 function initSettings() {
     // Semester Selection
