@@ -1,0 +1,32 @@
+[
+    {
+        "subjectCode": "BS CH-201",
+        "pdfName": "Atomic Structure",
+        "description": "Bohr model, quantum numbers, and electronic configuration.",
+        "link": "#"
+    },
+    {
+        "subjectCode": "BS CH-201",
+        "pdfName": "Thermodynamics",
+        "description": "Laws of thermodynamics, entropy, and free energy.",
+        "link": "#"
+    },
+    {
+        "subjectCode": "HM HU-201",
+        "pdfName": "Communication Skills",
+        "description": "Effective listening, speaking, reading, and writing.",
+        "link": "#"
+    },
+    {
+        "subjectCode": "ES CS-201",
+        "pdfName": "C Programming Basics",
+        "description": "Data types, operators, and control structures.",
+        "link": "#"
+    },
+    {
+        "subjectCode": "ES CS-201",
+        "pdfName": "Arrays and Pointers",
+        "description": "Working with arrays, strings, and pointer arithmetic.",
+        "link": "#"
+    }
+]

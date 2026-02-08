@@ -1298,3 +1298,135 @@ input:checked+.slider:before {
         white-space: nowrap;
     }
 }
+
+/* Resource View Styles */
+.resource-view-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+.resource-view-container .btn-back {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    font-family: var(--font-main);
+}
+
+.resource-view-container .btn-back:hover {
+    transform: translateX(-5px);
+    color: #fff;
+}
+
+.resource-detail-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.resource-detail-header h2 {
+    font-size: 2.5rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+/* PDF Cards Grid */
+.pdf-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.pdf-card {
+    background: var(--bg-card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.pdf-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.pdf-icon {
+    font-size: 3rem;
+    color: #ff4444;
+    /* PDF Red */
+    margin-bottom: 1.5rem;
+    background: rgba(255, 68, 68, 0.1);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.pdf-card:hover .pdf-icon {
+    transform: scale(1.1);
+    background: rgba(255, 68, 68, 0.2);
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.2);
+}
+
+.pdf-info h4 {
+    color: var(--text-main);
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+}
+
+.pdf-info p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.pdf-action {
+    margin-top: auto;
+    width: 100%;
+}
+
+.pdf-action .btn {
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
+.pdf-action .btn .btn-text {
+    display: inline;
+}
+
+.pdf-action .btn .btn-icon {
+    display: none;
+}
+
+/* Mobile adjustments for Resource View */
+@media (max-width: 768px) {
+    .resource-detail-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .pdf-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}

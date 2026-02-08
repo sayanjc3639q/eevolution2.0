@@ -266,4 +266,86 @@ body.nav-open::before {
     .notice-title {
         font-size: 1.2rem;
     }
+
+    /* Compact Resource View for Mobile */
+    .pdf-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        /* Reduced gap */
+    }
+
+    .pdf-card {
+        flex-direction: row;
+        /* Horizontal layout */
+        padding: 1rem;
+        /* Reduced padding */
+        text-align: left;
+        /* Align text left */
+        align-items: center;
+        /* Center vertically */
+        gap: 1rem;
+    }
+
+    .pdf-icon {
+        width: 50px;
+        /* Smaller icon */
+        height: 50px;
+        font-size: 1.5rem;
+        margin-bottom: 0;
+        /* Remove bottom margin */
+        flex-shrink: 0;
+        /* Prevent icon shrinking */
+    }
+
+    .pdf-info {
+        flex: 1;
+        /* Take remaining space */
+    }
+
+    .pdf-info h4 {
+        margin-bottom: 0.2rem;
+        font-size: 1rem;
+        /* Smaller title */
+    }
+
+    .pdf-info p {
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+        /* Smaller description */
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        /* Limit description lines */
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .pdf-action {
+        width: auto;
+        /* Auto width */
+        margin-top: 0;
+    }
+
+    .pdf-action .btn {
+        padding: 0.5rem;
+        /* Icon button padding */
+        width: 40px;
+        /* Square-ish button */
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        /* Circle button looks good for icon */
+    }
+
+    .pdf-action .btn .btn-text {
+        display: none;
+    }
+
+    .pdf-action .btn .btn-icon {
+        display: block;
+        font-size: 1rem;
+    }
 }

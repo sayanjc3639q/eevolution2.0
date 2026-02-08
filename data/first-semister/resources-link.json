@@ -1,0 +1,38 @@
+[
+    {
+        "subjectCode": "BS PH-101",
+        "pdfName": "Module 1 - Quantum Mechanics",
+        "description": "Introduction to wave-particle duality and Schrödinger equation.",
+        "link": "#"
+    },
+    {
+        "subjectCode": "BS PH-101",
+        "pdfName": "Module 2 - Electromagnetic Theory",
+        "description": "Maxwell's equations and their applications.",
+        "link": "#"
+    },
+    {
+        "subjectCode": "BS M-101",
+        "pdfName": "Calculus Notes",
+        "description": "Differential and Integral Calculus basics.",
+        "link": "#"
+    },
+    {
+        "subjectCode": "BS M-101",
+        "pdfName": "Linear Algebra",
+        "description": "Matrices, determinants, and vector spaces.",
+        "link": "#"
+    },
+    {
+        "subjectCode": "ES EE-101",
+        "pdfName": "DC Circuits",
+        "description": "Kirchhoff's laws, mesh and nodal analysis.",
+        "link": "#"
+    },
+    {
+        "subjectCode": "ES EE-101",
+        "pdfName": "AC Circuits",
+        "description": "Phasor diagrams, RLC circuits, and resonance.",
+        "link": "#"
+    }
+]

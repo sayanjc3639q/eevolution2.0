@@ -212,10 +212,16 @@ async function loadResources(semesterFolder) {
     grid.innerHTML = '<div class="loading-spinner" style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">Loading subjects...</div>';
 
     try {
-        const response = await fetch(`data/${semesterFolder}/subject.json?t=${new Date().getTime()}`);
-        if (!response.ok) throw new Error('Failed to load subjects');
+        const [subjectsResponse, linksResponse] = await Promise.all([
+            fetch(`data/${semesterFolder}/subject.json?t=${new Date().getTime()}`),
+            fetch(`data/${semesterFolder}/resources-link.json?t=${new Date().getTime()}`)
+        ]);
 
-        const subjects = await response.json();
+        if (!subjectsResponse.ok) throw new Error('Failed to load subjects');
+
+        const subjects = await subjectsResponse.json();
+        const resourceLinks = linksResponse.ok ? await linksResponse.json() : []; // Handle if file missing or empty
+
         // Clear loading
         grid.innerHTML = '';
 
@@ -227,6 +233,9 @@ async function loadResources(semesterFolder) {
         subjects.forEach(sub => {
             const card = document.createElement('div');
             card.className = 'resource-card scroll-reveal';
+            // Make card clickable
+            card.style.cursor = 'pointer';
+            card.onclick = () => openSubjectResources(sub, resourceLinks);
 
             // Icon mapping - Font Awesome
             let icon = '<i class="fas fa-book"></i>';
@@ -260,6 +269,52 @@ async function loadResources(semesterFolder) {
         console.error(error);
         grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ff4444; padding: 2rem;">Error loading resources. Please try again later.</div>';
     }
+}
+
+// Open Subject Resources View
+function openSubjectResources(subject, allLinks) {
+    // Filter links for this subject
+    const subjectLinks = allLinks.filter(link => link.subjectCode === subject.code);
+
+    // Populate Header
+    document.getElementById('subject-title').innerText = subject.name;
+    document.getElementById('subject-code').innerText = subject.code;
+
+    const cardsGrid = document.getElementById('pdf-cards-grid');
+    cardsGrid.innerHTML = '';
+
+    if (subjectLinks.length === 0) {
+        cardsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">No resources available for this subject yet.</div>';
+    } else {
+        subjectLinks.forEach(link => {
+            const pdfCard = document.createElement('div');
+            pdfCard.className = 'pdf-card scroll-reveal';
+            pdfCard.innerHTML = `
+                <div class="pdf-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="pdf-info">
+                    <h4>${link.pdfName}</h4>
+                    <p>${link.description || 'No description available.'}</p>
+                </div>
+                <div class="pdf-action">
+                    <a href="${link.link}" target="_blank" class="btn secondary small">
+                        <span class="btn-text">View / Download</span>
+                        <span class="btn-icon"><i class="fas fa-download"></i></span>
+                    </a>
+                </div>
+            `;
+            cardsGrid.appendChild(pdfCard);
+        });
+
+        // Trigger reveal for new cards
+        setTimeout(() => {
+            const reveals = cardsGrid.querySelectorAll('.scroll-reveal');
+            reveals.forEach(el => el.classList.add('visible'));
+        }, 50);
+    }
+
+    switchSection('resource-view');
 }
 
 // Navigation & Section Switching
