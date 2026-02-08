@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial Load - Default to first sem
     loadResources('first-semister');
     loadNotices('first-semister');
+    loadMoments();
 });
 
 // Toast Function
@@ -165,6 +166,169 @@ window.shareNotice = function (id) {
         console.error('Failed to copy: ', err);
         showToast("Failed to copy link");
     });
+};
+
+// Load Moments Function (Independent)
+async function loadMoments() {
+    const grid = document.getElementById('moments-grid');
+    if (!grid) return;
+
+    try {
+        const response = await fetch(`data/site-data/moments.json?t=${new Date().getTime()}`);
+        if (!response.ok) {
+            grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">No moments captured yet.</div>';
+            return;
+        }
+
+        const moments = await response.json();
+
+        // Clear loading
+        grid.innerHTML = '';
+
+        if (!moments || moments.length === 0) {
+            grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">Gallery is empty.</div>';
+            return;
+        }
+
+        // Sort by Date (Newest First)
+        moments.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        moments.forEach(moment => {
+            const card = document.createElement('div');
+            card.className = 'moment-card scroll-reveal';
+
+            // Handle Multiple Images
+            let imagesHtml = '';
+            let indicatorsHtml = '';
+
+            // Support both old 'imageUrl' and new 'imageUrls' format for backward compatibility
+            const images = moment.imageUrls || (moment.imageUrl ? [moment.imageUrl] : []);
+
+            if (images.length > 0) {
+                images.forEach((url, index) => {
+                    const activeClass = index === 0 ? 'active' : '';
+                    imagesHtml += `<img src="${url}" class="moment-img ${activeClass}" alt="${moment.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=Event+Image'">`;
+                    if (images.length > 1) {
+                        indicatorsHtml += `<span class="indicator ${activeClass}" onclick="switchMomentImage(this, ${index})"></span>`;
+                    }
+                });
+            } else {
+                imagesHtml = `<img src="https://via.placeholder.com/400x300?text=No+Image" class="moment-img active" alt="No Image">`;
+            }
+
+            card.innerHTML = `
+                <div class="moment-image-wrapper" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
+                    <div class="moment-slider">
+                        ${imagesHtml}
+                    </div>
+                    ${images.length > 1 ? `<div class="moment-indicators">${indicatorsHtml}</div>` : ''}
+                    <div class="moment-overlay">
+                        <span class="moment-date"><i class="far fa-calendar-alt"></i> ${moment.date}</span>
+                    </div>
+                    ${images.length > 1 ? `
+                        <button class="slider-btn prev" onclick="moveSlide(this, -1)">&#10094;</button>
+                        <button class="slider-btn next" onclick="moveSlide(this, 1)">&#10095;</button>
+                    ` : ''}
+                </div>
+                <div class="moment-info">
+                    <h3 class="moment-title">${moment.title}</h3>
+                    <p class="moment-caption">${moment.caption}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // Trigger reveal
+        setTimeout(() => {
+            const reveals = grid.querySelectorAll('.scroll-reveal');
+            reveals.forEach(el => el.classList.add('visible'));
+        }, 100);
+
+    } catch (error) {
+        console.error("Error loading moments:", error);
+        grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #ff4444;">Failed to load moments.</div>';
+    }
+}
+
+// Slider Logic
+window.moveSlide = function (btn, direction) {
+    const wrapper = btn.closest('.moment-image-wrapper');
+    const images = wrapper.querySelectorAll('.moment-img');
+    const indicators = wrapper.querySelectorAll('.indicator');
+    let activeIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+
+    images[activeIndex].classList.remove('active');
+    if (indicators.length > 0) indicators[activeIndex].classList.remove('active');
+
+    let newIndex = activeIndex + direction;
+    if (newIndex < 0) newIndex = images.length - 1;
+    if (newIndex >= images.length) newIndex = 0;
+
+    images[newIndex].classList.add('active');
+    if (indicators.length > 0) indicators[newIndex].classList.add('active');
+};
+
+window.switchMomentImage = function (indicator, index) {
+    const wrapper = indicator.closest('.moment-image-wrapper');
+    const images = wrapper.querySelectorAll('.moment-img');
+    const indicators = wrapper.querySelectorAll('.indicator');
+
+    // Deactivate all
+    images.forEach(img => img.classList.remove('active'));
+    indicators.forEach(ind => ind.classList.remove('active'));
+
+    // Activate specific
+    images[index].classList.add('active');
+    indicators[index].classList.add('active');
+}
+
+
+// Touch Swipe Logic for Mobile
+let xDown = null;
+let yDown = null;
+
+window.handleTouchStart = function (evt) {
+    const firstTouch = evt.touches[0];
+    xDown = firstTouch.clientX;
+    yDown = firstTouch.clientY;
+};
+
+window.handleTouchMove = function (evt) {
+    if (!xDown || !yDown) {
+        return;
+    }
+
+    let xUp = evt.touches[0].clientX;
+    let yUp = evt.touches[0].clientY;
+
+    let xDiff = xDown - xUp;
+    let yDiff = yDown - yUp;
+
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
+        const wrapper = evt.target.closest('.moment-image-wrapper');
+        if (!wrapper) return;
+
+        // Prevent scrolling if swiping horizontally on slider
+        if (Math.abs(xDiff) > 10) evt.preventDefault();
+
+        if (xDiff > 0) {
+            /* left swipe */
+            const nextBtn = wrapper.querySelector('.next');
+            if (nextBtn) nextBtn.click();
+        } else {
+            /* right swipe */
+            const prevBtn = wrapper.querySelector('.prev');
+            if (prevBtn) prevBtn.click();
+        }
+    }
+    /* reset values */
+    xDown = null;
+    yDown = null;
+};
+
+window.handleTouchEnd = function (evt) {
+    xDown = null;
+    yDown = null;
 };
 
 // Settings Interactions

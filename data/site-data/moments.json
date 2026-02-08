@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "date": "2025-09-05",
+        "caption": "Teachers Day Celebration 2025",
+        "title": "Honoring Our Mentors",
+        "imageUrls": [
+            "graphics/teachers_day.jpg",
+            "graphics/teachers_day_2.jpg"
+        ]
+    },
+    {
+        "id": 2,
+        "date": "2025-10-12",
+        "caption": "Fresher's Welcome Party",
+        "title": "A New Beginning",
+        "imageUrls": [
+            "../../moments/moments.jfif"
+        ]
+    },
+    {
+        "id": 3,
+        "date": "2025-11-20",
+        "caption": "Industrial Visit to Power Plant",
+        "title": "Learning in Action",
+        "imageUrls": [
+            "graphics/industrial_visit.jpg",
+            "graphics/industrial_visit_group.jpg",
+            "graphics/industrial_visit_plant.jpg"
+        ]
+    }
+]

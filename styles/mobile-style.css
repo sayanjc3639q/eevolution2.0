@@ -348,4 +348,38 @@ body.nav-open::before {
         display: block;
         font-size: 1rem;
     }
+
+    /* Moments Section Mobile */
+    .moments-grid {
+        grid-template-columns: 1fr;
+        /* Single column */
+        padding: 0 1rem;
+        gap: 2rem;
+    }
+
+    .moment-card {
+        border-radius: 16px;
+    }
+
+    .moment-image-wrapper {
+        height: 200px;
+        /* Reduced height for mobile */
+    }
+
+    .moment-info {
+        padding: 1.5rem;
+    }
+
+    .moment-title {
+        font-size: 1.3rem;
+    }
+
+    /* Ensure arrows are visible on mobile if needed, or rely on swipe */
+    .slider-btn {
+        opacity: 0.8 !important;
+        /* Always visible on mobile */
+        width: 35px;
+        height: 35px;
+        padding: 0;
+    }
 }
