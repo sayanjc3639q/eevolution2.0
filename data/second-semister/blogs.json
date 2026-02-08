@@ -1,0 +1,16 @@
+[
+    {
+        "id": "chem-lec-01",
+        "className": "Chemistry",
+        "date": "2026-02-15",
+        "topic": "Chemical Thermodynamics: Entropy and Free Energy",
+        "content": "<h3>Lecture Overview</h3><p>In this lecture, we explored the <strong>Second Law of Thermodynamics</strong> and its implications on spontaneity.</p><h4>Key Concepts:</h4><ul><li>Entropy (S): A measure of disorder.</li><li>Gibbs Free Energy (G): The energy available to do work.</li></ul><h4>Equations:</h4><div style='background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin: 1rem 0; font-family: monospace;'>ΔG = ΔH - TΔS</div><p>Where:</p><table class='blog-table'><tr><th>Symbol</th><th>Meaning</th></tr><tr><td>ΔG</td><td>Change in Free Energy</td></tr><tr><td>ΔH</td><td>Enthalpy Change</td></tr><tr><td>T</td><td>Temperature (Kelvin)</td></tr><tr><td>ΔS</td><td>Entropy Change</td></tr></table><p>We concluded with a discussion on how temperature affects reaction spontaneity.</p>"
+    },
+    {
+        "id": "math-lec-05",
+        "className": "Mathematics 2",
+        "date": "2026-02-18",
+        "topic": "Multiple Integrals and Their Applications",
+        "content": "<h3>Introduction to Double Integrals</h3><p>Double integrals allow us to calculate volume under a surface.</p><p>We solve them by integrating with respect to one variable while holding the other constant.</p><h4>Example Problem:</h4><p>Evaluate ∫∫(x + y) dx dy over the region R defined by 0 ≤ x ≤ 1, 0 ≤ y ≤ 2.</p><p><strong>Solution:</strong></p><p>First, integrate with respect to x:</p><div style='background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin: 1rem 0; font-family: monospace;'>∫ (x + y) dx = [x²/2 + xy] from 0 to 1<br>= (1/2 + y)</div><p>Then, integrate the result with respect to y:</p><div style='background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin: 1rem 0; font-family: monospace;'>∫ (1/2 + y) dy = [y/2 + y²/2] from 0 to 2<br>= (1 + 2) - 0 = 3</div>"
+    }
+]

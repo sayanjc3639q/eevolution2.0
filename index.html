@@ -217,9 +217,34 @@
                 <h2>Class Blogs</h2>
                 <p>Read about student experiences and tech articles.</p>
             </div>
-            <!-- Content to be added -->
-            <div style="text-align: center; padding: 5rem;">
-                <h3>Start writing today!</h3>
+
+            <div id="blogs-grid" class="blogs-container">
+                <!-- Javascript will populate this -->
+                <div class="loading-spinner">Loading blogs...</div>
+            </div>
+        </section>
+
+        <!-- Blog View Section (Hidden by default) -->
+        <section id="blog-view" class="page-section">
+            <div class="blog-view-container">
+                <button class="btn-back" onclick="switchSection('blogs')">
+                    <i class="fas fa-arrow-left"></i> Back to Blogs
+                </button>
+
+                <div class="blog-detail-card">
+                    <div class="blog-detail-header">
+                        <h1 id="blog-title">Blog Title</h1>
+                        <div class="blog-meta-tags">
+                            <span id="blog-subject" class="meta-tag primary">Subject</span>
+                            <span id="blog-date" class="meta-tag secondary"><i class="far fa-calendar-alt"></i>
+                                Date</span>
+                        </div>
+                    </div>
+
+                    <div id="blog-content" class="blog-detail-content">
+                        <!-- Rich content populated via JS -->
+                    </div>
+                </div>
             </div>
         </section>
 

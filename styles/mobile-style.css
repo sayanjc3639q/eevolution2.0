@@ -382,4 +382,35 @@ body.nav-open::before {
         height: 35px;
         padding: 0;
     }
+
+    /* Blogs Section Mobile */
+    .blogs-container {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+        gap: 1.5rem;
+    }
+
+    .blog-card {
+        border-radius: 16px;
+        min-height: auto;
+    }
+
+    .blog-topic {
+        font-size: 1.2rem;
+    }
+
+    /* Blog Detail Mobile */
+    .blog-detail-card {
+        padding: 1.5rem;
+    }
+
+    .blog-detail-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .blog-detail-content table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 }

@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('EEvolution 2.0 Landing Page Loaded');
 
-    // Global state for notices
+    // Global state for notices & blogs
     window.currentSemesterNotices = [];
+    window.currentSemesterBlogs = [];
 
     initBackgroundCanvas();
     initScrollReveal();
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial Load - Default to first sem
     loadResources('first-semister');
     loadNotices('first-semister');
+    loadBlogs('first-semister');
     loadMoments();
 });
 
@@ -166,6 +168,94 @@ window.shareNotice = function (id) {
         console.error('Failed to copy: ', err);
         showToast("Failed to copy link");
     });
+};
+
+// Load Blogs Function
+async function loadBlogs(semesterFolder) {
+    const container = document.getElementById('blogs-grid');
+    if (!container) return;
+
+    // Feature Check: Only availble for 2nd Sem+
+    if (semesterFolder === 'first-semister') {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+                <i class="fas fa-rocket" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary);"></i>
+                <h3>Feature Coming Soon</h3>
+                <p>Class Blogs are available from <strong>Second Semester</strong> onwards.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = '<div class="loading-spinner">Loading blogs...</div>';
+
+    try {
+        const response = await fetch(`data/${semesterFolder}/blogs.json?t=${new Date().getTime()}`);
+
+        if (!response.ok) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">No blogs found for this semester.</div>';
+            return;
+        }
+
+        const blogs = await response.json();
+        window.currentSemesterBlogs = blogs;
+
+        container.innerHTML = '';
+
+        if (!blogs || blogs.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">No blogs posted yet.</div>';
+            return;
+        }
+
+        blogs.forEach(blog => {
+            const card = document.createElement('div');
+            card.className = 'blog-card scroll-reveal';
+
+            // Extract snippet from content (strip HTML)
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = blog.content;
+            let snippet = tempDiv.textContent || tempDiv.innerText || "";
+            snippet = snippet.length > 120 ? snippet.substring(0, 120) + '...' : snippet;
+
+            card.innerHTML = `
+                <div class="blog-header">
+                    <span class="blog-class-badge">${blog.className}</span>
+                    <span class="blog-date"><i class="far fa-calendar-alt"></i> ${blog.date}</span>
+                </div>
+                <div class="blog-body">
+                    <h3 class="blog-topic">${blog.topic}</h3>
+                    <p class="blog-snippet">${snippet}</p>
+                </div>
+                <div class="blog-footer">
+                    <button onclick="openBlog('${blog.id}')" class="btn-read-blog">Read Full Note <i class="fas fa-arrow-right"></i></button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Trigger reveal
+        setTimeout(() => {
+            const reveals = container.querySelectorAll('.scroll-reveal');
+            reveals.forEach(el => el.classList.add('visible'));
+        }, 100);
+
+    } catch (error) {
+        console.error("Error loading blogs:", error);
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #ff4444;">Failed to load blogs.</div>';
+    }
+}
+
+// Open Blog Detail
+window.openBlog = function (id) {
+    const blog = window.currentSemesterBlogs.find(b => b.id === id);
+    if (!blog) return;
+
+    document.getElementById('blog-title').innerText = blog.topic; // Topic as Title
+    document.getElementById('blog-subject').innerText = blog.className;
+    document.getElementById('blog-date').innerHTML = `<i class="far fa-calendar-alt"></i> ${blog.date}`;
+    document.getElementById('blog-content').innerHTML = blog.content;
+
+    switchSection('blog-view');
 };
 
 // Load Moments Function (Independent)
@@ -360,6 +450,7 @@ function initSettings() {
                 // Reload Resources
                 loadResources(semFolder);
                 loadNotices(semFolder); // Reload Notices
+                loadBlogs(semFolder); // Reload Blogs
             }
         });
     });
