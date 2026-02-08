@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
     initNavigation();
     initSettings();
+
+    // Initial Load - Default to first sem
+    loadResources('first-semister');
 });
 
 // Settings Interactions
@@ -24,7 +27,22 @@ function initSettings() {
             option.classList.add('active');
             // Check the hidden radio
             const radio = option.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
+            if (radio) {
+                radio.checked = true;
+
+                // Determine semantic value
+                const semName = option.querySelector('.sem-name').innerText;
+                let semFolder = 'first-semister';
+                if (semName.includes('Second')) semFolder = 'second-semister';
+                else if (semName.includes('Third')) semFolder = 'third-semister';
+
+                // Update Display
+                const display = document.getElementById('current-semester-display');
+                if (display) display.innerText = `Current: ${semName}`;
+
+                // Reload Resources
+                loadResources(semFolder);
+            }
         });
     });
 
@@ -39,6 +57,62 @@ function initSettings() {
                 console.log("Experimental Mode Disabled");
             }
         });
+    }
+}
+
+// Load Resources Function
+async function loadResources(semesterFolder) {
+    const grid = document.getElementById('resources-grid');
+    if (!grid) return;
+
+    // Show loading
+    grid.innerHTML = '<div class="loading-spinner" style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">Loading subjects...</div>';
+
+    try {
+        const response = await fetch(`data/${semesterFolder}/subject.json`);
+        if (!response.ok) throw new Error('Failed to load subjects');
+
+        const subjects = await response.json();
+        // Clear loading
+        grid.innerHTML = '';
+
+        if (!subjects || subjects.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem;">No subjects found for this semester.</div>';
+            return;
+        }
+
+        subjects.forEach(sub => {
+            const card = document.createElement('div');
+            card.className = 'feature-card scroll-reveal';
+            // Add tilt data attribute for effect re-init
+            card.setAttribute('data-tilt', '');
+
+            // Icon mapping
+            let icon = '📘';
+            if (sub.type === 'Lab') icon = '🧪';
+
+            card.innerHTML = `
+                <div class="card-glow"></div>
+                <div class="icon" style="font-size: 2rem; margin-bottom: 0.5rem;">${icon}</div>
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">${sub.name}</h3>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-bottom: 0.25rem;">${sub.code}</p>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">${sub.type} Course</p>
+                <button class="btn secondary small" style="width: 100%; margin-top: 1rem; padding: 0.5rem;">View Materials</button>
+            `;
+            grid.appendChild(card);
+        });
+
+        // Re-initialize effects for new elements
+        // We use a short timeout to ensure DOM is ready
+        setTimeout(() => {
+            initTiltEffect();
+            const reveals = grid.querySelectorAll('.scroll-reveal');
+            reveals.forEach(el => el.classList.add('visible'));
+        }, 100);
+
+    } catch (error) {
+        console.error(error);
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ff4444; padding: 2rem;">Error loading resources. Please try again later.</div>';
     }
 }
 

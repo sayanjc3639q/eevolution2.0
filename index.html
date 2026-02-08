@@ -130,10 +130,22 @@
             <div class="section-header">
                 <h2>Resources Hub</h2>
                 <p>Curated notes and papers for every semester.</p>
+                <!-- Display currently selected semester -->
+                <div id="current-semester-display" style=" 
+                    margin-top: 1rem; 
+                    padding: 0.5rem 1rem; 
+                    background: rgba(0, 242, 255, 0.1); 
+                    border-radius: 20px; 
+                    display: inline-block; 
+                    font-size: 0.9rem; 
+                    color: var(--primary);">
+                    Current: First Semester
+                </div>
             </div>
-            <!-- Content to be added -->
-            <div style="text-align: center; padding: 5rem;">
-                <h3>Coming Soon...</h3>
+
+            <div id="resources-grid" class="features-grid">
+                <!-- Javascript will populate this -->
+                <div class="loading-spinner">Loading resources...</div>
             </div>
         </section>
 
@@ -213,7 +225,10 @@
                             <button class="btn secondary small">Connect</button>
                         </div>
                         <div class="setting-card">
-                            <div class="setting-icon">🪙</div>
+                            <div class="setting-icon">
+                                <img src="graphics/evocoinicon.png" alt="EvoCoin"
+                                    style="width: 40px; height: 40px; vertical-align: middle;">
+                            </div>
                             <h4>My Evo Coins</h4>
                             <div class="coin-balance">0 EC</div>
                         </div>

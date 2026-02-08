@@ -1,0 +1,37 @@
+[
+    {
+        "name": "Physics",
+        "code": "BS PH-101",
+        "type": "Theory"
+    },
+    {
+        "name": "Mathematics",
+        "code": "BS M-101",
+        "type": "Theory"
+    },
+    {
+        "name": "Biology For Engineers",
+        "code": "ES BT-101",
+        "type": "Theory"
+    },
+    {
+        "name": "Basic Electrical & Electronics Engineering",
+        "code": "ES EE-101",
+        "type": "Theory"
+    },
+    {
+        "name": "Physics Lab",
+        "code": "BS PH191",
+        "type": "Lab"
+    },
+    {
+        "name": "Basic Electrical & Electronics Engineering Lab",
+        "code": "ES EE191",
+        "type": "Lab"
+    },
+    {
+        "name": "Mechanical Workshop",
+        "code": "ES ME 191",
+        "type": "Lab"
+    }
+]

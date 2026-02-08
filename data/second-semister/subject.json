@@ -1,0 +1,47 @@
+[
+    {
+        "name": "Chemistry",
+        "code": "BS CH-201",
+        "type": "Theory"
+    },
+    {
+        "name": "English",
+        "code": "HM HU-201",
+        "type": "Theory"
+    },
+    {
+        "name": "Value & Ethics",
+        "code": "HM HU-202",
+        "type": "Theory"
+    },
+    {
+        "name": "Programming for Problem Solving",
+        "code": "ES CS-201",
+        "type": "Theory"
+    },
+    {
+        "name": "Mathematics 2",
+        "code": "BS M-201",
+        "type": "Theory"
+    },
+    {
+        "name": "Chemistry Lab",
+        "code": "BS CH-291",
+        "type": "Lab"
+    },
+    {
+        "name": "Language Lab",
+        "code": "HM HU-291",
+        "type": "Lab"
+    },
+    {
+        "name": "Programming Lab",
+        "code": "ES CS-291",
+        "type": "Lab"
+    },
+    {
+        "name": "Engineering Graphics & Design",
+        "code": "ES ME-291",
+        "type": "Lab"
+    }
+]
