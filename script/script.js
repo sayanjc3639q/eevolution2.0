@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadNotices('first-semister');
     loadBlogs('first-semister');
     loadMoments();
+    loadHallOfFame();
 });
 
 // Toast Function
@@ -420,6 +421,70 @@ window.handleTouchEnd = function (evt) {
     xDown = null;
     yDown = null;
 };
+
+// Load Hall of Fame Function (Contributors & Donators)
+async function loadHallOfFame() {
+    const contributorsGrid = document.getElementById('contributors-grid');
+    const donatorsGrid = document.getElementById('donators-grid');
+
+    if (!contributorsGrid && !donatorsGrid) return;
+
+    try {
+        const response = await fetch(`data/site-data/hall-of-fame.json?t=${new Date().getTime()}`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+
+        // Load Contributors
+        if (contributorsGrid && data.contributors) {
+            contributorsGrid.innerHTML = '';
+            data.contributors.forEach(person => {
+                const card = document.createElement('div');
+                card.className = 'hof-card scroll-reveal';
+                card.innerHTML = `
+                    <div class="hof-img-wrapper">
+                        <img src="${person.image}" alt="${person.name}" loading="lazy">
+                        <div class="hof-glow"></div>
+                    </div>
+                    <div class="hof-info">
+                        <h3>${person.name}</h3>
+                        <p class="hof-roll">${person.roll}</p>
+                    </div>
+                `;
+                contributorsGrid.appendChild(card);
+            });
+        }
+
+        // Load Donators
+        if (donatorsGrid && data.donators) {
+            donatorsGrid.innerHTML = '';
+            data.donators.forEach(person => {
+                const card = document.createElement('div');
+                card.className = 'hof-card donator scroll-reveal';
+                card.innerHTML = `
+                    <div class="hof-img-wrapper">
+                        <img src="${person.image}" alt="${person.name}" loading="lazy">
+                        <div class="hof-glow gold"></div>
+                    </div>
+                    <div class="hof-info">
+                        <h3>${person.name}</h3>
+                        <p class="hof-roll">${person.roll}</p>
+                    </div>
+                `;
+                donatorsGrid.appendChild(card);
+            });
+        }
+
+        // Trigger reveal
+        setTimeout(() => {
+            const reveals = document.querySelectorAll('.hof-card.scroll-reveal');
+            reveals.forEach(el => el.classList.add('visible'));
+        }, 100);
+
+    } catch (error) {
+        console.error("Error loading Hall of Fame:", error);
+    }
+}
 
 // Settings Interactions
 function initSettings() {

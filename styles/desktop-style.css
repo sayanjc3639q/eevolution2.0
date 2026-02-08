@@ -1954,8 +1954,135 @@ input:checked+.slider:before {
     font-weight: 600;
 }
 
-/* Mobile adjustments for Resource View */
+/* Hall of Fame Section */
+.hall-of-fame-section {
+    padding: 6rem 5%;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hof-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+}
+
+.hof-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.hof-grid {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+}
+
+.hof-card {
+    text-align: center;
+    width: 250px;
+    transition: transform 0.3s ease;
+}
+
+.hof-card:hover {
+    transform: translateY(-10px);
+}
+
+.hof-img-wrapper {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+    border-radius: 50%;
+    /* No background for image wrapper to support transparency */
+}
+
+/* Background glow behind transparent image */
+.hof-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.hof-glow.gold {
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+}
+
+.hof-card:hover .hof-glow {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+.hof-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensure image itself is circular if it's a square photo, or fits well if transparent */
+    border-radius: 50%;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
+}
+
+.hof-info h3 {
+    font-size: 1.4rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.hof-roll {
+    font-family: monospace;
+    color: var(--text-muted);
+    font-size: 1rem;
+    display: inline-block;
+}
+
+/* Mobile adjustments */
 @media (max-width: 768px) {
+    .hof-grid {
+        gap: 2rem;
+    }
+
+    .hof-card {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        text-align: left;
+        border-radius: 12px;
+        gap: 1.5rem;
+    }
+
+    .hof-img-wrapper {
+        width: 80px;
+        height: 80px;
+        margin: 0;
+    }
+
+    .hof-info h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .hof-roll {
+        font-size: 0.9rem;
+    }
+
     .evo-container {
         grid-template-columns: 1fr;
     }
