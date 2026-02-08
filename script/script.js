@@ -80,6 +80,17 @@ async function loadNotices(semesterFolder = 'first-semister') {
                 `;
             }
 
+            // Create snippet
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = notice.content;
+            let snippet = tempDiv.textContent || tempDiv.innerText || "";
+            if (snippet.length > 100) {
+                snippet = snippet.substring(0, 100) + "......";
+            } else if (!snippet && notice.content) {
+                // Fallback if structured content like tables have no direct text
+                snippet = "Click to view details......";
+            }
+
             card.innerHTML = `
                 ${imageHtml}
                 <div class="notice-body">
@@ -94,15 +105,15 @@ async function loadNotices(semesterFolder = 'first-semister') {
                             </button>
                         </div>
                     </div>
-                    
+
                     <h3 class="notice-title">${notice.title}</h3>
-                    <p class="notice-content">${notice.content}</p>
-                    
+                    <p class="notice-content">${snippet}</p>
+
                     <div class="notice-footer">
                         <button onclick="openNoticeDetail('${notice.id}')" class="read-more-link" style="background:none; border:none; padding:0; cursor:pointer;">Read full notice <i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
-            `;
+                `;
             container.appendChild(card);
         });
 
@@ -134,10 +145,10 @@ window.openNoticeDetail = function (id) {
         actionsContainer.innerHTML = '';
         if (notice.hasPdf) {
             actionsContainer.innerHTML = `
-            <a href="${notice.pdfLink}" class="btn primary" target="_blank" style="display:inline-flex; align-items:center; gap:0.5rem; margin-top:2rem;">
-                <i class="fas fa-file-download"></i> Download PDF
-            </a>
-        `;
+                <a href="${notice.pdfLink}" class="btn primary" target="_blank" style="display:inline-flex; align-items:center; gap:0.5rem; margin-top:2rem;">
+                    <i class="fas fa-file-download"></i> Download PDF
+                </a>
+            `;
         }
     }
 
