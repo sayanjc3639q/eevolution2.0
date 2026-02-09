@@ -23,6 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHallOfFame();
     loadVoices();
     loadFAQ();
+
+    // Global Click Listener for Dropdowns
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.resource-menu-wrapper')) {
+            document.querySelectorAll('.resource-dropdown.active').forEach(d => {
+                d.classList.remove('active');
+                if (d.closest('.resource-card')) d.closest('.resource-card').style.zIndex = '';
+            });
+        }
+    });
 });
 
 // Toast Function
@@ -756,6 +766,20 @@ function initNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('.page-section');
 
+    // Handle Nav Dropdown Item Clicks
+    const uploadLink = document.getElementById('nav-upload-resources');
+    if (uploadLink) {
+        uploadLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Google Form URL - Placeholder
+            window.open('https://forms.google.com/your-form-url', '_blank');
+        });
+    }
+
+    // View Resources is handled by onclick="switchSection('resources')" in HTML directly
+    // but we can add a listener if we want to be consistent, though HTML attribute works fine.
+
+    // ... existing switchSection logic ...
     window.switchSection = function (targetId) {
         console.log("Attempting switch to:", targetId);
 
@@ -774,9 +798,6 @@ function initNavigation() {
 
             if (section.id === targetId) {
                 // For the target, make it active
-                // We use a small timeout to allow display:none to be unset by the class change if needed,
-                // but relying on CSS class 'active' to handle display:block is cleaner if CSS is correct.
-                // However, let's force a reflow just in case animations are stuck.
                 section.classList.add('active');
 
                 // Re-trigger scroll reveal
@@ -794,7 +815,6 @@ function initNavigation() {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const target = link.getAttribute('data-target');
-            // Update fragment without scrolling
             if (history.pushState) {
                 history.pushState(null, null, '#' + target);
             } else {

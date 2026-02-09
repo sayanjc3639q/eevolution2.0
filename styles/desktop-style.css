@@ -792,15 +792,12 @@ footer {
     box-shadow:
         0 0 20px rgba(0, 242, 255, 0.4),
         0 0 40px rgba(0, 242, 255, 0.2);
+    color: #ffffff;
 }
 
 .resource-card:hover .btn-arrow::before {
     width: 100%;
     height: 100%;
-}
-
-.resource-card:hover .btn-arrow {
-    color: #000;
 }
 
 /* Loading state */
@@ -1455,12 +1452,81 @@ input:checked+.slider:before {
     overflow: hidden;
 }
 
+/* Nav Dropdown Styles */
+.nav-item-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: rgba(15, 17, 26, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 0.5rem;
+    min-width: 200px;
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 1100;
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Show dropdown on hover */
+.nav-item-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown-menu:hover {
+    display: flex;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: all;
+}
+
+.nav-dropdown-menu a {
+    padding: 0.8rem 1rem;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.nav-dropdown-menu a:hover {
+    background: rgba(0, 242, 255, 0.05);
+    color: var(--primary);
+    border-color: rgba(0, 242, 255, 0.1);
+}
+
+.nav-dropdown-menu a::after {
+    display: none;
+    /* Remove underline from main nav styles */
+}
+
+.nav-dropdown-menu i {
+    width: 20px;
+    text-align: center;
+    font-size: 1rem;
+}
+
 /* Moment Slider Styles */
 .moment-slider {
     position: relative;
     width: 100%;
     height: 100%;
 }
+
 
 .moment-img {
     width: 100%;

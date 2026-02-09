@@ -23,7 +23,15 @@
         <div class="logo">EEvolution <span class="highlight">2.0</span></div>
         <nav class="nav">
             <a href="#" class="nav-link active" data-target="home">Home</a>
-            <a href="#" class="nav-link" data-target="resources">Resources</a>
+            <div class="nav-item-dropdown">
+                <a href="#" class="nav-link" data-target="resources">Resources <i class="fas fa-chevron-down"
+                        style="font-size: 0.8em; margin-left: 5px;"></i></a>
+                <div class="nav-dropdown-menu">
+                    <a href="#" id="nav-view-resources" onclick="switchSection('resources')"><i class="fas fa-eye"></i>
+                        View Resources</a>
+                    <a href="#" id="nav-upload-resources"><i class="fas fa-cloud-upload-alt"></i> Upload Resources</a>
+                </div>
+            </div>
             <a href="#" class="nav-link" data-target="notices">Notices</a>
             <a href="#" class="nav-link" data-target="blogs">Blogs</a>
             <a href="#" class="nav-link" data-target="moments">Moments</a>
