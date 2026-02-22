@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EEvolution 2.0 | Digital Hub for Batch 2</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Phosphor Icons (Sleek generic icons) -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="description"
+    content="A centralized digital hub for Electrical Engineering Batch 2 at Haldia Institute of Technology.">
+</head>
+
+<body class="dark-theme">
+  <!-- Sidebar Navigation -->
+  <nav id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="ph ph-lightning"></i>
+        <span>EEvolution <span class="accent">2.0</span></span>
+      </div>
+      <button class="mobile-toggle" onclick="toggleSidebar()"><i class="ph ph-x"></i></button>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="#" data-target="home" class="active"><i class="ph ph-house"></i> Home</a></li>
+      <li class="dropdown">
+        <a href="#" data-target="study"><i class="ph ph-book-open"></i> Study <i
+            class="ph ph-caret-down dropdown-icon"></i></a>
+        <ul class="submenu">
+          <li><a href="#" data-target="study" data-sub="modules">Modules</a></li>
+          <li><a href="#" data-target="study" data-sub="digest">Evo Digest</a></li>
+          <li><a href="#" data-target="study" data-sub="labs">Lab Notes</a></li>
+          <li><a href="#" data-target="study" data-sub="resources">Resources</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" data-target="updates"><i class="ph ph-bell"></i> Updates <i
+            class="ph ph-caret-down dropdown-icon"></i></a>
+        <ul class="submenu">
+          <li><a href="#" data-target="updates" data-sub="notices">Notices</a></li>
+          <li><a href="#" data-target="updates" data-sub="events">Events</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" data-target="points"><i class="ph ph-star"></i> Points & Credits <i
+            class="ph ph-caret-down dropdown-icon"></i></a>
+        <ul class="submenu">
+          <li><a href="#" data-target="points" data-sub="mar">MAR Points</a></li>
+          <li><a href="#" data-target="points" data-sub="moocs">MOOCs Points</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" data-target="community"><i class="ph ph-users"></i> Community <i
+            class="ph ph-caret-down dropdown-icon"></i></a>
+        <ul class="submenu">
+          <li><a href="#" data-target="community" data-sub="batchFeed">Batch Feed</a></li>
+          <li><a href="#" data-target="community" data-sub="memories">Memories</a></li>
+          <li><a href="#" data-target="community" data-sub="upload">Upload Documents</a></li>
+          <li><a href="#" data-target="community" data-sub="contributors">All Contributors</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" data-target="support"><i class="ph ph-hand-heart"></i> Support Us <i
+            class="ph ph-caret-down dropdown-icon"></i></a>
+        <ul class="submenu">
+          <li><a href="#" data-target="support" data-sub="donate">Donations</a></li>
+          <li><a href="#" data-target="support" data-sub="donators">All Donators</a></li>
+        </ul>
+      </li>
+      <li><a href="#" data-target="profile"><i class="ph ph-user-circle"></i> Profile & Settings</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <p>Built by Sayan Maity</p>
+      <a href="mailto:feedback@example.com" class="feedback-link">Submit Feedback</a>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="ph ph-list"></i></button>
+        <h2 id="page-title">Home</h2>
+      </div>
+      <div class="header-right" style="display:flex; align-items:center; gap: 0.75rem;">
+        <div id="unauth-navbar-area" class="hidden">
+          <a href="auth.html" class="btn-primary btn-small">Sign In <i class="ph ph-sign-in"></i></a>
+        </div>
+        <div id="auth-navbar-area" class="hidden" style="display:flex; align-items:center; gap: 0.75rem;">
+          <span id="nav-user-first-name" class="text-accent" style="font-weight: 600; font-size: 0.95rem;"></span>
+          <span id="nav-user-coins" class="text-muted" style="font-size: 0.9rem;"><i class="ph ph-coins"></i> 0</span>
+        </div>
+      </div>
+    </header>
+
+    <div id="content-area" class="content-container">
+      <div class="section-header">
+        <h3 id="sub-page-title">Overview</h3>
+        <div class="header-line"></div>
+      </div>
+      <!-- Sections injected via JS or toggled visibilty -->
+
+      <!-- HOME SECTION -->
+      <section id="section-home" class="page-section active">
+        <div class="hero">
+          <h1>Welcome to <span class="accent">EEvolution 2.0</span></h1>
+          <p class="subtitle">The centralized digital hub for Batch 2 Electrical Engineering.</p>
+          <button class="btn-primary" onclick="navigateTo('study')">Explore Resources <i
+              class="ph ph-arrow-right"></i></button>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <i class="ph ph-chats-circle"></i>
+            <h3>No More Lost Chats</h3>
+            <p>Important files get lost in WhatsApp. Find them all right here, securely hosted.</p>
+          </div>
+          <div class="feature-card">
+            <i class="ph ph-notebook"></i>
+            <h3>Evo Digest</h3>
+            <p>Daily class notes uploaded by students, so you never miss a lecture.</p>
+          </div>
+          <div class="feature-card">
+            <i class="ph ph-coins"></i>
+            <h3>Earn Evo-Coins</h3>
+            <p>Upload helpful material and earn coins. Buy featured slots or perks.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="panel leaderboard-panel">
+            <div class="panel-header">
+              <h3><i class="ph ph-trophy"></i> Top Contributors</h3>
+            </div>
+            <ul id="top-contributors" class="list-group">
+              <!-- Rendered via JS -->
+            </ul>
+          </div>
+          <div class="panel leaderboard-panel">
+            <div class="panel-header">
+              <h3><i class="ph ph-hand-heart"></i> Top Donators</h3>
+            </div>
+            <ul id="top-donators" class="list-group">
+              <!-- Rendered via JS -->
+            </ul>
+          </div>
+        </div>
+
+        <div class="featured-slot">
+          <h3><i class="ph ph-star"></i> Featured Student Slot</h3>
+          <div class="slot-card">
+            <div class="slot-content">
+              <p>"Using my Evo-coins to say: Best of luck for the mid-sems everyone! Keep pushing!"</p>
+              <span class="slot-author">- Sayan Maity (Purchased for 500 Coins)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="reviews-section">
+          <h3><i class="ph ph-chat-centered-text"></i> Student Reviews</h3>
+          <div id="reviews-container" class="features-grid">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- STUDY SECTION -->
+      <section id="section-study" class="page-section">
+        <div class="section-nav">
+          <div id="study-back-btn" class="hidden">
+            <button class="btn-outline btn-small" onclick="backToSubjects()"><i class="ph ph-arrow-left"></i> Back to
+              Subjects</button>
+          </div>
+        </div>
+        <div id="study-content" class="dynamic-grid">
+          <!-- Rendered via JS -->
+          <div class="empty-state">Loading study materials...</div>
+        </div>
+      </section>
+
+      <!-- UPDATES SECTION -->
+      <section id="section-updates" class="page-section">
+        <div class="section-nav">
+          <!-- Sub-navigation handled by sidebar -->
+        </div>
+        <div id="updates-content" class="feed-layout">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- POINTS SECTION -->
+      <section id="section-points" class="page-section">
+        <div class="section-nav">
+          <!-- Sub-navigation handled by sidebar -->
+        </div>
+        <div id="points-content" class="text-content">
+          <div id="mar-content" class="tab-pane active">
+            <h2>Mandatory Additional Requirements (MAR)</h2>
+            <p>Guidelines for earning MAR points for the degree...</p>
+            <ul>
+              <li>Blood Donation: 5 Points</li>
+              <li>Tree Plantation: 4 Points</li>
+              <li>Organizing Tech Fest: 10 Points</li>
+              <li>Participation in Hackathon: 5 Points</li>
+            </ul>
+          </div>
+          <div id="moocs-content" class="tab-pane">
+            <h2>Massive Open Online Courses (MOOCs)</h2>
+            <p>Keep track of platforms like NPTEL and Coursera to acquire credit requirements.</p>
+            <div class="info-card">
+              <h4>Requirement for Honors:</h4>
+              <p>20 Credits throughout 4 years via NPTEL courses.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMMUNITY SECTION -->
+      <section id="section-community" class="page-section">
+        <div class="section-nav">
+          <!-- Sub-navigation handled by sidebar -->
+        </div>
+        <div id="community-content">
+          <div id="batchFeed-content" class="tab-pane active">
+            <!-- Submit new post -->
+            <div id="feed-composer" class="card feed-composer hidden" style="margin-bottom: 2rem;">
+              <h3 style="margin-bottom: 1rem;"><i class="ph ph-chat-circle-dots"></i> Share an Update</h3>
+              <textarea id="feed-text-input" rows="3" placeholder="What's happening in Batch 2?" required
+                style="width: 100%; border-radius: var(--border-radius); border: 1px solid var(--border-color); background: var(--bg-surface); color: var(--text-main); padding: 0.6rem 1rem; resize: vertical;"></textarea>
+              <div class="composer-footer mt-2"
+                style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                <span id="feed-word-count" class="text-muted" style="font-size: 0.85rem;">0 / 200 words</span>
+                <button id="feed-post-btn" class="btn-primary" onclick="submitFeedPost()">Post <i
+                    class="ph ph-paper-plane-right"></i></button>
+              </div>
+            </div>
+            <!-- Feed stream -->
+            <div id="feed-container" class="feed-layout">
+              <p class="text-muted"><i class="ph ph-spinner ph-spin"></i> Loading latest updates...</p>
+            </div>
+          </div>
+          <div id="memories-content" class="tab-pane">
+            <p class="text-muted"><i class="ph ph-spinner ph-spin"></i> Loading memories...</p>
+          </div>
+          <div id="upload-content" class="tab-pane">
+            <div class="upload-dashboard">
+              <div class="upload-hero">
+                <div class="hero-text">
+                  <h3>Become a Contributor</h3>
+                  <p>Support your batch by sharing high-quality notes, lab records, or previous year questions. Your
+                    contributions keep EEvolution alive!</p>
+                </div>
+                <div class="evo-badge">
+                  <i class="ph ph-coins"></i>
+                  <span>Earn 50+ Coins per file</span>
+                </div>
+              </div>
+
+              <div class="upload-grid">
+                <div class="upload-info-card">
+                  <h4><i class="ph ph-info"></i> How it works</h4>
+                  <ul class="info-list">
+                    <li><i class="ph ph-check-circle"></i> Complete the submission form</li>
+                    <li><i class="ph ph-check-circle"></i> Admin verifies the document quality</li>
+                    <li><i class="ph ph-check-circle"></i> Coins are added to your profile</li>
+                    <li><i class="ph ph-check-circle"></i> Your name appears in Contributors List</li>
+                  </ul>
+                </div>
+
+                <div class="upload-action-card">
+                  <div class="drop-zone">
+                    <i class="ph ph-cloud-arrow-up"></i>
+                    <h4>Ready to Share?</h4>
+                    <p>All types of academic files are welcome (PDF, Images, Docs)</p>
+                    <a href="#" target="_blank" class="btn-primary mt-3">Open Upload Portal <i
+                        class="ph ph-arrow-square-out"></i></a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guidelines-card mt-4">
+                <h4><i class="ph ph-warning-circle"></i> Content Guidelines</h4>
+                <div class="guidelines-flex">
+                  <div class="guide-item">
+                    <span class="guide-icon ok"><i class="ph ph-check"></i></span>
+                    <p>Clear, readable handwritten notes</p>
+                  </div>
+                  <div class="guide-item">
+                    <span class="guide-icon ok"><i class="ph ph-check"></i></span>
+                    <p>Lab experiments with verified results</p>
+                  </div>
+                  <div class="guide-item">
+                    <span class="guide-icon no"><i class="ph ph-x"></i></span>
+                    <p>Blurry photos or incomplete records</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="contributors-content" class="tab-pane">
+            <div class="panel">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Uploads</th>
+                    <th>Coins</th>
+                  </tr>
+                </thead>
+                <tbody id="all-contributors-table">
+                  <!-- JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUPPORT SECTION -->
+      <section id="section-support" class="page-section">
+        <div class="section-nav">
+          <!-- Sub-navigation handled by sidebar -->
+        </div>
+        <div id="support-content">
+          <div id="donate-content" class="tab-pane active">
+            <div class="card donation-card">
+              <div class="donation-header">
+                <h3>SUPPORT EEVOLUTION</h3>
+                <div class="header-line"></div>
+              </div>
+
+              <p class="donation-desc mt-3">This platform is self-funded. Your contribution — however small — helps keep
+                it running. Here's a transparent breakdown of costs:</p>
+
+              <div class="expense-table-container">
+                <table class="expense-table">
+                  <thead>
+                    <tr>
+                      <th>EXPENSE</th>
+                      <th>AMOUNT / YEAR</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Domain & Hosting (sayanmaity.com)</td>
+                      <td>₹999</td>
+                    </tr>
+                    <tr>
+                      <td>Cloud Storage for PDFs & media</td>
+                      <td>₹599</td>
+                    </tr>
+                    <tr>
+                      <td>Miscellaneous / Contingency</td>
+                      <td>₹200</td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td>Total</td>
+                      <td class="total-amount">₹1,798 / year</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div class="upi-section">
+                <p class="upi-label">DONATE VIA UPI</p>
+                <div class="upi-copy-box">
+                  <span id="upi-id">sayanmaity@upi</span>
+                  <button class="copy-btn" onclick="copyUPI()"><i class="ph ph-copy"></i> Copy</button>
+                </div>
+                <div class="upi-apps mt-3">
+                  <button class="btn-gpay"><i class="ph ph-google-logo"></i> GPay</button>
+                  <button class="btn-phonepe"><i class="ph ph-phone"></i> PhonePe</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="donators-content" class="tab-pane">
+            <div class="panel">
+              <ul id="full-donators-list" class="list-group">
+                <!-- JS -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE SECTION -->
+      <section id="section-profile" class="page-section">
+        <div class="profile-card" id="profile-card">
+          <div class="not-logged-in center-content hidden">
+            <i class="ph ph-user-circle-plus"
+              style="font-size: 4rem; color: var(--electric-blue); margin-bottom: 1.5rem; display: block;"></i>
+            <h3>Welcome to Student Portal</h3>
+            <p class="text-muted mb-4">Please sign in to access your profile, post updates, and comment on memories.</p>
+            <a href="auth.html" class="btn-primary"
+              style="display: inline-flex; justify-content: center; min-width: 200px;">Access Portal <i
+                class="ph ph-sign-in"></i></a>
+          </div>
+          <!-- Logged In State Template -->
+          <div class="logged-in hidden" id="profile-details">
+            <div class="profile-header">
+              <div class="avatar"><i class="ph ph-user"></i></div>
+              <div class="profile-info">
+                <h2 id="profile-name">Student Name</h2>
+                <p id="profile-roll" class="text-muted">25/EE/000</p>
+              </div>
+            </div>
+            <div class="profile-stats">
+              <div class="stat-box">
+                <h4>Evo-Coins</h4>
+                <div class="stat-val" id="profile-coins"><i class="ph ph-coins text-accent"></i> 0</div>
+              </div>
+              <div class="stat-box">
+                <h4>Total Uploads</h4>
+                <div class="stat-val" id="profile-uploads"><i class="ph ph-upload text-blue"></i> 0</div>
+              </div>
+            </div>
+
+            <div class="card semester-card mt-4"
+              style="padding: 1.5rem; border: 1px dashed var(--border-color); background: var(--bg-surface);">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h4 style="margin-bottom: 0.25rem;"><i class="ph ph-calendar-check"></i> Academic Term</h4>
+                  <p class="text-muted" style="font-size: 0.85rem;">Switch between archived semesters</p>
+                </div>
+                <div class="semester-switch-profile">
+                  <div class="sem-display">
+                    <i class="ph ph-gear-six"></i>
+                    <span id="sem-text">SEM 2</span>
+                  </div>
+                  <select id="semester-select">
+                    <option value="1">Semester 1</option>
+                    <option value="2" selected>Semester 2</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="profile-actions">
+              <a href="admin.html" class="btn-outline hidden" id="admin-panel-btn">Admin Panel <i
+                  class="ph ph-shield"></i></a>
+              <button class="btn-outline">Buy Featured Slot (500 Coins)</button>
+              <button class="btn-outline" id="logout-btn">Log Out</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEMESTER 1 OVERLAY -->
+      <div id="legacy-overlay" class="overlay hidden">
+        <div class="overlay-content">
+          <i class="ph ph-archive text-muted"></i>
+          <h3>Legacy Content</h3>
+          <p>Semester 1 data is securely archived on the legacy site.</p>
+          <a href="#" class="btn-outline mt-3">Visit Legacy Site</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/global-auth.js"></script>
+  <script src="js/feed-memories.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

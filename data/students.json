@@ -1,0 +1,26 @@
+[
+    {
+        "roll": "25/EE/001",
+        "name": "Sayan Maity",
+        "coins": 1500,
+        "uploads": 42
+    },
+    {
+        "roll": "25/EE/002",
+        "name": "John Doe",
+        "coins": 50,
+        "uploads": 5
+    },
+    {
+        "roll": "25/EE/003",
+        "name": "Alice Smith",
+        "coins": 320,
+        "uploads": 12
+    },
+    {
+        "roll": "25/EE/004",
+        "name": "Bob Martin",
+        "coins": 210,
+        "uploads": 8
+    }
+]

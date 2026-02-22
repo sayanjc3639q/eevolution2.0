@@ -1,0 +1,31 @@
+{
+    "theory": [
+        {
+            "id": "bee",
+            "name": "Basic Electrical Engineering",
+            "icon": "ph-lightning"
+        },
+        {
+            "id": "math",
+            "name": "Mathematics-II",
+            "icon": "ph-math-operations"
+        },
+        {
+            "id": "physics",
+            "name": "Physics",
+            "icon": "ph-atom"
+        }
+    ],
+    "lab": [
+        {
+            "id": "bee_lab",
+            "name": "BEE Laboratory",
+            "icon": "ph-flask"
+        },
+        {
+            "id": "physics_lab",
+            "name": "Physics Laboratory",
+            "icon": "ph-test-tube"
+        }
+    ]
+}

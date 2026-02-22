@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | EEvolution 2.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-table-container {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            margin-top: 2rem;
+        }
+
+        .data-table input[type="number"] {
+            width: 80px;
+            padding: 0.4rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: var(--border-radius);
+        }
+
+        .data-table input[type="number"]:focus {
+            border-color: var(--electric-blue);
+            outline: none;
+        }
+    </style>
+</head>
+
+<body class="dark-theme" style="min-height: 100dvh; background: var(--bg-dark);">
+
+    <div class="admin-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color: var(--electric-blue);"><i class="ph ph-shield-check"></i> Admin Dashboard</h2>
+            <a href="index.html" class="btn-outline btn-small"><i class="ph ph-arrow-left"></i> Back to Hub</a>
+        </div>
+
+        <div id="loading-state" style="text-align: center; margin-top: 4rem;">
+            <i class="ph ph-spinner ph-spin" style="font-size: 2rem; color: var(--electric-blue);"></i>
+            <p class="text-muted mt-2">Checking Authorization...</p>
+        </div>
+
+        <div id="admin-content" class="hidden">
+            <div class="admin-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Roll Number</th>
+                            <th>Coins</th>
+                            <th>Upload Count</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/supabase-config.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
