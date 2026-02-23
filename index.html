@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>EEvolution 2.0 | Digital Hub for Batch 2</title>
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -288,7 +288,19 @@
               <p class="text-muted"><i class="ph ph-spinner ph-spin"></i> Loading latest updates...</p>
             </div>
           </div>
-          <div id="memories-content" class="tab-pane">
+          <div id="memories-content" class="tab-pane gallery-grid">
+            <div class="card event-submission-banner mb-4"
+              style="grid-column: 1 / -1; border: 1px dashed var(--border-color); background: var(--bg-surface); display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: 1.5rem; width: 100%; margin: 0 auto 2rem; max-width: 900px;">
+              <div style="flex: 1; min-width: 200px;">
+                <h4 style="color: var(--theme-color); font-size: 1.1rem; margin-bottom: 0.25rem;"><i
+                    class="ph ph-camera"></i> Captured a Moment?</h4>
+                <p class="text-muted" style="font-size: 0.85rem; line-height: 1.4;">Shared lab sessions, campus vibes,
+                  or batch trips? Submit your photos to the gallery!</p>
+              </div>
+              <a href="https://docs.google.com/forms/d/e/YOUR_MEMORIES_FORM_ID/viewform" target="_blank"
+                class="btn-primary" style="white-space: nowrap; text-align: center;">Submit Memory <i
+                  class="ph ph-image-square"></i></a>
+            </div>
             <p class="text-muted"><i class="ph ph-spinner ph-spin"></i> Loading memories...</p>
           </div>
           <div id="upload-content" class="tab-pane">

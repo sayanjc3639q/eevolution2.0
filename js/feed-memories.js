@@ -252,27 +252,37 @@ window.renderMemories = async function () {
         }
     }
 
-    container.innerHTML = MEMORIES.map(m => {
+    const postsHtml = MEMORIES.map(m => {
         const hasLiked = likedMemories.includes(m.id);
         const lCount = likesMap[m.id] || 0;
         return `
-        <div class="gallery-item card" style="padding:0; overflow:hidden;">
-            <img src="${m.url}" alt="${m.caption}" style="width:100%; height:250px; object-fit:cover;">
-            <div style="padding:1.5rem;">
+        <div class="gallery-item card">
+            <img src="${m.url}" alt="${m.caption}">
+            <div class="gallery-item-content">
                 <p><strong>${m.caption}</strong></p>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
+                <div class="gallery-actions">
                     <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="likeMemory('${m.id}')" ${hasLiked ? 'disabled' : ''}>
                         <i class="${hasLiked ? 'ph-fill text-accent' : 'ph'} ph-heart"></i> ${lCount} Likes
                     </button>
                     <button class="btn-outline btn-small" onclick="toggleComments('${m.id}')">Comments <i class="ph ph-chat-centered-text"></i></button>
                 </div>
-                <div id="comments-section-${m.id}" class="comments-section hidden mt-3" style="border-top: 1px dashed var(--border-color); padding-top:1rem;">
-                     <button class="btn-outline btn-small w-100" style="width:100%;" onclick="fetchComments('${m.id}')">Load Comments <i class="ph ph-arrows-clockwise"></i></button>
+                <div id="comments-section-${m.id}" class="comments-section hidden mt-3">
+                     <button class="btn-outline btn-small w-100" onclick="fetchComments('${m.id}')">Load Comments <i class="ph ph-arrows-clockwise"></i></button>
                 </div>
             </div>
         </div>
         `;
     }).join('');
+
+    // Remove loading text but keep banner
+    const loadingText = container.querySelector('p.text-muted');
+    if (loadingText) loadingText.remove();
+
+    // Remove existing memory cards to prevent duplicates when rendering multiple times
+    const existingCards = container.querySelectorAll('.gallery-item');
+    existingCards.forEach(card => card.remove());
+
+    container.insertAdjacentHTML('beforeend', postsHtml);
 };
 
 window.likeMemory = async function (photoId) {

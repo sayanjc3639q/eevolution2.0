@@ -731,38 +731,83 @@ input[type="text"]:focus {
 }
 
 /* Content Grid / Feed */
-.dynamic-grid,
-.gallery-grid {
+.dynamic-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 769px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 900px;
+    margin: 2rem auto;
+    gap: 3rem;
+    padding: 0 4rem;
+  }
+}
+
 .gallery-item {
   background-color: var(--bg-panel);
-  border-radius: var(--border-radius);
+  border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--border-color);
   transition: var(--transition);
+  display: flex;
+  flex-direction: column;
 }
 
 .gallery-item:hover {
-  transform: translateY(-5px);
-  border-color: var(--electric-blue);
+  transform: translateY(-8px);
+  border-color: var(--theme-color);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
 }
 
 .gallery-item img {
   width: 100%;
-  height: 250px;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   display: block;
+  transition: var(--transition);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Landscape/Portrait helpers if classes are added later */
+.gallery-item.portrait img {
+  aspect-ratio: 3 / 4;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.03);
 }
 
 .gallery-item p {
-  padding: 1rem;
-  font-size: 0.9rem;
-  text-align: center;
-  color: var(--text-muted);
+  font-size: 0.95rem;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.gallery-item-content {
+  padding: 1.5rem;
+}
+
+.gallery-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
+.comments-section {
+  border-top: 1px dashed var(--border-color);
+  padding-top: 1.25rem;
 }
 
 .file-card {
@@ -1250,7 +1295,16 @@ input[type="text"]:focus {
 
   .features-grid,
   .dashboard-grid,
-  .gallery-grid,
+  .gallery-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+
+  .gallery-item img {
+    aspect-ratio: auto;
+    max-height: 400px;
+  }
+
   .dynamic-grid,
   .upload-grid {
     grid-template-columns: 1fr !important;
