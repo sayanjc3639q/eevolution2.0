@@ -98,15 +98,15 @@
         </div>
         <div id="auth-navbar-area" class="hidden" style="display:flex; align-items:center; gap: 0.75rem;">
           <span id="nav-user-first-name" class="text-accent" style="font-weight: 600; font-size: 0.95rem;"></span>
-          <span id="nav-user-coins" class="text-muted" style="font-size: 0.9rem;"><i class="ph ph-coins"></i> 0</span>
+          <span id="nav-user-coins" class="text-gold" style="font-size: 0.9rem;"><i class="ph-fill ph-coins"></i>
+            0</span>
         </div>
       </div>
     </header>
 
     <div id="content-area" class="content-container">
       <div class="section-header">
-        <h3 id="sub-page-title">Overview</h3>
-        <div class="header-line"></div>
+        <h3 id="sub-page-title"></h3>
       </div>
       <!-- Sections injected via JS or toggled visibilty -->
 
@@ -117,6 +117,33 @@
           <p class="subtitle">The centralized digital hub for Batch 2 Electrical Engineering.</p>
           <button class="btn-primary" onclick="navigateTo('study')">Explore Resources <i
               class="ph ph-arrow-right"></i></button>
+        </div>
+
+        <div class="quick-links-grid">
+          <div class="link-card" onclick="navigateTo('study')">
+            <i class="ph ph-book-open"></i>
+            <span>Study Hub</span>
+          </div>
+          <div class="link-card" onclick="navigateTo('updates')">
+            <i class="ph ph-bell"></i>
+            <span>Live Notices</span>
+          </div>
+          <div class="link-card" onclick="navigateTo('community')">
+            <i class="ph ph-users"></i>
+            <span>Batch Feed</span>
+          </div>
+          <div class="link-card" onclick="navigateTo('community'); renderGenericTabPanes('community', 'memories')">
+            <i class="ph ph-camera"></i>
+            <span>Memories</span>
+          </div>
+          <div class="link-card" onclick="navigateTo('points')">
+            <i class="ph ph-star"></i>
+            <span>MAR Points</span>
+          </div>
+          <div class="link-card" onclick="navigateTo('support')">
+            <i class="ph ph-hand-heart"></i>
+            <span>Support Us</span>
+          </div>
         </div>
 
         <div class="features-grid">
@@ -131,7 +158,7 @@
             <p>Daily class notes uploaded by students, so you never miss a lecture.</p>
           </div>
           <div class="feature-card">
-            <i class="ph ph-coins"></i>
+            <i class="ph-fill ph-coins text-gold"></i>
             <h3>Earn Evo-Coins</h3>
             <p>Upload helpful material and earn coins. Buy featured slots or perks.</p>
           </div>
@@ -261,7 +288,7 @@
                     contributions keep EEvolution alive!</p>
                 </div>
                 <div class="evo-badge">
-                  <i class="ph ph-coins"></i>
+                  <i class="ph-fill ph-coins text-gold"></i>
                   <span>Earn 50+ Coins per file</span>
                 </div>
               </div>
@@ -421,7 +448,7 @@
             <div class="profile-stats">
               <div class="stat-box">
                 <h4>Evo-Coins</h4>
-                <div class="stat-val" id="profile-coins"><i class="ph ph-coins text-accent"></i> 0</div>
+                <div class="stat-val" id="profile-coins"><i class="ph-fill ph-coins text-gold"></i> 0</div>
               </div>
               <div class="stat-box">
                 <h4>Total Uploads</h4>

@@ -58,7 +58,7 @@ async function checkAuth() {
                 const firstName = (profile.name || "Student").split(' ')[0];
                 headerName.innerText = firstName;
             }
-            if (headerCoins) headerCoins.innerHTML = `<i class="ph ph-coins"></i> ${profile.evo_coins || 0}`;
+            if (headerCoins) headerCoins.innerHTML = `<i class="ph-fill ph-coins"></i> ${profile.evo_coins || 0}`;
 
             // Profile display
             const profRoll = document.getElementById('profile-roll');
@@ -68,7 +68,7 @@ async function checkAuth() {
             const adminPanelBtn = document.getElementById('admin-panel-btn');
 
             if (profRoll) profRoll.innerText = profile.roll_number || 'N/A';
-            if (profCoins) profCoins.innerHTML = `<i class="ph ph-coins text-accent"></i> ${profile.evo_coins || 0}`;
+            if (profCoins) profCoins.innerHTML = `<i class="ph-fill ph-coins text-gold"></i> ${profile.evo_coins || 0}`;
             if (profUploads) profUploads.innerHTML = `<i class="ph ph-upload text-blue"></i> ${profile.upload_count || 0}`;
             if (profName) profName.innerText = profile.name || "Student Portal";
 

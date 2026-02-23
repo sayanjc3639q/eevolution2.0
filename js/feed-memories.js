@@ -98,10 +98,10 @@ async function renderSinglePost(post, prepend = false) {
         <p class="mt-2" style="word-break: break-word;">${post.content}</p>
         <div class="feed-actions mt-3" style="display:flex; gap:1rem;">
             <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" ${hasLiked || hasDisliked ? 'disabled' : ''}>
-                <i class="ph ${hasLiked ? 'ph-thumbs-up-fill' : 'ph-thumbs-up'}"></i> <span id="likes-count-${post.id}">${post.likes || 0}</span>
+                <i class="${hasLiked ? 'ph-fill' : 'ph'} ph-thumbs-up"></i> <span id="likes-count-${post.id}">${post.likes || 0}</span>
             </button>
             <button class="btn-outline btn-small ${hasDisliked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'dislikes')" ${hasLiked || hasDisliked ? 'disabled' : ''}>
-                <i class="ph ${hasDisliked ? 'ph-thumbs-down-fill' : 'ph-thumbs-down'}"></i> <span id="dislikes-count-${post.id}">${post.dislikes || 0}</span>
+                <i class="${hasDisliked ? 'ph-fill' : 'ph'} ph-thumbs-down"></i> <span id="dislikes-count-${post.id}">${post.dislikes || 0}</span>
             </button>
         </div>
     </div>
@@ -226,10 +226,10 @@ window.handleFeedAction = async function (postId, action) {
                 b.disabled = true;
                 if (b.onclick.toString().includes(`'${action}'`)) {
                     b.classList.add('active');
-                    const icon = b.querySelector('.ph');
+                    const icon = b.querySelector('i');
                     if (icon) {
-                        icon.classList.replace('ph-thumbs-up', 'ph-thumbs-up-fill');
-                        icon.classList.replace('ph-thumbs-down', 'ph-thumbs-down-fill');
+                        icon.classList.remove('ph');
+                        icon.classList.add('ph-fill');
                     }
                 }
             });
@@ -262,7 +262,7 @@ window.renderMemories = async function () {
                 <p><strong>${m.caption}</strong></p>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
                     <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="likeMemory('${m.id}')" ${hasLiked ? 'disabled' : ''}>
-                        <i class="ph ${hasLiked ? 'ph-heart-fill text-accent' : 'ph-heart'}"></i> ${lCount} Likes
+                        <i class="${hasLiked ? 'ph-fill text-accent' : 'ph'} ph-heart"></i> ${lCount} Likes
                     </button>
                     <button class="btn-outline btn-small" onclick="toggleComments('${m.id}')">Comments <i class="ph ph-chat-centered-text"></i></button>
                 </div>

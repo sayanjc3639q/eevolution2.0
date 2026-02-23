@@ -115,7 +115,7 @@ function navigateTo(sectionId) {
     const sub = activeSubTabs[sectionId];
     const subTitleElement = document.getElementById('sub-page-title');
     if (sectionId === 'home') {
-        subTitleElement.innerText = 'Overview';
+        subTitleElement.innerText = '';
     } else if (sectionId === 'profile') {
         subTitleElement.innerText = 'User Portal';
     } else if (sub) {
@@ -335,7 +335,7 @@ async function renderContributors() {
                     <td>${i + 1}</td>
                     <td><strong>${s.name || 'Anonymous'}</strong><br><small class="text-muted">${s.roll_number}</small></td>
                     <td>${s.upload_count || 0}</td>
-                    <td class="text-accent">${s.evo_coins || 0} <i class="ph ph-coins"></i></td>
+                    <td class="text-gold">${s.evo_coins || 0} <i class="ph-fill ph-coins"></i></td>
                 </tr>
             `).join('');
         }
