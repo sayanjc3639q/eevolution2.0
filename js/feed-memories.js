@@ -27,10 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+let globalProfileMap = {};
+let feedChannelActive = false;
+
 async function fetchFeed() {
     if (!window.supabaseClient) return;
 
-    // Fetch posts and profiles to resolve names
+    // Fetch posts
     const { data: posts, error: postError } = await supabaseClient
         .from('batch_feed')
         .select('*')
@@ -45,45 +48,92 @@ async function fetchFeed() {
         return;
     }
 
-    if (!posts || posts.length === 0) {
-        container.innerHTML = `<p class="text-muted">No posts yet. Be the first to share an update!</p>`;
-        return;
-    }
-
     // Fetch profiles to get names for the roll numbers
     const { data: profiles } = await supabaseClient.from('profiles').select('roll_number, name');
-    const profileMap = {};
     if (profiles) {
-        profiles.forEach(p => { profileMap[p.roll_number] = p.name; });
+        profiles.forEach(p => { globalProfileMap[p.roll_number] = p.name; });
+    }
+
+    if (!posts || posts.length === 0) {
+        container.innerHTML = `<p id="no-posts-msg" class="text-muted">No posts yet. Be the first to share an update!</p>`;
+    } else {
+        container.innerHTML = '';
+        for (const post of posts) {
+            await renderSinglePost(post, false);
+        }
+    }
+
+    setupRealtimeFeed();
+}
+
+async function renderSinglePost(post, prepend = false) {
+    const container = document.getElementById('feed-container');
+    if (!container) return;
+
+    const noPostsMsg = document.getElementById('no-posts-msg');
+    if (noPostsMsg) noPostsMsg.remove();
+
+    // Dynamically fetch missing profile info
+    if (!globalProfileMap[post.roll_number] && window.supabaseClient) {
+        const { data: prof } = await supabaseClient.from('profiles').select('name').eq('roll_number', post.roll_number).single();
+        if (prof && prof.name) {
+            globalProfileMap[post.roll_number] = prof.name;
+        }
     }
 
     // Local state for likes to prevent spam
     const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
     const dislikedPosts = JSON.parse(localStorage.getItem('dislikedPosts') || '[]');
 
-    container.innerHTML = posts.map(post => {
-        const hasLiked = likedPosts.includes(post.id);
-        const hasDisliked = dislikedPosts.includes(post.id);
-        const displayName = profileMap[post.roll_number] ? `${profileMap[post.roll_number]} (${post.roll_number})` : post.roll_number;
+    const hasLiked = likedPosts.includes(post.id);
+    const hasDisliked = dislikedPosts.includes(post.id);
+    const displayName = globalProfileMap[post.roll_number] ? `${globalProfileMap[post.roll_number]} (${post.roll_number})` : post.roll_number;
 
-        return `
-        <div class="feed-item card mb-4">
-            <div class="feed-header" style="display:flex; justify-content:space-between; align-items: center;">
-                <strong><i class="ph ph-user"></i> ${displayName}</strong>
-                <span class="feed-date text-muted" style="font-size:0.8rem;">${new Date(post.created_at).toLocaleString()}</span>
-            </div>
-            <p class="mt-2" style="word-break: break-word;">${post.content}</p>
-            <div class="feed-actions mt-3" style="display:flex; gap:1rem;">
-                <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" ${hasLiked || hasDisliked ? 'disabled' : ''}>
-                    <i class="ph ${hasLiked ? 'ph-thumbs-up-fill' : 'ph-thumbs-up'}"></i> ${post.likes || 0}
-                </button>
-                <button class="btn-outline btn-small ${hasDisliked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'dislikes')" ${hasLiked || hasDisliked ? 'disabled' : ''}>
-                    <i class="ph ${hasDisliked ? 'ph-thumbs-down-fill' : 'ph-thumbs-down'}"></i> ${post.dislikes || 0}
-                </button>
-            </div>
+    const html = `
+    <div id="post-${post.id}" class="feed-item card mb-4">
+        <div class="feed-header" style="display:flex; justify-content:space-between; align-items: center;">
+            <strong><i class="ph ph-user"></i> ${displayName}</strong>
+            <span class="feed-date text-muted" style="font-size:0.8rem;">${new Date(post.created_at).toLocaleString()}</span>
         </div>
-        `;
-    }).join('');
+        <p class="mt-2" style="word-break: break-word;">${post.content}</p>
+        <div class="feed-actions mt-3" style="display:flex; gap:1rem;">
+            <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" ${hasLiked || hasDisliked ? 'disabled' : ''}>
+                <i class="ph ${hasLiked ? 'ph-thumbs-up-fill' : 'ph-thumbs-up'}"></i> <span id="likes-count-${post.id}">${post.likes || 0}</span>
+            </button>
+            <button class="btn-outline btn-small ${hasDisliked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'dislikes')" ${hasLiked || hasDisliked ? 'disabled' : ''}>
+                <i class="ph ${hasDisliked ? 'ph-thumbs-down-fill' : 'ph-thumbs-down'}"></i> <span id="dislikes-count-${post.id}">${post.dislikes || 0}</span>
+            </button>
+        </div>
+    </div>
+    `;
+
+    if (prepend) {
+        container.insertAdjacentHTML('afterbegin', html);
+    } else {
+        container.insertAdjacentHTML('beforeend', html);
+    }
+}
+
+function setupRealtimeFeed() {
+    if (feedChannelActive || !window.supabaseClient) return;
+    feedChannelActive = true;
+
+    window.supabaseClient
+        .channel('custom-feed-channel')
+        .on(
+            'postgres_changes',
+            { event: 'INSERT', schema: 'public', table: 'batch_feed' },
+            (payload) => {
+                console.log('Realtime Triggered! New post arrived:', payload.new);
+
+                // Prevent duplicate rendering if the current user is the one who just posted it
+                const existingPost = document.getElementById(`post-${payload.new.id}`);
+                if (!existingPost) {
+                    renderSinglePost(payload.new, true);
+                }
+            }
+        )
+        .subscribe();
 }
 
 window.submitFeedPost = async function () {
@@ -108,14 +158,14 @@ window.submitFeedPost = async function () {
     btn.disabled = true;
     btn.innerHTML = `Posting... <i class="ph ph-spinner ph-spin"></i>`;
 
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from('batch_feed')
         .insert([{
             roll_number: roll,
             content: text,
             likes: 0,
             dislikes: 0
-        }]);
+        }]).select();
 
     if (error) {
         console.error("Error posting to batch_feed:", error);
@@ -123,7 +173,10 @@ window.submitFeedPost = async function () {
     } else {
         document.getElementById('feed-text-input').value = "";
         document.getElementById('feed-word-count').innerText = "0 / 200 words";
-        await fetchFeed();
+
+        if (data && data.length > 0) {
+            renderSinglePost(data[0], true);
+        }
     }
     btn.disabled = false;
     btn.innerHTML = `Post <i class="ph ph-paper-plane-right"></i>`;
@@ -160,7 +213,27 @@ window.handleFeedAction = async function (postId, action) {
 
         localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
         localStorage.setItem('dislikedPosts', JSON.stringify(dislikedPosts));
-        fetchFeed();
+
+        // Optimistically update the UI instead of re-fetching the whole feed
+        const countSpan = document.getElementById(`${action}-count-${postId}`);
+        if (countSpan) countSpan.innerText = newVal;
+
+        // Disable the buttons for this post explicitly
+        const postElement = document.getElementById(`post-${postId}`);
+        if (postElement) {
+            const buttons = postElement.querySelectorAll('.feed-actions button');
+            buttons.forEach(b => {
+                b.disabled = true;
+                if (b.onclick.toString().includes(`'${action}'`)) {
+                    b.classList.add('active');
+                    const icon = b.querySelector('.ph');
+                    if (icon) {
+                        icon.classList.replace('ph-thumbs-up', 'ph-thumbs-up-fill');
+                        icon.classList.replace('ph-thumbs-down', 'ph-thumbs-down-fill');
+                    }
+                }
+            });
+        }
     }
 };
 
