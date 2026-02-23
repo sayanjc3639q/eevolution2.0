@@ -21,7 +21,7 @@ async function handleLogin(e) {
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
 
     if (error) {
-        alert(error.message);
+        showToast(error.message, "error");
         btn.disabled = false;
         btn.innerHTML = 'Log In <i class="ph ph-sign-in"></i>';
     } else {
@@ -38,7 +38,7 @@ async function handleRegister(e) {
     const btn = document.getElementById('btn-register');
 
     if (!/^25\/EE\/\d{3}$/.test(roll)) {
-        alert("Invalid Roll Format. Use 25/EE/___");
+        showToast("Invalid Roll Format. Use 25/EE/___", "error");
         return;
     }
 
@@ -57,11 +57,11 @@ async function handleRegister(e) {
     });
 
     if (error) {
-        alert(error.message);
+        showToast(error.message, "error");
         btn.disabled = false;
         btn.innerHTML = 'Register <i class="ph ph-user-plus"></i>';
     } else {
-        alert("Registration successful! Please check your email for the verification link.");
+        showToast("Registration successful! Please check your email for the verification link.", "success");
         toggleAuthForm('login-form');
         btn.disabled = false;
         btn.innerHTML = 'Register <i class="ph ph-user-plus"></i>';
@@ -81,9 +81,9 @@ async function handleForgot(e) {
     });
 
     if (error) {
-        alert(error.message);
+        showToast(error.message, "error");
     } else {
-        alert("Password reset email sent!");
+        showToast("Password reset email sent!", "success");
     }
     btn.disabled = false;
     btn.innerHTML = 'Send Reset Link <i class="ph ph-envelope-simple"></i>';

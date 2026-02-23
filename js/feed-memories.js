@@ -138,7 +138,7 @@ function setupRealtimeFeed() {
 
 window.submitFeedPost = async function () {
     if (!window.isLoggedIn || !window.currentProfile) {
-        alert("Please log in to share an update.");
+        showToast("Please log in to share an update.", "error");
         return;
     }
 
@@ -146,11 +146,11 @@ window.submitFeedPost = async function () {
     const text = document.getElementById('feed-text-input').value.trim();
 
     if (!roll) {
-        alert("User roll number missing. Please contact admin.");
+        showToast("User roll number missing. Please contact admin.", "error");
         return;
     }
     if (!text) {
-        alert("Please write something to post.");
+        showToast("Please write something to post.", "error");
         return;
     }
 
@@ -169,7 +169,7 @@ window.submitFeedPost = async function () {
 
     if (error) {
         console.error("Error posting to batch_feed:", error);
-        alert("Failed to post. " + error.message);
+        showToast("Failed to post. " + error.message, "error");
     } else {
         document.getElementById('feed-text-input').value = "";
         document.getElementById('feed-word-count').innerText = "0 / 200 words";
@@ -379,7 +379,7 @@ window.addComment = async function (photoId) {
     const text = document.getElementById(`comment-text-${photoId}`).value.trim();
 
     if (!text) {
-        alert("Enter comment text."); return;
+        showToast("Enter comment text.", "error"); return;
     }
 
     const { error } = await supabaseClient
@@ -390,6 +390,6 @@ window.addComment = async function (photoId) {
         fetchComments(photoId);
     } else {
         console.error("Error adding comment", error);
-        alert("Failed to submit comment. Ensure database is configured properly.");
+        showToast("Failed to submit comment. Ensure database is configured properly.", "error");
     }
 };

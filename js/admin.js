@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', initAdmin);
 
 async function initAdmin() {
     if (!window.supabaseClient) {
-        alert("Supabase not configured");
-        window.location.href = "index.html";
+        showToast("Supabase not configured", "error");
+        setTimeout(() => window.location.href = "index.html", 2000);
         return;
     }
 
@@ -70,8 +70,8 @@ window.saveUser = async function (userId) {
         .eq('id', userId);
 
     if (error) {
-        alert("Failed to update user: " + error.message);
+        showToast("Failed to update user: " + error.message, "error");
     } else {
-        alert("User updated successfully!");
+        showToast("User updated successfully!", "success");
     }
 };
