@@ -352,6 +352,7 @@ function renderDonators() {
 /* ================= INTERACTIONS / AUTH ================= */
 
 function setupInteractions() {
+    // Semester Switch
     const semSelect = document.getElementById('semester-select');
     if (semSelect) {
         semSelect.addEventListener('change', (e) => {
@@ -359,6 +360,35 @@ function setupInteractions() {
             document.getElementById('sem-text').innerText = `SEM ${e.target.value}`;
         });
     }
+
+    // Theme Switch
+    const colorOptions = document.querySelectorAll('.color-option');
+    const savedColor = localStorage.getItem('theme-color');
+    const savedRGB = localStorage.getItem('theme-color-rgb');
+
+    if (savedColor) {
+        document.documentElement.style.setProperty('--theme-color', savedColor);
+        document.documentElement.style.setProperty('--theme-color-rgb', savedRGB);
+        colorOptions.forEach(opt => {
+            opt.classList.toggle('active', opt.getAttribute('data-color') === savedColor);
+        });
+    }
+
+    colorOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            const color = option.getAttribute('data-color');
+            const rgb = option.getAttribute('data-rgb');
+
+            document.documentElement.style.setProperty('--theme-color', color);
+            document.documentElement.style.setProperty('--theme-color-rgb', rgb);
+
+            localStorage.setItem('theme-color', color);
+            localStorage.setItem('theme-color-rgb', rgb);
+
+            colorOptions.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+        });
+    });
 }
 
 function copyUPI() {

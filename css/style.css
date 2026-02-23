@@ -9,9 +9,11 @@
   --text-muted: #9ca3af;
   --text-inverse: #ffffff;
 
-  --electric-blue: #00e1ff;
-  --electric-blue-hover: #00bfff;
-  --accent-color: #3b82f6;
+  --theme-color: #00e1ff;
+  --theme-color-rgb: 0, 225, 255;
+  --electric-blue: var(--theme-color);
+  --electric-blue-hover: color-mix(in srgb, var(--theme-color), black 15%);
+  --accent-color: var(--theme-color);
   --gold-color: #fbbf24;
 
   --border-radius: 4px;
@@ -138,7 +140,7 @@ ol {
 }
 
 .btn-primary:hover {
-  background-color: #2563eb;
+  filter: brightness(0.9);
   transform: translateY(-2px);
 }
 
@@ -154,7 +156,7 @@ ol {
 }
 
 .btn-outline:hover {
-  background-color: rgba(0, 225, 255, 0.1);
+  background-color: rgba(var(--theme-color-rgb), 0.1);
 }
 
 /* Sidebar */
@@ -1015,6 +1017,33 @@ input[type="text"]:focus {
   display: flex;
   gap: 1rem;
   justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Theme Selector */
+.theme-selector {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: var(--transition);
+}
+
+.color-option:hover {
+  transform: scale(1.2);
+}
+
+.color-option.active {
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 /* Upload Dashboard */
@@ -1283,27 +1312,68 @@ input[type="text"]:focus {
   .profile-header {
     flex-direction: column;
     text-align: center;
-    padding: 2.5rem 1rem;
-    gap: 1.5rem;
+    padding: 2rem 1rem;
+    gap: 1rem;
   }
 
   .avatar {
-    width: 85px;
-    height: 85px;
-    font-size: 2.5rem;
+    width: 80px;
+    height: 80px;
+    font-size: 2.2rem;
+  }
+
+  .profile-info h2 {
+    font-size: 1.5rem;
   }
 
   .profile-stats {
-    flex-direction: column;
+    flex-direction: row;
+    display: flex;
   }
 
   .stat-box {
-    border-right: none;
-    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    border-bottom: none;
+    padding: 1rem 0.5rem;
+  }
+
+  .stat-box h4 {
+    font-size: 0.8rem;
   }
 
   .stat-val {
-    font-size: 1.6rem;
+    font-size: 1.3rem;
+  }
+
+  .semester-card>div {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+
+  .semester-switch-profile {
+    width: 100%;
+  }
+
+  .semester-switch-profile select,
+  .semester-switch-profile .sem-display {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+  }
+
+  .profile-actions button,
+  .profile-actions a {
+    width: 100%;
+  }
+
+  .color-option {
+    width: 32px;
+    height: 32px;
   }
 
   .panel {

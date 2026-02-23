@@ -17,6 +17,17 @@
   <link rel="stylesheet" href="css/style.css">
   <meta name="description"
     content="A centralized digital hub for Electrical Engineering Batch 2 at Haldia Institute of Technology.">
+  <script>
+    // Immediate Theme Application to prevent flashing
+    (function () {
+      const savedColor = localStorage.getItem('theme-color');
+      const savedRGB = localStorage.getItem('theme-color-rgb');
+      if (savedColor && savedRGB) {
+        document.documentElement.style.setProperty('--theme-color', savedColor);
+        document.documentElement.style.setProperty('--theme-color-rgb', savedRGB);
+      }
+    })();
+  </script>
 </head>
 
 <body class="dark-theme">
@@ -473,6 +484,26 @@
                     <option value="2" selected>Semester 2</option>
                   </select>
                 </div>
+              </div>
+            </div>
+
+            <div class="card theme-section mt-4"
+              style="padding: 1.5rem; border: 1px dashed var(--border-color); background: var(--bg-surface);">
+              <h4 style="margin-bottom: 0.5rem;"><i class="ph ph-palette"></i> Theme Colour</h4>
+              <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1rem;">Personalize your workspace</p>
+              <div class="theme-selector">
+                <div class="color-option active" style="background: #00e1ff;" data-color="#00e1ff"
+                  data-rgb="0, 225, 255" title="Electric Blue"></div>
+                <div class="color-option" style="background: #10b981;" data-color="#10b981" data-rgb="16, 185, 129"
+                  title="Emerald"></div>
+                <div class="color-option" style="background: #8b5cf6;" data-color="#8b5cf6" data-rgb="139, 92, 246"
+                  title="Royal Purple"></div>
+                <div class="color-option" style="background: #f59e0b;" data-color="#f59e0b" data-rgb="245, 158, 11"
+                  title="Amber"></div>
+                <div class="color-option" style="background: #ec4899;" data-color="#ec4899" data-rgb="236, 72, 153"
+                  title="Pink Power"></div>
+                <div class="color-option" style="background: #ef4444;" data-color="#ef4444" data-rgb="239, 68, 68"
+                  title="Crimson"></div>
               </div>
             </div>
             <div class="profile-actions">
