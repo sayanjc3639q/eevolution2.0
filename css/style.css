@@ -1484,3 +1484,78 @@ input[type="text"]:focus {
   border-left: 4px solid #ef4444;
   /* Sharp left border for error */
 }
+
+/* Center Alert Modal */
+#center-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+#center-alert-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.center-alert-box {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  padding: 2.5rem 2rem;
+  max-width: 450px;
+  width: 90%;
+  text-align: center;
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  transform: translateY(30px) scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#center-alert-overlay.show .center-alert-box {
+  transform: translateY(0) scale(1);
+}
+
+.center-alert-box.success {
+  border-top: 4px solid var(--electric-blue);
+}
+
+.center-alert-box.error {
+  border-top: 4px solid #ef4444;
+}
+
+.center-alert-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.center-alert-box.success .center-alert-icon {
+  color: var(--electric-blue);
+}
+
+.center-alert-box.error .center-alert-icon {
+  color: #ef4444;
+}
+
+.center-alert-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.75rem;
+}
+
+.center-alert-message {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}

@@ -61,7 +61,7 @@ async function handleRegister(e) {
         btn.disabled = false;
         btn.innerHTML = 'Register <i class="ph ph-user-plus"></i>';
     } else {
-        showToast("Registration successful! Please check your email for the verification link.", "success");
+        showCenterAlert("Check Your Inbox!", "Registration successful! We've sent a verification link to your email. Please verify before logging in.", "success");
         toggleAuthForm('login-form');
         btn.disabled = false;
         btn.innerHTML = 'Register <i class="ph ph-user-plus"></i>';
@@ -83,7 +83,7 @@ async function handleForgot(e) {
     if (error) {
         showToast(error.message, "error");
     } else {
-        showToast("Password reset email sent!", "success");
+        showCenterAlert("Check Your Inbox!", "We've sent a password reset link to your email.", "success");
     }
     btn.disabled = false;
     btn.innerHTML = 'Send Reset Link <i class="ph ph-envelope-simple"></i>';
