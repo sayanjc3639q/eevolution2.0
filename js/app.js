@@ -107,7 +107,7 @@ function navigateTo(sectionId) {
     const titleMap = {
         'home': 'Home', 'study': 'Study Materials', 'updates': 'Live Updates',
         'points': 'Points & Credits', 'community': 'Community',
-        'support': 'Support Us', 'profile': 'Profile Settings'
+        'support': 'Support Us', 'about': 'About Us', 'profile': 'Profile Settings'
     };
     document.getElementById('page-title').innerText = titleMap[sectionId] || 'EEvolution 2.0';
 
@@ -344,9 +344,45 @@ async function renderContributors() {
 
 function renderDonators() {
     if (!currentData) return;
-    document.getElementById('full-donators-list').innerHTML = currentData.donators.map((d, i) => `
-    <li><span class="primary-text">${i + 1}. ${d.name}</span><span class="secondary-text">${d.amount} on ${d.date}</span></li>
-  `).join('');
+    const container = document.getElementById('full-donators-list');
+    if (!container) return;
+
+    // Aggregate donations by name
+    const totals = currentData.donators.reduce((acc, d) => {
+        const amount = parseInt(d.amount.replace('₹', '').replace(',', '')) || 0;
+        if (acc[d.name]) {
+            acc[d.name].amount += amount;
+            acc[d.name].lastDate = d.date;
+        } else {
+            acc[d.name] = { name: d.name, amount: amount, lastDate: d.date };
+        }
+        return acc;
+    }, {});
+
+    // Convert to array and sort
+    const sortedDonators = Object.values(totals).sort((a, b) => b.amount - a.amount);
+
+    let html = `
+    <div class="leaderboard-header">
+        <h4><i class="ph ph-hands-clapping"></i> Hall of Heroes</h4>
+        <p>A huge thank you to everyone listed below. Your contributions directly fuel the server and hosting costs of EEvolution 2.0. We couldn't do this without you!</p>
+    </div>
+    <div class="leaderboard-list">
+    `;
+
+    html += sortedDonators.map((d, i) => `
+    <div class="leaderboard-item">
+        <div class="rank-slot">${i + 1}</div>
+        <div class="donator-info">
+            <span class="donator-name">${d.name}</span>
+            <span class="donator-meta">Last contribution on ${d.lastDate}</span>
+        </div>
+        <div class="donation-badge">₹${d.amount}</div>
+    </div>
+    `).join('');
+
+    html += `</div>`;
+    container.innerHTML = html;
 }
 
 /* ================= INTERACTIONS / AUTH ================= */
