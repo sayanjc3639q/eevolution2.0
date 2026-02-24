@@ -198,6 +198,10 @@ function renderGenericTabPanes(sectionId, subId) {
         if (subId === 'donators') {
             renderDonators();
         }
+    } else if (sectionId === 'points') {
+        if (subId === 'moocs') {
+            loadMoocsTable();
+        }
     }
 }
 
@@ -484,3 +488,75 @@ function copyUPI() {
         console.error('Failed to copy: ', err);
     });
 }
+
+/* ================= MOOCS LOAD ENGINE ================= */
+
+async function loadMoocsTable() {
+    const container = document.getElementById('moocs-table-container');
+    if (!container) return;
+
+    // Show loading state
+    const titleBox = container.querySelector('.section-title-box');
+    titleBox.querySelector('p').innerHTML = `<i class="ph ph-spinner ph-spin"></i> Loading approved courses...`;
+
+    try {
+        const response = await fetch('data/moocs.json');
+        if (!response.ok) throw new Error('Failed to fetch MOOCs data');
+        const data = await response.json();
+
+        let tableHtml = `
+            <div class="table-container mar-table-wrapper">
+                <table class="mar-points-table">
+                    <thead>
+                        <tr>
+                            <th>Module / Course Name</th>
+                            <th>Provider</th>
+                            <th>Duration</th>
+                            <th class="text-center">Credits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        for (const category in data) {
+            // Category Header Row
+            tableHtml += `
+                <tr style="background: rgba(var(--theme-color-rgb), 0.05);">
+                    <td colspan="4" style="color: var(--electric-blue); font-weight: 700; border-left: 4px solid var(--electric-blue); letter-spacing: 1px; text-transform: uppercase; font-size: 0.85rem;">
+                        ${category}
+                    </td>
+                </tr>
+            `;
+
+            data[category].forEach(item => {
+                tableHtml += `
+                    <tr>
+                        <td style="padding-left: 1.5rem;">${item.course}</td>
+                        <td><span class="badge" style="background: var(--bg-hover); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid var(--border-color);">${item.provider}</span></td>
+                        <td>${item.duration}</td>
+                        <td class="text-center" style="font-weight: 700; color: var(--gold-color);">${item.credits}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Update the container
+        titleBox.querySelector('p').innerText = "List of approved courses for Honours requirements.";
+
+        // Remove existing table if any and append new one
+        const existingTable = container.querySelector('.mar-table-wrapper');
+        if (existingTable) existingTable.remove();
+        container.insertAdjacentHTML('beforeend', tableHtml);
+
+    } catch (error) {
+        console.error("MOOCs engine error:", error);
+        titleBox.querySelector('p').innerHTML = `<span class="text-danger">Failed to load course list. Please refresh the page.</span>`;
+    }
+}
+

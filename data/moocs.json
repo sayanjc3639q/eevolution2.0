@@ -1,0 +1,272 @@
+{
+    "Ethics": [
+        {
+            "course": "Ethics in Engineering Practice",
+            "provider": "NPTEL",
+            "duration": "8 Weeks",
+            "credits": 2
+        },
+        {
+            "course": "Moral Thinking: An Introduction to Values and Ethics",
+            "provider": "NPTEL",
+            "duration": "4 Weeks",
+            "credits": 1
+        },
+        {
+            "course": "Data Science Ethics",
+            "provider": "edX",
+            "duration": "4 Weeks",
+            "credits": 1
+        },
+        {
+            "course": "A Life of Happiness and Fulfilment",
+            "provider": "Coursera",
+            "duration": "27 Hrs",
+            "credits": 3
+        },
+        {
+            "course": "Moralities of Everyday Life",
+            "provider": "Coursera",
+            "duration": "24 Hrs",
+            "credits": 3
+        },
+        {
+            "course": "Introduction to Philosophy",
+            "provider": "Coursera",
+            "duration": "19 Hrs",
+            "credits": 2
+        },
+        {
+            "course": "The Science of Well-Being",
+            "provider": "Coursera",
+            "duration": "19 Hrs",
+            "credits": 2
+        },
+        {
+            "course": "Business Communication and Ethics in Organizations",
+            "provider": "Udemy",
+            "duration": "22 Hrs",
+            "credits": 2
+        }
+    ],
+    "Soft Skills": [
+        {
+            "course": "Enhancing Soft Skills and Personality",
+            "provider": "NPTEL",
+            "duration": "8 Weeks",
+            "credits": 2
+        },
+        {
+            "course": "Soft Skill Development",
+            "provider": "NPTEL",
+            "duration": "8 Weeks",
+            "credits": 2
+        },
+        {
+            "course": "Public Speaking",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "Soft Skills",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "Feminist Writings",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "The Science of Happiness and Wellbeing",
+            "provider": "NPTEL",
+            "duration": "8 Weeks",
+            "credits": 2
+        },
+        {
+            "course": "Body Language: Key to Professional Success",
+            "provider": "edX",
+            "duration": "4 Weeks",
+            "credits": 1
+        },
+        {
+            "course": "Working in Teams: A Practical Guide",
+            "provider": "edX",
+            "duration": "4 Weeks",
+            "credits": 1
+        },
+        {
+            "course": "Writing in the Sciences",
+            "provider": "Coursera",
+            "duration": "30 Hrs",
+            "credits": 3
+        },
+        {
+            "course": "Interpersonal Communication for Engineering Leaders",
+            "provider": "Coursera",
+            "duration": "22 Hrs",
+            "credits": 2
+        },
+        {
+            "course": "Successful Career Development",
+            "provider": "Coursera",
+            "duration": "19 Hrs",
+            "credits": 2
+        },
+        {
+            "course": "Listening Skills - The Ultimate Workplace Soft Skills",
+            "provider": "Udemy",
+            "duration": "30.5 Hrs",
+            "credits": 3
+        },
+        {
+            "course": "Soft Skills: The 11 Essential Career Soft Skills",
+            "provider": "Udemy",
+            "duration": "34 Hrs",
+            "credits": 4
+        },
+        {
+            "course": "Soft Skills Masterclass - 5 in 1",
+            "provider": "Udemy",
+            "duration": "31.5 Hrs",
+            "credits": 3
+        },
+        {
+            "course": "The Complete Communication Skills Master Class",
+            "provider": "Udemy",
+            "duration": "31 Hrs",
+            "credits": 3
+        }
+    ],
+    "Programming Skills": [
+        {
+            "course": "Joy of computing using Python",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "Programming, Data Structures and Algorithm Using Python",
+            "provider": "NPTEL",
+            "duration": "8 Weeks",
+            "credits": 2
+        },
+        {
+            "course": "An Introduction to Programming Through C++",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "Scientific Computing using Python",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "Python for Data Science",
+            "provider": "NPTEL",
+            "duration": "4 Weeks",
+            "credits": 1
+        },
+        {
+            "course": "Problem Solving Through Programming in C",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "Foundations of R Software",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "Getting Started with Competitive Programming",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "Programming in Java",
+            "provider": "NPTEL",
+            "duration": "12 Weeks",
+            "credits": 3
+        },
+        {
+            "course": "IBM: Introduction to Statistics for Data Science using Python",
+            "provider": "edX",
+            "duration": "4 Weeks",
+            "credits": 1
+        },
+        {
+            "course": "Introduction to Computer Science and Programming Using Python",
+            "provider": "edX",
+            "duration": "9 Weeks",
+            "credits": 2
+        },
+        {
+            "course": "Introduction to R for Data Science",
+            "provider": "edX",
+            "duration": "4 Weeks",
+            "credits": 1
+        },
+        {
+            "course": "University of Cape Town: Data Science with Python",
+            "provider": "edX",
+            "duration": "8 Weeks",
+            "credits": 2
+        },
+        {
+            "course": "Introduction to Programming with MATLAB",
+            "provider": "Coursera",
+            "duration": "35 Hrs",
+            "credits": 4
+        },
+        {
+            "course": "Java Programming: Solving Problems with Software",
+            "provider": "Coursera",
+            "duration": "17 Hrs",
+            "credits": 2
+        },
+        {
+            "course": "Responsive Website Basics: HTML, CSS, JavaScript",
+            "provider": "Coursera",
+            "duration": "25 Hrs",
+            "credits": 3
+        },
+        {
+            "course": "Python Basics",
+            "provider": "Coursera",
+            "duration": "26 Hrs",
+            "credits": 3
+        },
+        {
+            "course": "Crash Course on Python",
+            "provider": "Coursera",
+            "duration": "32 Hrs",
+            "credits": 4
+        },
+        {
+            "course": "The Complete Python Developer",
+            "provider": "Udemy",
+            "duration": "30.5 Hrs",
+            "credits": 3
+        },
+        {
+            "course": "Python Programming: The Complete Python Bootcamp 2024",
+            "provider": "Udemy",
+            "duration": "28.2 Hrs",
+            "credits": 3
+        },
+        {
+            "course": "The Complete Python Bootcamp From Zero to Hero",
+            "provider": "Udemy",
+            "duration": "22.2 Hrs",
+            "credits": 2
+        }
+    ]
+}
