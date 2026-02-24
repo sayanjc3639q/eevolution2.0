@@ -26,7 +26,43 @@ async function initializeApp() {
     await renderHomeData();
     renderStudySection();
     renderUpdates(activeSubTabs.updates);
+
+    // Initial state setup for history API
+    if (!history.state) {
+        history.replaceState({ section: 'home', sub: null }, "", "#home");
+    } else if (history.state.section) {
+        // Handle direct load with hash or existing state
+        const section = history.state.section;
+        if (history.state.sub) {
+            activeSubTabs[section] = history.state.sub;
+        }
+        navigateTo(section, true);
+    }
 }
+
+// Popstate listener to handle browser back/forward buttons
+window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.section) {
+        if (event.state.sub) {
+            activeSubTabs[event.state.section] = event.state.sub;
+        }
+        navigateTo(event.state.section, true);
+
+        // Ensure UI navigation reflects the back navigation
+        const navTarget = document.querySelector(`.nav-links a[data-target="${event.state.section}"]`);
+        if (navTarget) {
+            updateActiveNav(navTarget);
+
+            // Re-open dropdown if it was a sub-item
+            if (event.state.sub) {
+                const dropdown = navTarget.closest('.dropdown');
+                if (dropdown) dropdown.classList.add('expanded');
+            }
+        }
+    } else {
+        navigateTo('home', true);
+    }
+});
 
 /* ================= NAVIGATION ================= */
 
@@ -52,6 +88,7 @@ function setupNavigation() {
 
             e.preventDefault();
             const target = link.getAttribute('data-target');
+            activeSubTabs[target] = null; // Clear sub-tab if navigating to main target directly
             navigateTo(target);
             updateActiveNav(link);
             document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('expanded'));
@@ -99,7 +136,7 @@ const subTitleMap = {
     'donate': 'Donations', 'donators': 'Donators List'
 };
 
-function navigateTo(sectionId) {
+function navigateTo(sectionId, isPopState = false) {
     document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
     const targetSec = document.getElementById(`section-${sectionId}`);
     if (targetSec) targetSec.classList.add('active');
@@ -129,6 +166,11 @@ function navigateTo(sectionId) {
         if (sectionId === 'study') renderStudySection();
         else if (sectionId === 'updates') renderUpdates(sub);
         else renderGenericTabPanes(sectionId, sub);
+    }
+
+    if (!isPopState) {
+        const hash = sub ? `#${sectionId}/${sub}` : `#${sectionId}`;
+        history.pushState({ section: sectionId, sub: sub }, "", hash);
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
