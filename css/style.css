@@ -906,21 +906,53 @@ input[type="text"]:focus {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 630px) {
+  .feed-item {
+    padding: 1.25rem;
+  }
 }
 
 .feed-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 630px) {
+  .notice-item .feed-header {
+    flex-direction: column-reverse;
+    gap: 0.25rem;
+  }
 }
 
 .feed-header h3 {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
+  color: var(--text-main);
+  flex: 1;
 }
 
 .feed-date {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+}
+
+.date-badge {
+  color: var(--electric-blue);
+  font-size: 0.85rem;
+  background: rgba(var(--theme-color-rgb), 0.1);
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid rgba(var(--theme-color-rgb), 0.2);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
 }
 
 .feed-hashtags {

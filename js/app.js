@@ -10,6 +10,17 @@ let activeSubTabs = {
     support: 'donate'
 };
 
+function formatFullDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date)) return dateString;
+    const day = date.getDate();
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         currentData = await fetchJSONData();
@@ -325,8 +336,11 @@ function renderUpdates(tab) {
     if (!currentData || !container) return;
     if (tab === 'notices') {
         container.innerHTML = currentData.notices.map(n => `
-      <div class="feed-item">
-        <div class="feed-header"><h3>${n.title}</h3><span class="feed-date">${n.date}</span></div>
+      <div class="feed-item notice-item">
+        <div class="feed-header">
+            <h3>${n.title}</h3>
+            <span class="date-badge"><i class="ph ph-calendar-blank"></i> ${formatFullDate(n.date)}</span>
+        </div>
         <div class="feed-hashtags">${n.hashtags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
         <p>${n.content}</p>
         ${n.img ? `<img src="${n.img}" class="feed-img">` : ''}
@@ -345,9 +359,11 @@ function renderUpdates(tab) {
         `;
 
         html += currentData.events.map(e => `
-      <div class="feed-item" style="border-left: 4px solid var(--electric-blue)">
-        <h3>${e.title}</h3>
-        <p class="text-accent mb-2"><i class="ph ph-calendar-blank"></i> ${e.date}</p>
+      <div class="feed-item notice-item" style="border-left: 4px solid var(--electric-blue)">
+        <div class="feed-header">
+            <h3>${e.title}</h3>
+            <span class="date-badge"><i class="ph ph-calendar-blank"></i> ${formatFullDate(e.date)}</span>
+        </div>
         <p>${e.desc}</p>
         ${e.link ? `<a href="${e.link}" target="_blank" class="btn-primary mt-3">Join / Register Here <i class="ph ph-arrow-square-out"></i></a>` : ''}
       </div>

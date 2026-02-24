@@ -1,10 +1,5 @@
 // Centralized Feed & Memories UI logic interacting with Supabase
 
-const MEMORIES = [
-    { id: 'mem1', url: 'https://i.pinimg.com/736x/63/4a/20/634a20fb0a9f0a2a38ad37594bbc2794.jpg', caption: 'First day at Campus', postedBy: 'Sayan Maity', date: '2026-02-22T10:00:00Z' },
-    { id: 'mem2', url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&auto=format&fit=crop', caption: 'Electrical Lab Session', postedBy: 'Admin', date: '2026-02-23T14:30:00Z' }
-];
-
 document.addEventListener('DOMContentLoaded', () => {
     // Word counter for feed composer
     const feedText = document.getElementById('feed-text-input');
@@ -24,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.supabaseClient) {
         fetchFeed();
         renderMemories();
+        checkAdminForMemories();
     }
 });
 
@@ -131,7 +127,7 @@ async function renderSinglePost(post, prepend = false) {
 
     const html = `
     <div id="post-${post.id}" class="feed-item card mb-4" style="border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-surface); box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 0; overflow: hidden; transition: transform 0.2s ease;">
-        <div class="feed-header" style="display:flex; justify-content:space-between; align-items: center; padding: 1rem 1.25rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-color);">
+        <div class="feed-header" style="display:flex; flex-direction: row !important; justify-content:space-between; align-items: center; padding: 1rem 1.25rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-color);">
             <div style="display: flex; align-items: center; gap: 0.9rem;">
                 <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--electric-blue, #007bff), var(--accent-color, #6610f2)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
                     ${initials}
@@ -385,21 +381,34 @@ window.renderMemories = async function () {
     const container = document.getElementById('memories-content');
     if (!container) return;
 
+    if (!window.supabaseClient) return;
+
+    // Fetch memories from DB
+    const { data: memoriesArray, error: fetchErr } = await supabaseClient
+        .from('memories')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (fetchErr) {
+        console.error("Error fetching memories:", fetchErr);
+        const loadingText = container.querySelector('p.text-muted');
+        if (loadingText) loadingText.innerHTML = "Error loading memories.";
+        return;
+    }
+
     const likedMemories = JSON.parse(localStorage.getItem('likedMemories') || '[]');
 
     // Fetch memory likes from DB
     let likesMap = {};
-    if (window.supabaseClient) {
-        const { data: metaData, error } = await supabaseClient.from('memories_data').select('*');
-        if (metaData && !error) {
-            metaData.forEach(m => { likesMap[m.photo_id] = m.like_count || 0; });
-        }
+    const { data: metaData, error } = await supabaseClient.from('memories_data').select('*');
+    if (metaData && !error) {
+        metaData.forEach(m => { likesMap[m.photo_id] = m.like_count || 0; });
     }
 
-    const postsHtml = MEMORIES.map(m => {
+    const postsHtml = (memoriesArray || []).map(m => {
         const hasLiked = likedMemories.includes(m.id);
         const lCount = likesMap[m.id] || 0;
-        let posterName = m.postedBy || 'Unknown User';
+        let posterName = m.student_name || 'Unknown User';
         let posterInitials = posterName.substring(0, 2).toUpperCase();
         if (posterName.includes(' ')) {
             const parts = posterName.split(' ');
@@ -410,7 +419,7 @@ window.renderMemories = async function () {
             posterInitials = "U";
         }
 
-        const timeString = m.date ? formatRelativeTime(m.date) : '';
+        const timeString = m.created_at ? formatRelativeTime(m.created_at) : '';
 
         return `
         <div class="gallery-item card" style="padding: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-surface);">
@@ -420,12 +429,12 @@ window.renderMemories = async function () {
                         ${posterInitials}
                     </div>
                     <div style="display: flex; flex-direction: column;">
-                        <strong style="font-size: 1rem; color: var(--text-main); font-weight: 600;">${posterName}</strong>
+                        <strong style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;">${posterName} (${m.roll_number || 'N/A'})</strong>
                         ${timeString ? `<span class="text-muted" style="font-size:0.75rem; margin-top: 2px;">${timeString}</span>` : ''}
                     </div>
                 </div>
             </div>
-            <img src="${m.url}" alt="${m.caption}" style="width: 100%; display: block; object-fit: cover;">
+            <img src="${m.image_url}" alt="${m.caption}" style="width: 100%; display: block; object-fit: cover; max-height: 400px;">
             <div class="gallery-item-content" style="padding: 1rem;">
                 <p style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--text-main);"><strong>${m.caption}</strong></p>
                 <div class="gallery-actions" style="display:flex; gap:0.5rem; justify-content: space-between;">
@@ -450,7 +459,57 @@ window.renderMemories = async function () {
     const existingCards = container.querySelectorAll('.gallery-item');
     existingCards.forEach(card => card.remove());
 
-    container.insertAdjacentHTML('beforeend', postsHtml);
+    container.insertAdjacentHTML('beforeend', postsHtml || '<p class="text-muted" style="grid-column: 1 / -1;">No memories found.</p>');
+};
+
+// Admin Check to toggle Admin panel
+async function checkAdminForMemories() {
+    if (!window.isLoggedIn || !window.supabaseClient) return;
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
+
+    const { data: profile } = await supabaseClient.from('profiles').select('is_admin').eq('id', user.id).single();
+    if (profile && profile.is_admin) {
+        const panel = document.getElementById('admin-memory-panel');
+        if (panel) panel.style.display = 'block';
+    }
+}
+
+// Global submit handler for the Memory Form
+window.submitAdminMemory = async function (e) {
+    if (e) e.preventDefault();
+    const btn = document.getElementById('admin-memory-submit-btn');
+    if (btn) { btn.disabled = true; btn.innerHTML = "Uploading..."; }
+
+    const student_name = document.getElementById('mem-student-name').value.trim();
+    const roll_number = document.getElementById('mem-roll-number').value.trim();
+    const image_url = document.getElementById('mem-image-url').value.trim();
+    const caption = document.getElementById('mem-caption').value.trim();
+
+    if (!student_name || !roll_number || !image_url || !caption) {
+        if (window.showToast) window.showToast("Please fill all fields.", "error");
+        if (btn) { btn.disabled = false; btn.innerHTML = "Upload Memory"; }
+        return;
+    }
+
+    const { error } = await supabaseClient.from('memories').insert([{
+        student_name,
+        roll_number,
+        image_url,
+        caption
+    }]);
+
+    if (error) {
+        console.error("Upload Error:", error);
+        if (window.showToast) window.showToast("Upload failed: " + error.message, "error");
+    } else {
+        if (window.showToast) window.showToast("Memory published!", "success");
+        // Clear form
+        document.getElementById('admin-memory-form').reset();
+        // Refresh memories
+        if (window.renderMemories) window.renderMemories();
+    }
+    if (btn) { btn.disabled = false; btn.innerHTML = "Upload Memory"; }
 };
 
 window.likeMemory = async function (photoId) {
