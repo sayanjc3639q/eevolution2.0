@@ -93,7 +93,9 @@
 
     <div class="sidebar-footer">
       <p>Sparked with <i class="ph-fill ph-heart" style="color: #ef4444;"></i> for Batch 2</p>
-      <a href="mailto:feedback@example.com" class="feedback-link">Submit Feedback</a>
+      <button onclick="openPreFilledForm('feedback')" class="feedback-link"
+        style="background: none; border: none; padding: 0; cursor: pointer; font-family: inherit; font-size: inherit; text-decoration: underline;">Submit
+        Feedback</button>
     </div>
   </nav>
 
@@ -297,9 +299,9 @@
                 <p class="text-muted" style="font-size: 0.85rem; line-height: 1.4;">Shared lab sessions, campus vibes,
                   or batch trips? Submit your photos to the gallery!</p>
               </div>
-              <a href="https://docs.google.com/forms/d/e/YOUR_MEMORIES_FORM_ID/viewform" target="_blank"
-                class="btn-primary" style="white-space: nowrap; text-align: center;">Submit Memory <i
-                  class="ph ph-image-square"></i></a>
+              <button onclick="openPreFilledForm('memory')" class="btn-primary"
+                style="white-space: nowrap; text-align: center; border: none; font-family: inherit; font-size: inherit; cursor: pointer;">Submit
+                Memory <i class="ph ph-image-square"></i></button>
             </div>
             <p class="text-muted"><i class="ph ph-spinner ph-spin"></i> Loading memories...</p>
           </div>
@@ -333,8 +335,9 @@
                     <i class="ph ph-cloud-arrow-up"></i>
                     <h4>Ready to Share?</h4>
                     <p>All types of academic files are welcome (PDF, Images, Docs)</p>
-                    <a href="#" target="_blank" class="btn-primary mt-3">Open Upload Portal <i
-                        class="ph ph-arrow-square-out"></i></a>
+                    <button onclick="openPreFilledForm('file')" class="btn-primary mt-3"
+                      style="border: none; font-family: inherit; font-size: inherit; cursor: pointer;">Open Upload
+                      Portal <i class="ph ph-arrow-square-out"></i></button>
                   </div>
                 </div>
               </div>

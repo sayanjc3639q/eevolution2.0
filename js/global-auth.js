@@ -97,3 +97,59 @@ async function checkAuth() {
         window.renderMemories();
     }
 }
+
+const formLinks = {
+    file: {
+        baseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeoojbxxltwn-A4aWsQB_z0HkRAnEjTkr_7V00YG3NUIJkg7Q/viewform",
+        nameEntry: "entry.1171407804",
+        rollEntry: "entry.1240276289"
+    },
+    memory: {
+        baseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfhIxPwiHYOR0YPXI06bUBZn02WQJ_ngHaZigqXpKMEyhkL5Q/viewform",
+        nameEntry: "entry.1256960757",
+        rollEntry: "entry.1104866823"
+    },
+    feedback: {
+        baseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeMIArjNWd97fP_eWlOuM1CJyepCUdNoZlp1i5uqCzTcVbYkw/viewform",
+        nameEntry: "entry.1816392909",
+        rollEntry: "entry.308794664"
+    },
+    event: {
+        baseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSephcJ-rLanL1nHllZXIFho8D9ZAvUPHU-4RmjwDcsQXwFMWw/viewform",
+        nameEntry: "entry.2140947050",
+        rollEntry: "entry.142949056"
+    }
+};
+
+async function openPreFilledForm(formType) {
+    try {
+        const { data: { user }, error } = await window.supabaseClient.auth.getUser();
+
+        if (error || !user) {
+            if (typeof showToast === 'function') {
+                showToast("You must be logged in to access this form.", "error");
+            } else {
+                alert("You must be logged in to access this form.");
+            }
+            return;
+        }
+
+        const userName = user.user_metadata.name || "";
+        const userRoll = user.user_metadata.roll_number || "";
+        const config = formLinks[formType];
+
+        if (!config) {
+            console.error("Invalid form type requested.");
+            return;
+        }
+
+        const dynamicURL = `${config.baseUrl}?usp=pp_url&${config.nameEntry}=${encodeURIComponent(userName)}&${config.rollEntry}=${encodeURIComponent(userRoll)}`;
+        window.open(dynamicURL, '_blank');
+
+    } catch (err) {
+        console.error("Form routing error:", err);
+    }
+}
+
+// Attach it to the window object so inline HTML onclick handlers can reach it
+window.openPreFilledForm = openPreFilledForm;

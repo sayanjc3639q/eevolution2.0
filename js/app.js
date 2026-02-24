@@ -294,7 +294,7 @@ function renderUpdates(tab) {
                 <h4 style="color: var(--electric-blue); font-size: 1.1rem; margin-bottom: 0.25rem;"><i class="ph ph-megaphone"></i> Host an Event?</h4>
                 <p class="text-muted" style="font-size: 0.85rem; line-height: 1.4;">Technical workshop or batch gathering? Submit it for review!</p>
             </div>
-            <a href="https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform" target="_blank" class="btn-primary" style="white-space: nowrap; text-align: center;">Submit Event <i class="ph ph-arrow-square-out"></i></a>
+            <button onclick="openPreFilledForm('event')" class="btn-primary" style="white-space: nowrap; text-align: center; border: none; font-family: inherit; font-size: inherit; cursor: pointer;">Submit Event <i class="ph ph-arrow-square-out"></i></button>
         </div>
         `;
 
