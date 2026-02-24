@@ -307,9 +307,11 @@ async function renderHomeData() {
         }
     }
 
-    const donators = [...currentData.donators].slice(0, 3);
-    document.getElementById('top-donators').innerHTML = donators.map((d, i) => `
-    <li><div><span class="primary-text">#${i + 1} ${d.name}</span><span class="secondary-text">${d.date}</span></div><div><span class="text-accent">${d.amount}</span></div></li>
+    const donators = [...currentData.donators]
+        .sort((a, b) => (parseInt(b.amount.replace('₹', '')) || 0) - (parseInt(a.amount.replace('₹', '')) || 0))
+        .slice(0, 3);
+    document.getElementById('top-donators').innerHTML = donators.map((d) => `
+    <li><div><span class="primary-text">${d.name}</span></div><div><span class="text-accent">${d.amount}</span></div></li>
   `).join('');
 
     // Render Reviews
@@ -432,12 +434,13 @@ function renderDonators() {
     <div class="leaderboard-list">
     `;
 
-    html += sortedDonators.map((d, i) => `
-    <div class="leaderboard-item">
-        <div class="rank-slot">${i + 1}</div>
+    html += sortedDonators.map((d) => `
+    <div class="leaderboard-item simple-donator">
+        <div class="donator-icon">
+            <i class="ph ph-heart text-accent"></i>
+        </div>
         <div class="donator-info">
             <span class="donator-name">${d.name}</span>
-            <span class="donator-meta">Last contribution on ${d.lastDate}</span>
         </div>
         <div class="donation-badge">₹${d.amount}</div>
     </div>

@@ -111,6 +111,10 @@
           <a href="auth.html" class="btn-primary btn-small">Sign In <i class="ph ph-sign-in"></i></a>
         </div>
         <div id="auth-navbar-area" class="hidden" style="display:flex; align-items:center; gap: 0.75rem;">
+          <div class="user-avatar" id="nav-user-avatar"
+            style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 1px solid var(--border-color); background: var(--bg-surface);">
+            <!-- Avatar JS -->
+          </div>
           <span id="nav-user-first-name" class="text-accent" style="font-weight: 600; font-size: 0.95rem;"></span>
           <span id="nav-user-coins" class="text-gold" style="font-size: 0.9rem;"><i class="ph-fill ph-coins"></i>
             0</span>
@@ -739,11 +743,28 @@
           <!-- Logged In State Template -->
           <div class="logged-in hidden" id="profile-details">
             <div class="profile-header">
-              <div class="avatar"><i class="ph ph-user"></i></div>
+              <div class="avatar" id="profile-avatar-container" style="position: relative;">
+                <i class="ph ph-user"></i>
+                <button class="edit-avatar-trigger" onclick="toggleAvatarEditor()" title="Edit Avatar">
+                  <i class="ph ph-pencil-simple"></i>
+                </button>
+              </div>
               <div class="profile-info">
                 <h2 id="profile-name">Student Name</h2>
                 <p id="profile-roll" class="text-muted">25/EE/000</p>
               </div>
+            </div>
+
+            <!-- Avatar Selection Selection -->
+            <div class="avatar-selection-container" id="avatar-editor" style="display: none;">
+              <h4 style="margin-bottom: 0.25rem;"><i class="ph ph-user-circle"></i> Choose Your Avatar</h4>
+              <p class="text-muted" style="font-size: 0.85rem;">Select an identity for the batch feed</p>
+              <div class="avatar-grid" id="avatar-selection-grid">
+                <!-- JS will inject 20 avatars here -->
+              </div>
+              <button id="save-avatar-btn" class="btn-primary"
+                style="width: 100%; border: none; cursor: pointer; opacity: 0.6; pointer-events: none;"
+                onclick="saveSelectedAvatar()">Save Avatar <i class="ph ph-floppy-disk"></i></button>
             </div>
             <div class="profile-stats">
               <div class="stat-box">

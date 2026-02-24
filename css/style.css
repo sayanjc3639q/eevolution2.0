@@ -1578,47 +1578,24 @@ input[type="text"]:focus {
 .leaderboard-item {
   display: flex;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 2rem;
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  transition: var(--transition);
 }
 
-.leaderboard-item:hover {
-  border-color: var(--theme-color);
-  transform: translateX(10px);
-}
-
-.rank-slot {
+.donator-icon {
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   margin-right: 1.5rem;
   border-radius: 50%;
-  background: var(--bg-panel);
-  color: var(--text-muted);
+  background: rgba(var(--theme-color-rgb), 0.05);
 }
 
-.leaderboard-item:nth-child(1) .rank-slot {
-  background: #ffd700;
-  color: #000;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-}
-
-.leaderboard-item:nth-child(2) .rank-slot {
-  background: #c0c0c0;
-  color: #000;
-}
-
-.leaderboard-item:nth-child(3) .rank-slot {
-  background: #cd7f32;
-  color: #000;
-}
 
 .donator-info {
   flex-grow: 1;
@@ -2092,4 +2069,85 @@ input[type="text"]:focus {
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 2rem;
+}
+
+/* Avatar System */
+.avatar-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #334155;
+  border: 1px solid var(--border-color);
+}
+
+.edit-avatar-trigger {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 32px;
+  height: 32px;
+  background: var(--electric-blue);
+  color: white;
+  border: 3px solid var(--bg-surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.15rem;
+  transition: var(--transition);
+  z-index: 99;
+}
+
+.edit-avatar-trigger:hover {
+  transform: scale(1.1);
+  background: white;
+  color: var(--electric-blue);
+}
+
+.avatar-selection-container {
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  margin-top: 1.5rem;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.avatar-item {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  padding: 3px;
+  transition: var(--transition);
+}
+
+
+
+.avatar-item.selected {
+  border-color: var(--electric-blue);
+  background: rgba(var(--theme-color-rgb), 0.15);
+}
+
+.avatar-item img {
+  width: 100%;
+  display: block;
+}
+
+.avatar-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.avatar-grid::-webkit-scrollbar-thumb {
+  background: var(--border-color);
 }

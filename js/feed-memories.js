@@ -44,10 +44,12 @@ async function fetchFeed() {
         return;
     }
 
-    // Fetch profiles to get names for the roll numbers
-    const { data: profiles } = await supabaseClient.from('profiles').select('roll_number, name');
+    // Fetch profiles to get names and avatars for the roll numbers
+    const { data: profiles } = await supabaseClient.from('profiles').select('roll_number, name, avatar_url');
     if (profiles) {
-        profiles.forEach(p => { globalProfileMap[p.roll_number] = p.name; });
+        profiles.forEach(p => {
+            globalProfileMap[p.roll_number] = { name: p.name, avatar: p.avatar_url };
+        });
     }
 
     if (!posts || posts.length === 0) {
@@ -96,9 +98,9 @@ async function renderSinglePost(post, prepend = false) {
 
     // Dynamically fetch missing profile info
     if (!globalProfileMap[post.roll_number] && window.supabaseClient) {
-        const { data: prof } = await supabaseClient.from('profiles').select('name').eq('roll_number', post.roll_number).single();
-        if (prof && prof.name) {
-            globalProfileMap[post.roll_number] = prof.name;
+        const { data: prof } = await supabaseClient.from('profiles').select('name, avatar_url').eq('roll_number', post.roll_number).single();
+        if (prof) {
+            globalProfileMap[post.roll_number] = { name: prof.name || post.roll_number, avatar: prof.avatar_url };
         }
     }
 
@@ -109,28 +111,19 @@ async function renderSinglePost(post, prepend = false) {
     const hasLiked = likedPosts.includes(post.id);
     const hasDisliked = dislikedPosts.includes(post.id);
 
-    // Extracted name (only name, no roll number as requested)
-    const displayName = globalProfileMap[post.roll_number] || post.roll_number;
+    // Extracted profile info
+    const profileInfo = globalProfileMap[post.roll_number] || { name: post.roll_number, avatar: null };
+    const displayName = profileInfo.name;
+    const avatarUrl = profileInfo.avatar || `https://api.dicebear.com/9.x/avataaars/svg?seed=${post.roll_number}`;
 
     const timeString = formatRelativeTime(post.created_at);
-
-    // Create an avatar initials string
-    let initials = displayName.substring(0, 2).toUpperCase();
-    if (displayName.includes(' ')) {
-        const parts = displayName.split(' ');
-        if (parts[0] && parts[1]) {
-            initials = (parts[0][0] + parts[1][0]).toUpperCase();
-        }
-    } else if (initials.length === 0) {
-        initials = "U";
-    }
 
     const html = `
     <div id="post-${post.id}" class="feed-item card mb-4" style="border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-surface); box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 0; overflow: hidden; transition: transform 0.2s ease;">
         <div class="feed-header" style="display:flex; flex-direction: row !important; justify-content:space-between; align-items: center; padding: 1rem 1.25rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-color);">
             <div style="display: flex; align-items: center; gap: 0.9rem;">
-                <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--electric-blue, #007bff), var(--accent-color, #6610f2)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
-                    ${initials}
+                <div style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #334155; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                    <img src="${avatarUrl}" class="avatar-img" style="width: 100%; height: 100%;" alt="Avatar">
                 </div>
                 <div style="display: flex; flex-direction: column;">
                     <strong style="font-size: 1.05rem; color: var(--text-main); font-weight: 600;">${displayName}</strong>
@@ -405,19 +398,18 @@ window.renderMemories = async function () {
         metaData.forEach(m => { likesMap[m.photo_id] = m.like_count || 0; });
     }
 
+    // Fetch avatars mapping
+    const { data: allProfiles } = await supabaseClient.from('profiles').select('roll_number, avatar_url');
+    const avatarMap = {};
+    if (allProfiles) {
+        allProfiles.forEach(p => avatarMap[p.roll_number] = p.avatar_url);
+    }
+
     const postsHtml = (memoriesArray || []).map(m => {
         const hasLiked = likedMemories.includes(m.id);
         const lCount = likesMap[m.id] || 0;
         let posterName = m.student_name || 'Unknown User';
-        let posterInitials = posterName.substring(0, 2).toUpperCase();
-        if (posterName.includes(' ')) {
-            const parts = posterName.split(' ');
-            if (parts[0] && parts[1]) {
-                posterInitials = (parts[0][0] + parts[1][0]).toUpperCase();
-            }
-        } else if (posterInitials.length === 0) {
-            posterInitials = "U";
-        }
+        const userAvatar = avatarMap[m.roll_number] || `https://api.dicebear.com/9.x/avataaars/svg?seed=${m.roll_number || 'default'}`;
 
         const timeString = m.created_at ? formatRelativeTime(m.created_at) : '';
 
@@ -425,8 +417,8 @@ window.renderMemories = async function () {
         <div class="gallery-item card" style="padding: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-surface);">
             <div class="memory-header" style="display:flex; justify-content:space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color);">
                 <div style="display: flex; align-items: center; gap: 0.8rem;">
-                    <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-color, #6610f2), var(--electric-blue, #007bff)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.95rem; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">
-                        ${posterInitials}
+                    <div style="width: 38px; height: 38px; border-radius: 50%; overflow: hidden; background: #334155; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">
+                        <img src="${userAvatar}" class="avatar-img" style="width: 100%; height: 100%;" alt="Avatar">
                     </div>
                     <div style="display: flex; flex-direction: column;">
                         <strong style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;">${posterName} (${m.roll_number || 'N/A'})</strong>
