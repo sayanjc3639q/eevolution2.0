@@ -146,11 +146,11 @@ async function renderSinglePost(post, prepend = false) {
             <p style="word-break: break-word; font-size: 1.05rem; line-height: 1.6; color: var(--text-main); margin-bottom: 0; white-space: pre-wrap;">${post.content}</p>
         </div>
         <div class="feed-actions" style="display:flex; gap:0.75rem; padding: 0.8rem 1.25rem; border-top: 1px solid var(--border-color); background: var(--bg-surface);">
-            <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" ${hasLiked || hasDisliked ? 'disabled' : ''} style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
+            <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
                 <i class="${hasLiked ? 'ph-fill text-accent' : 'ph'} ph-thumbs-up" style="font-size: 1.15rem;"></i> 
                 <span id="likes-count-${post.id}" style="font-weight: 600;">${post.likes || 0}</span>
             </button>
-            <button class="btn-outline btn-small ${hasDisliked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'dislikes')" ${hasLiked || hasDisliked ? 'disabled' : ''} style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
+            <button class="btn-outline btn-small ${hasDisliked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'dislikes')" style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
                 <i class="${hasDisliked ? 'ph-fill text-danger' : 'ph'} ph-thumbs-down" style="font-size: 1.15rem;"></i> 
                 <span id="dislikes-count-${post.id}" style="font-weight: 600;">${post.dislikes || 0}</span>
             </button>
@@ -234,57 +234,150 @@ window.submitFeedPost = async function () {
 };
 
 window.handleFeedAction = async function (postId, action) {
-    const likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
-    const dislikedPosts = JSON.parse(localStorage.getItem('dislikedPosts') || '[]');
-
-    if (likedPosts.includes(postId) || dislikedPosts.includes(postId)) return;
-
-    // Get current value
-    const { data: fetchPost, error: errFetch } = await window.supabaseClient
-        .from('batch_feed')
-        .select(action)
-        .eq('id', postId)
-        .single();
-
-    if (errFetch) {
-        console.error("Fetch Post Error: ", errFetch);
+    if (!window.isLoggedIn) {
+        if (typeof showToast === 'function') showToast("Please log in to vote", "error");
+        else alert("Please log in to vote");
         return;
     }
 
-    const newVal = (fetchPost[action] || 0) + 1;
+    const likeBtn = document.querySelector(`#post-${postId} button[onclick*="'likes'"]`);
+    const dislikeBtn = document.querySelector(`#post-${postId} button[onclick*="'dislikes'"]`);
+    if (!likeBtn || !dislikeBtn) return;
 
-    const { error } = await supabaseClient
-        .from('batch_feed')
-        .update({ [action]: newVal })
-        .eq('id', postId);
+    const likeCountSpan = document.getElementById(`likes-count-${postId}`);
+    const dislikeCountSpan = document.getElementById(`dislikes-count-${postId}`);
 
-    if (!error) {
-        if (action === 'likes') likedPosts.push(postId);
-        else dislikedPosts.push(postId);
+    let likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '[]');
+    let dislikedPosts = JSON.parse(localStorage.getItem('dislikedPosts') || '[]');
 
-        localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
-        localStorage.setItem('dislikedPosts', JSON.stringify(dislikedPosts));
+    const hasLiked = likedPosts.includes(postId);
+    const hasDisliked = dislikedPosts.includes(postId);
 
-        // Optimistically update the UI instead of re-fetching the whole feed
-        const countSpan = document.getElementById(`${action}-count-${postId}`);
-        if (countSpan) countSpan.innerText = newVal;
+    let newLikeChange = 0;
+    let newDislikeChange = 0;
 
-        // Disable the buttons for this post explicitly
-        const postElement = document.getElementById(`post-${postId}`);
-        if (postElement) {
-            const buttons = postElement.querySelectorAll('.feed-actions button');
-            buttons.forEach(b => {
-                b.disabled = true;
-                if (b.onclick.toString().includes(`'${action}'`)) {
-                    b.classList.add('active');
-                    const icon = b.querySelector('i');
-                    if (icon) {
-                        icon.classList.remove('ph');
-                        icon.classList.add('ph-fill');
-                    }
-                }
-            });
+    let willLike = hasLiked;
+    let willDislike = hasDisliked;
+
+    if (action === 'likes') {
+        if (hasLiked) {
+            willLike = false;
+            newLikeChange = -1;
+            likedPosts = likedPosts.filter(id => id !== postId);
+        } else {
+            willLike = true;
+            newLikeChange = 1;
+            likedPosts.push(postId);
+            if (hasDisliked) {
+                willDislike = false;
+                newDislikeChange = -1;
+                dislikedPosts = dislikedPosts.filter(id => id !== postId);
+            }
         }
+    } else if (action === 'dislikes') {
+        if (hasDisliked) {
+            willDislike = false;
+            newDislikeChange = -1;
+            dislikedPosts = dislikedPosts.filter(id => id !== postId);
+        } else {
+            willDislike = true;
+            newDislikeChange = 1;
+            dislikedPosts.push(postId);
+            if (hasLiked) {
+                willLike = false;
+                newLikeChange = -1;
+                likedPosts = likedPosts.filter(id => id !== postId);
+            }
+        }
+    }
+
+    // 2. Optimistic UI Updates
+    const currentLikes = parseInt(likeCountSpan.innerText) || 0;
+    const currentDislikes = parseInt(dislikeCountSpan.innerText) || 0;
+
+    likeCountSpan.innerText = Math.max(0, currentLikes + newLikeChange);
+    dislikeCountSpan.innerText = Math.max(0, currentDislikes + newDislikeChange);
+
+    // Update visuals instantly
+    if (willLike) {
+        likeBtn.classList.add('active');
+        likeBtn.querySelector('i').className = 'ph-fill text-accent ph-thumbs-up';
+    } else {
+        likeBtn.classList.remove('active');
+        likeBtn.querySelector('i').className = 'ph ph-thumbs-up';
+    }
+
+    if (willDislike) {
+        dislikeBtn.classList.add('active');
+        dislikeBtn.querySelector('i').className = 'ph-fill text-danger ph-thumbs-down';
+    } else {
+        dislikeBtn.classList.remove('active');
+        dislikeBtn.querySelector('i').className = 'ph ph-thumbs-down';
+    }
+
+    localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+    localStorage.setItem('dislikedPosts', JSON.stringify(dislikedPosts));
+
+    // Disable clicks safely while syncing logic
+    likeBtn.disabled = true;
+    dislikeBtn.disabled = true;
+
+    try {
+        // 3. Database Syncing (Increment/Decrementing integer counts accurately)
+        const { data: fetchPost, error: errFetch } = await window.supabaseClient
+            .from('batch_feed')
+            .select('likes, dislikes')
+            .eq('id', postId)
+            .single();
+
+        if (errFetch) throw errFetch;
+
+        const updatedLikes = Math.max(0, (fetchPost.likes || 0) + newLikeChange);
+        const updatedDislikes = Math.max(0, (fetchPost.dislikes || 0) + newDislikeChange);
+
+        const { error: errUpdate } = await window.supabaseClient
+            .from('batch_feed')
+            .update({ likes: updatedLikes, dislikes: updatedDislikes })
+            .eq('id', postId);
+
+        if (errUpdate) throw errUpdate;
+
+    } catch (error) {
+        console.error("Action Failed:", error);
+
+        // REVERT OPTIMISTIC UI CAUSE DB FAILED
+        likeCountSpan.innerText = currentLikes;
+        dislikeCountSpan.innerText = currentDislikes;
+
+        if (hasLiked) {
+            likeBtn.classList.add('active');
+            likeBtn.querySelector('i').className = 'ph-fill text-accent ph-thumbs-up';
+            if (action === 'likes' || (action === 'dislikes' && !hasDisliked)) likedPosts.push(postId);
+        } else {
+            likeBtn.classList.remove('active');
+            likeBtn.querySelector('i').className = 'ph ph-thumbs-up';
+            likedPosts = likedPosts.filter(id => id !== postId);
+        }
+
+        if (hasDisliked) {
+            dislikeBtn.classList.add('active');
+            dislikeBtn.querySelector('i').className = 'ph-fill text-danger ph-thumbs-down';
+            if (action === 'dislikes' || (action === 'likes' && !hasLiked)) dislikedPosts.push(postId);
+        } else {
+            dislikeBtn.classList.remove('active');
+            dislikeBtn.querySelector('i').className = 'ph ph-thumbs-down';
+            dislikedPosts = dislikedPosts.filter(id => id !== postId);
+        }
+
+        // Save original states back
+        localStorage.setItem('likedPosts', JSON.stringify([...new Set(likedPosts)]));
+        localStorage.setItem('dislikedPosts', JSON.stringify([...new Set(dislikedPosts)]));
+
+        if (window.showToast) window.showToast("Action failed. Reverted.", "error");
+    } finally {
+        // Safe to click again
+        likeBtn.disabled = false;
+        dislikeBtn.disabled = false;
     }
 };
 
