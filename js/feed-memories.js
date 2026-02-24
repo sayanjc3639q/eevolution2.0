@@ -1,8 +1,8 @@
 // Centralized Feed & Memories UI logic interacting with Supabase
 
 const MEMORIES = [
-    { id: 'mem1', url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop', caption: 'First day at Campus' },
-    { id: 'mem2', url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&auto=format&fit=crop', caption: 'Electrical Lab Session' }
+    { id: 'mem1', url: 'https://i.pinimg.com/736x/63/4a/20/634a20fb0a9f0a2a38ad37594bbc2794.jpg', caption: 'First day at Campus', postedBy: 'Sayan Maity', date: '2026-02-22T10:00:00Z' },
+    { id: 'mem2', url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=600&auto=format&fit=crop', caption: 'Electrical Lab Session', postedBy: 'Admin', date: '2026-02-23T14:30:00Z' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -66,6 +66,31 @@ async function fetchFeed() {
     setupRealtimeFeed();
 }
 
+function formatRelativeTime(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMin = Math.floor(diffMs / (1000 * 60));
+    const diffHour = Math.floor(diffMin / 60);
+
+    const nowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const n = Math.floor((nowStart - dateStart) / (1000 * 60 * 60 * 24));
+
+    if (diffMin < 1) return 'now';
+    if (diffMin < 60) return `${diffMin} min ago`;
+    if (diffHour < 24 && n === 0) return `${diffHour} hour${diffHour !== 1 ? 's' : ''} ago`;
+    if (n === 0) return 'Today';
+    if (n === 1) return 'yesterday';
+    if (n <= 99) return `${n} days ago`;
+
+    const m = Math.floor(n / 30);
+    if (m <= 99) return `${m} months ago`;
+
+    const y = Math.floor(m / 12);
+    return `${y} years ago`;
+}
+
 async function renderSinglePost(post, prepend = false) {
     const container = document.getElementById('feed-container');
     if (!container) return;
@@ -87,21 +112,47 @@ async function renderSinglePost(post, prepend = false) {
 
     const hasLiked = likedPosts.includes(post.id);
     const hasDisliked = dislikedPosts.includes(post.id);
-    const displayName = globalProfileMap[post.roll_number] ? `${globalProfileMap[post.roll_number]} (${post.roll_number})` : post.roll_number;
+
+    // Extracted name (only name, no roll number as requested)
+    const displayName = globalProfileMap[post.roll_number] || post.roll_number;
+
+    const timeString = formatRelativeTime(post.created_at);
+
+    // Create an avatar initials string
+    let initials = displayName.substring(0, 2).toUpperCase();
+    if (displayName.includes(' ')) {
+        const parts = displayName.split(' ');
+        if (parts[0] && parts[1]) {
+            initials = (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+    } else if (initials.length === 0) {
+        initials = "U";
+    }
 
     const html = `
-    <div id="post-${post.id}" class="feed-item card mb-4">
-        <div class="feed-header" style="display:flex; justify-content:space-between; align-items: center;">
-            <strong><i class="ph ph-user"></i> ${displayName}</strong>
-            <span class="feed-date text-muted" style="font-size:0.8rem;">${new Date(post.created_at).toLocaleString()}</span>
+    <div id="post-${post.id}" class="feed-item card mb-4" style="border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-surface); box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 0; overflow: hidden; transition: transform 0.2s ease;">
+        <div class="feed-header" style="display:flex; justify-content:space-between; align-items: center; padding: 1rem 1.25rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: center; gap: 0.9rem;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--electric-blue, #007bff), var(--accent-color, #6610f2)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                    ${initials}
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <strong style="font-size: 1.05rem; color: var(--text-main); font-weight: 600;">${displayName}</strong>
+                    <span class="feed-date text-muted" style="font-size:0.8rem; margin-top: 3px;">${timeString}</span>
+                </div>
+            </div>
         </div>
-        <p class="mt-2" style="word-break: break-word;">${post.content}</p>
-        <div class="feed-actions mt-3" style="display:flex; gap:1rem;">
-            <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" ${hasLiked || hasDisliked ? 'disabled' : ''}>
-                <i class="${hasLiked ? 'ph-fill' : 'ph'} ph-thumbs-up"></i> <span id="likes-count-${post.id}">${post.likes || 0}</span>
+        <div style="padding: 1.25rem; background: var(--bg-surface);">
+            <p style="word-break: break-word; font-size: 1.05rem; line-height: 1.6; color: var(--text-main); margin-bottom: 0; white-space: pre-wrap;">${post.content}</p>
+        </div>
+        <div class="feed-actions" style="display:flex; gap:0.75rem; padding: 0.8rem 1.25rem; border-top: 1px solid var(--border-color); background: var(--bg-surface);">
+            <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" ${hasLiked || hasDisliked ? 'disabled' : ''} style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
+                <i class="${hasLiked ? 'ph-fill text-accent' : 'ph'} ph-thumbs-up" style="font-size: 1.15rem;"></i> 
+                <span id="likes-count-${post.id}" style="font-weight: 600;">${post.likes || 0}</span>
             </button>
-            <button class="btn-outline btn-small ${hasDisliked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'dislikes')" ${hasLiked || hasDisliked ? 'disabled' : ''}>
-                <i class="${hasDisliked ? 'ph-fill' : 'ph'} ph-thumbs-down"></i> <span id="dislikes-count-${post.id}">${post.dislikes || 0}</span>
+            <button class="btn-outline btn-small ${hasDisliked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'dislikes')" ${hasLiked || hasDisliked ? 'disabled' : ''} style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
+                <i class="${hasDisliked ? 'ph-fill text-danger' : 'ph'} ph-thumbs-down" style="font-size: 1.15rem;"></i> 
+                <span id="dislikes-count-${post.id}" style="font-weight: 600;">${post.dislikes || 0}</span>
             </button>
         </div>
     </div>
@@ -255,16 +306,40 @@ window.renderMemories = async function () {
     const postsHtml = MEMORIES.map(m => {
         const hasLiked = likedMemories.includes(m.id);
         const lCount = likesMap[m.id] || 0;
+        let posterName = m.postedBy || 'Unknown User';
+        let posterInitials = posterName.substring(0, 2).toUpperCase();
+        if (posterName.includes(' ')) {
+            const parts = posterName.split(' ');
+            if (parts[0] && parts[1]) {
+                posterInitials = (parts[0][0] + parts[1][0]).toUpperCase();
+            }
+        } else if (posterInitials.length === 0) {
+            posterInitials = "U";
+        }
+
+        const timeString = m.date ? formatRelativeTime(m.date) : '';
+
         return `
-        <div class="gallery-item card">
-            <img src="${m.url}" alt="${m.caption}">
-            <div class="gallery-item-content">
-                <p><strong>${m.caption}</strong></p>
-                <div class="gallery-actions">
-                    <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="likeMemory('${m.id}')" ${hasLiked ? 'disabled' : ''}>
+        <div class="gallery-item card" style="padding: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-surface);">
+            <div class="memory-header" style="display:flex; justify-content:space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; gap: 0.8rem;">
+                    <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-color, #6610f2), var(--electric-blue, #007bff)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.95rem; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">
+                        ${posterInitials}
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <strong style="font-size: 1rem; color: var(--text-main); font-weight: 600;">${posterName}</strong>
+                        ${timeString ? `<span class="text-muted" style="font-size:0.75rem; margin-top: 2px;">${timeString}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+            <img src="${m.url}" alt="${m.caption}" style="width: 100%; display: block; object-fit: cover;">
+            <div class="gallery-item-content" style="padding: 1rem;">
+                <p style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--text-main);"><strong>${m.caption}</strong></p>
+                <div class="gallery-actions" style="display:flex; gap:0.5rem; justify-content: space-between;">
+                    <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="likeMemory('${m.id}')" ${hasLiked ? 'disabled' : ''} style="flex: 1; justify-content: center;">
                         <i class="${hasLiked ? 'ph-fill text-accent' : 'ph'} ph-heart"></i> ${lCount} Likes
                     </button>
-                    <button class="btn-outline btn-small" onclick="toggleComments('${m.id}')">Comments <i class="ph ph-chat-centered-text"></i></button>
+                    <button class="btn-outline btn-small" onclick="toggleComments('${m.id}')" style="flex: 1; justify-content: center;">Comments <i class="ph ph-chat-centered-text"></i></button>
                 </div>
                 <div id="comments-section-${m.id}" class="comments-section hidden mt-3">
                      <button class="btn-outline btn-small w-100" onclick="fetchComments('${m.id}')">Load Comments <i class="ph ph-arrows-clockwise"></i></button>
