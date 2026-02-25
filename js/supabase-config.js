@@ -1,5 +1,4 @@
 // Supabase Configuration
-// Leave these as placeholders for the user to replace later.
 const supabaseUrl = 'https://mnkytgygusfxngrdnseg.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ua3l0Z3lndXNmeG5ncmRuc2VnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NTg2MzAsImV4cCI6MjA4NzMzNDYzMH0.A_upRIOaFRCFVMPVX2VVXornCtG3pGVQ7qLYBwijIUs';
 
