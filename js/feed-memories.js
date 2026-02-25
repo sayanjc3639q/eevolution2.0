@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.supabaseClient) {
         fetchFeed();
         renderMemories();
-        checkAdminForMemories();
+        if (window.checkAdminForMemories) window.checkAdminForMemories();
     }
 });
 
@@ -455,12 +455,18 @@ window.renderMemories = async function () {
 };
 
 // Admin Check to toggle Admin panel
-async function checkAdminForMemories() {
+window.checkAdminForMemories = async function () {
     if (!window.isLoggedIn || !window.supabaseClient) return;
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) return;
 
-    const { data: profile } = await supabaseClient.from('profiles').select('is_admin').eq('id', user.id).single();
+    // Use window.currentProfile if available to avoid redundant fetch
+    let profile = window.currentProfile;
+    if (!profile) {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+        const { data: fetchedProfile } = await supabaseClient.from('profiles').select('is_admin').eq('id', user.id).single();
+        profile = fetchedProfile;
+    }
+
     if (profile && profile.is_admin) {
         const panel = document.getElementById('admin-memory-panel');
         if (panel) panel.style.display = 'block';

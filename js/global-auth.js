@@ -101,6 +101,9 @@ async function checkAuth() {
             if (profile.is_admin && adminPanelBtn) {
                 adminPanelBtn.classList.remove('hidden');
             }
+
+            // Sync with Memories Admin Panel
+            if (window.checkAdminForMemories) window.checkAdminForMemories();
         }
     }
 
