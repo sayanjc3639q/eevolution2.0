@@ -29,14 +29,29 @@ let feedChannelActive = false;
 async function fetchFeed() {
     if (!window.supabaseClient) return;
 
+    const container = document.getElementById('feed-container');
+    if (!container) return;
+
+    // LOGIN CHECK: Restrict visibility to logged-in users only
+    if (!window.isLoggedIn) {
+        container.innerHTML = `
+            <div class="card text-center" style="border: 1px dashed var(--border-color); background: rgba(var(--theme-color-rgb), 0.05); border-radius: 16px; margin: 2rem auto; padding: 4rem 2rem; max-width: 500px; width: 100%;">
+                <div style="width: 64px; height: 64px; background: rgba(var(--theme-color-rgb), 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                    <i class="ph ph-lock-key" style="font-size: 2.5rem; color: var(--theme-color);"></i>
+                </div>
+                <h3 style="margin-bottom: 0.75rem; font-size: 1.5rem;">Batch Feed is Private</h3>
+                <p class="text-muted" style="margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.5;">You must be logged in to view posts and interact with the Batch 2 community.</p>
+                <a href="auth.html" class="btn-primary" style="display: inline-flex; justify-content: center; min-width: 200px; padding: 0.8rem 1.5rem;">Login to View Feed <i class="ph ph-sign-in" style="margin-left: 0.5rem;"></i></a>
+            </div>
+        `;
+        return;
+    }
+
     // Fetch posts
     const { data: posts, error: postError } = await supabaseClient
         .from('batch_feed')
         .select('*')
         .order('created_at', { ascending: false });
-
-    const container = document.getElementById('feed-container');
-    if (!container) return;
 
     if (postError) {
         console.error("Error fetching feed:", postError);

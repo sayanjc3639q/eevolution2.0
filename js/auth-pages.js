@@ -122,6 +122,26 @@ async function handleRegister(e) {
     const fullRoll = `25/EE/${rollLast3}`;
 
     btn.disabled = true;
+    btn.innerHTML = 'Checking... <i class="ph ph-spinner ph-spin"></i>';
+
+    // 1. Check if roll number is already registered
+    const { data: existingUser, error: checkError } = await supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('roll_number', fullRoll)
+        .maybeSingle();
+
+    if (checkError) {
+        console.error("Database check failed:", checkError);
+    }
+
+    if (existingUser) {
+        showToast("Roll Number already registered. Please login.", "error");
+        btn.disabled = false;
+        btn.innerHTML = 'Register <i class="ph ph-user-plus"></i>';
+        return;
+    }
+
     btn.innerHTML = 'Registering... <i class="ph ph-spinner ph-spin"></i>';
 
     const { data, error } = await supabaseClient.auth.signUp({
