@@ -457,8 +457,16 @@ function setupInteractions() {
     const semSelect = document.getElementById('semester-select');
     if (semSelect) {
         semSelect.addEventListener('change', (e) => {
-            document.getElementById('legacy-overlay').classList.toggle('hidden', e.target.value !== '1');
-            document.getElementById('sem-text').innerText = `SEM ${e.target.value}`;
+            // Check if showToast or alert exists
+            const msg = "Semester switching is not available currently. Sem 1 data is archived.";
+            if (window.showToast) {
+                showToast(msg, "info");
+            } else {
+                alert(msg);
+            }
+            // Revert to Sem 2
+            semSelect.value = "2";
+            document.getElementById('sem-text').innerText = `SEM 2`;
         });
     }
 
