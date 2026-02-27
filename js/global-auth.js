@@ -54,11 +54,59 @@ async function checkAuth() {
             const headerName = document.getElementById('nav-user-first-name');
             const headerCoins = document.getElementById('nav-user-coins');
             if (headerName) {
-                // Assuming profile.name might be "Full Name", extract first part
                 const firstName = (profile.name || "Student").split(' ')[0];
                 headerName.innerText = firstName;
             }
             if (headerCoins) headerCoins.innerHTML = `<i class="ph-fill ph-coins"></i> ${profile.evo_coins || 0}`;
+
+            // GUEST MODE ENFORCEMENT logic
+            // 1. Load local dictionary to verify existing users who might have null flags
+            let isVerifiedByDict = false;
+            try {
+                const resp = await fetch('data/students.json');
+                const dict = await resp.json();
+                const rollKey = profile.roll_number ? profile.roll_number.split('/').pop() : null;
+                if (rollKey && dict[rollKey]) isVerifiedByDict = true;
+            } catch (e) { console.warn("Dict check failed", e); }
+
+            const isVerifiedUser = profile.is_batch2_verified === true ||
+                profile.is_admin === true ||
+                (profile.role === 'admin') ||
+                isVerifiedByDict ||
+                (currentSessionUser.user_metadata && currentSessionUser.user_metadata.is_batch2_verified === true);
+
+            if (!isVerifiedUser) {
+                console.log("Member [Guest Mode]: Restricted access.");
+                const composer = document.getElementById('feed-composer') || document.getElementById('share-update-container');
+                if (composer) {
+                    composer.remove();
+                    const feedContainer = document.getElementById('feed-container');
+                    if (feedContainer) {
+                        const banner = document.createElement('div');
+                        banner.className = 'card mb-4';
+                        banner.style.border = '1px dashed var(--border-color)';
+                        banner.style.background = 'rgba(var(--theme-color-rgb), 0.03)';
+                        banner.style.padding = '1rem';
+                        banner.style.textAlign = 'center';
+                        banner.innerHTML = `<p class="text-muted" style="margin:0;"><i class="ph ph-mask-happy"></i> <strong>Guest Mode:</strong> Read-only access. Only verified Batch 2 members can post.</p>`;
+                        feedContainer.prepend(banner);
+                    }
+                }
+
+                // Hide Memory/Event Submission Buttons for guests
+                document.querySelectorAll('button').forEach(btn => {
+                    const text = btn.innerText.toLowerCase();
+                    if (text.includes('submit memory') || text.includes('upload memory') || text.includes('submit event')) {
+                        const parentCard = btn.closest('.event-submission-banner');
+                        if (parentCard) parentCard.style.display = 'none';
+                        else btn.style.display = 'none';
+                    }
+                });
+            } else {
+                console.log("Member [Verified]: Full access granted.");
+                const composer = document.getElementById('feed-composer');
+                if (composer) composer.classList.remove('hidden');
+            }
 
             // Profile display
             const profRoll = document.getElementById('profile-roll');
@@ -106,25 +154,26 @@ async function checkAuth() {
             if (window.checkAdminForMemories) window.checkAdminForMemories();
         }
     }
-
-    const logoutBtn = document.getElementById('nav-logout-btn');
-    const mainLogoutBtn = document.getElementById('logout-btn');
-
-    const handleLogout = async () => {
-        await supabaseClient.auth.signOut();
-        window.location.reload();
-    };
-
-    if (logoutBtn) logoutBtn.onclick = handleLogout;
-    if (mainLogoutBtn) mainLogoutBtn.onclick = handleLogout;
-
-    // Also re-render Memories thread input if it was active
-    if (window.renderMemories && document.getElementById('memories-content')) {
-        // Just retrigger but careful no infinite loops. 
-        // It renders initially before auth is finished, so this effectively upgrades UI.
-        window.renderMemories();
-    }
 }
+
+const logoutBtn = document.getElementById('nav-logout-btn');
+const mainLogoutBtn = document.getElementById('logout-btn');
+
+const handleLogout = async () => {
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+};
+
+if (logoutBtn) logoutBtn.onclick = handleLogout;
+if (mainLogoutBtn) mainLogoutBtn.onclick = handleLogout;
+
+// Also re-render Memories thread input if it was active
+if (window.renderMemories && document.getElementById('memories-content')) {
+    // Just retrigger but careful no infinite loops. 
+    // It renders initially before auth is finished, so this effectively upgrades UI.
+    window.renderMemories();
+}
+
 
 const formLinks = {
     file: {
