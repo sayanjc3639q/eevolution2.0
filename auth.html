@@ -81,6 +81,41 @@
         .auth-switch a:hover {
             text-decoration: underline;
         }
+
+        /* Roll Number Input Group */
+        .roll-input-group {
+            display: flex;
+            align-items: center;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .roll-input-group:focus-within {
+            border-color: var(--electric-blue);
+        }
+
+        .roll-prefix {
+            padding: 0.75rem 0 0.75rem 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            user-select: none;
+            background: var(--bg-surface);
+            font-size: 0.95rem;
+        }
+
+        .roll-input-group input {
+            border: none !important;
+            padding: 0.75rem 1rem 0.75rem 0.25rem !important;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+        }
+
+        .roll-input-group input:focus {
+            outline: none;
+        }
     </style>
 </head>
 
@@ -119,7 +154,11 @@
             <h3 style="margin-bottom: 1.5rem;">Create Account</h3>
             <div class="form-group">
                 <label>Roll Number</label>
-                <input type="text" id="reg-roll" placeholder="25/EE/___" pattern="25/EE/\d{3}" required>
+                <div class="roll-input-group">
+                    <span class="roll-prefix">25/EE/</span>
+                    <input type="text" id="reg-roll" placeholder="000" maxlength="3" pattern="\d{3}" inputmode="numeric"
+                        required>
+                </div>
             </div>
             <div class="form-group">
                 <label>Name</label>

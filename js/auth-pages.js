@@ -31,16 +31,18 @@ async function handleLogin(e) {
 
 async function handleRegister(e) {
     e.preventDefault();
-    const roll = document.getElementById('reg-roll').value.trim();
+    const rollLast3 = document.getElementById('reg-roll').value.trim();
     const name = document.getElementById('user-name').value.trim();
     const email = document.getElementById('reg-email').value.trim();
     const pass = document.getElementById('reg-password').value;
     const btn = document.getElementById('btn-register');
 
-    if (!/^25\/EE\/\d{3}$/.test(roll)) {
-        showToast("Invalid Roll Format. Use 25/EE/___", "error");
+    if (!/^\d{3}$/.test(rollLast3)) {
+        showToast("Roll number must be exactly 3 digits.", "error");
         return;
     }
+
+    const fullRoll = `25/EE/${rollLast3}`;
 
     btn.disabled = true;
     btn.innerHTML = 'Registering... <i class="ph ph-spinner ph-spin"></i>';
@@ -51,7 +53,7 @@ async function handleRegister(e) {
         options: {
             data: {
                 name: name,
-                roll_number: roll
+                roll_number: fullRoll
             }
         }
     });
