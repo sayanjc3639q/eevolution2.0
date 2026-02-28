@@ -308,7 +308,14 @@ async function renderHomeData() {
     }
 
     const donators = [...currentData.donators]
-        .sort((a, b) => (parseInt(b.amount.replace('₹', '')) || 0) - (parseInt(a.amount.replace('₹', '')) || 0))
+        .filter(d => (parseFloat(d.amount.replace('₹', '')) || 0) > 0)
+        .sort((a, b) => {
+            const amtA = parseFloat(a.amount.replace('₹', '')) || 0;
+            const amtB = parseFloat(b.amount.replace('₹', '')) || 0;
+            if (amtB !== amtA) return amtB - amtA;
+            // Tie-breaker: Latest date first
+            return new Date(b.date) - new Date(a.date);
+        })
         .slice(0, 3);
     document.getElementById('top-donators').innerHTML = donators.map((d) => `
     <li><div><span class="primary-text">${d.name}</span></div><div><span class="text-accent">${d.amount}</span></div></li>
@@ -411,20 +418,26 @@ function renderDonators() {
     const container = document.getElementById('full-donators-list');
     if (!container) return;
 
-    // Aggregate donations by name
-    const totals = currentData.donators.reduce((acc, d) => {
-        const amount = parseInt(d.amount.replace('₹', '').replace(',', '')) || 0;
-        if (acc[d.name]) {
-            acc[d.name].amount += amount;
-            acc[d.name].lastDate = d.date;
-        } else {
-            acc[d.name] = { name: d.name, amount: amount, lastDate: d.date };
-        }
-        return acc;
-    }, {});
+    // Aggregate donations by name (filtering out zero amounts)
+    const totals = currentData.donators
+        .filter(d => (parseInt(d.amount.replace('₹', '').replace(',', '')) || 0) > 0)
+        .reduce((acc, d) => {
+            const amount = parseInt(d.amount.replace('₹', '').replace(',', '')) || 0;
+            if (acc[d.name]) {
+                acc[d.name].amount += amount;
+                acc[d.name].lastDate = d.date;
+            } else {
+                acc[d.name] = { name: d.name, amount: amount, lastDate: d.date };
+            }
+            return acc;
+        }, {});
 
     // Convert to array and sort
-    const sortedDonators = Object.values(totals).sort((a, b) => b.amount - a.amount);
+    const sortedDonators = Object.values(totals).sort((a, b) => {
+        if (b.amount !== a.amount) return b.amount - a.amount;
+        // Tie-breaker: Latest donation date first
+        return new Date(b.lastDate) - new Date(a.lastDate);
+    });
 
     let html = `
     <div class="leaderboard-header">
