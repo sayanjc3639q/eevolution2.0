@@ -151,7 +151,7 @@ async function renderSinglePost(post, prepend = false) {
     const timeString = formatRelativeTime(post.created_at);
 
     const html = `
-    <div id="post-${post.id}" class="feed-item card mb-4" style="border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-surface); box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 0; overflow: hidden; transition: transform 0.2s ease;">
+    <div id="post-${post.id}" class="feed-item card" style="border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-surface); box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 0; overflow: hidden; transition: transform 0.2s ease;">
         <div class="feed-header" style="display:flex; flex-direction: row !important; justify-content:space-between; align-items: center; padding: 1rem 1.25rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-color);">
             <div style="display: flex; align-items: center; gap: 0.9rem;">
                 <div style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #334155; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
@@ -162,6 +162,11 @@ async function renderSinglePost(post, prepend = false) {
                     <span class="feed-date text-muted" style="font-size:0.8rem; margin-top: 3px;">${timeString}</span>
                 </div>
             </div>
+            ${window.currentProfile && window.currentProfile.is_admin ? `
+                <button class="btn-outline btn-small text-danger" title="Delete Post" onclick="deleteFeedPost('${post.id}')" style="padding: 0.4rem; min-width: 32px; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);">
+                    <i class="ph ph-trash" style="font-size: 1.1rem; color: #ef4444;"></i>
+                </button>
+            ` : ''}
         </div>
         <div style="padding: 1.25rem; background: var(--bg-surface);">
             <p style="word-break: break-word; font-size: 1.05rem; line-height: 1.6; color: var(--text-main); margin-bottom: 0; white-space: pre-wrap;">${post.content}</p>
@@ -670,5 +675,30 @@ window.addComment = async function (photoId) {
     } else {
         console.error("Error adding comment", error);
         showToast("Failed to submit comment. Ensure database is configured properly.", "error");
+    }
+};
+
+window.deleteFeedPost = async function (postId) {
+    if (!window.isLoggedIn || !window.currentProfile || !window.currentProfile.is_admin) return;
+
+    if (!confirm("Are you sure you want to delete this post? This action cannot be undone.")) return;
+
+    const { error } = await supabaseClient
+        .from('batch_feed')
+        .delete()
+        .eq('id', postId);
+
+    if (error) {
+        console.error("Delete Error:", error);
+        showToast("Failed to delete post: " + error.message, "error");
+    } else {
+        showToast("Post deleted successfully.", "success");
+        // Remove from UI immediately or refresh
+        const card = document.getElementById(`post-${postId}`);
+        if (card) {
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            setTimeout(() => card.remove(), 300);
+        }
     }
 };
