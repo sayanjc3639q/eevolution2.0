@@ -11,9 +11,9 @@
     },
     {
         "id": 102,
-        "subjectId": "bee",
+        "subjectId": "math",
         "category": "resources",
-        "name": "BEE Question Bank",
+        "name": "Math Question Bank",
         "desc": "Previous year questions and solutions.",
         "uploadedBy": "John Doe",
         "date": "2026-01-15",
@@ -31,9 +31,9 @@
     },
     {
         "id": 201,
-        "subjectId": "bee",
+        "subjectId": "math",
         "category": "digest",
-        "name": "Lec 1: Circuit Basics",
+        "name": "Lec 1: Math Basics",
         "desc": "Class notes by Dr. Smith on Feb 22.",
         "faculty": "Dr. Smith",
         "uploadedBy": "Sayan Maity",
