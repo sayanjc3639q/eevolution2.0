@@ -483,18 +483,21 @@ function setupInteractions() {
         });
     }
 
-    // Theme Switch
+    // Theme Color Switch
     const colorOptions = document.querySelectorAll('.color-option');
-    const savedColor = localStorage.getItem('theme-color');
-    const savedRGB = localStorage.getItem('theme-color-rgb');
+    const defaultColor = '#00e1ff';
+    const defaultRGB = '0, 225, 255';
 
-    if (savedColor) {
-        document.documentElement.style.setProperty('--theme-color', savedColor);
-        document.documentElement.style.setProperty('--theme-color-rgb', savedRGB);
-        colorOptions.forEach(opt => {
-            opt.classList.toggle('active', opt.getAttribute('data-color') === savedColor);
-        });
-    }
+    const savedColor = localStorage.getItem('theme-color') || defaultColor;
+    const savedRGB = localStorage.getItem('theme-color-rgb') || defaultRGB;
+
+    // Apply color immediately
+    document.documentElement.style.setProperty('--theme-color', savedColor);
+    document.documentElement.style.setProperty('--theme-color-rgb', savedRGB);
+
+    colorOptions.forEach(opt => {
+        opt.classList.toggle('active', opt.getAttribute('data-color') === savedColor);
+    });
 
     colorOptions.forEach(option => {
         option.addEventListener('click', () => {
@@ -509,6 +512,40 @@ function setupInteractions() {
 
             colorOptions.forEach(opt => opt.classList.remove('active'));
             option.classList.add('active');
+        });
+    });
+
+    // Theme Mode Switch (Light / Dark / Contrast)
+    const modeButtons = document.querySelectorAll('.theme-mode-btn');
+    const savedMode = localStorage.getItem('theme-mode') || 'dark';
+    let currentBase = localStorage.getItem('theme-base') || 'dark';
+
+    const applyThemeMode = (mode) => {
+        let themeToApply = mode;
+
+        if (mode === 'dark' || mode === 'light') {
+            currentBase = mode;
+            localStorage.setItem('theme-base', mode);
+        } else if (mode === 'high-contrast') {
+            // Shift to 100% based on active base
+            themeToApply = currentBase === 'light' ? 'light-hc' : 'dark-hc';
+        }
+
+        document.documentElement.setAttribute('data-theme', themeToApply);
+
+        modeButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-theme') === mode);
+        });
+        localStorage.setItem('theme-mode', mode);
+    };
+
+    // Initial Apply
+    applyThemeMode(savedMode);
+
+    modeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.getAttribute('data-theme');
+            applyThemeMode(mode);
         });
     });
 }

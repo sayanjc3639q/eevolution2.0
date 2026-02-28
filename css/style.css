@@ -1,13 +1,13 @@
-/* Base Variables */
+/* Base Variables (Soft Dark Theme) */
 :root {
   --bg-dark: #0f1115;
   --bg-panel: #16181d;
   --bg-surface: #1e2029;
   --bg-hover: #292d39;
 
-  --text-main: #f3f4f6;
-  --text-muted: #9ca3af;
-  --text-inverse: #ffffff;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-inverse: #000000;
 
   --theme-color: #00e1ff;
   --theme-color-rgb: 0, 225, 255;
@@ -21,6 +21,50 @@
   --transition: all 0.3s ease;
 
   --sidebar-width: 280px;
+
+  /* Hero Section Specifics */
+  --hero-bg: linear-gradient(135deg, rgba(var(--theme-color-rgb), 0.1), rgba(var(--theme-color-rgb), 0.05));
+  --hero-glow: radial-gradient(circle at center, rgba(var(--theme-color-rgb), 0.1) 0%, transparent 60%);
+}
+
+/* Soft Light Theme Variables */
+[data-theme="light"] {
+  --bg-dark: #f1f3f6;
+  --bg-panel: #ffffff;
+  --bg-surface: #f8fafc;
+  --bg-hover: #e2e8f0;
+  --text-main: #1a202c;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+
+  --hero-bg: linear-gradient(135deg, rgba(var(--theme-color-rgb), 0.05), rgba(var(--theme-color-rgb), 0.02));
+  --hero-glow: radial-gradient(circle at center, rgba(var(--theme-color-rgb), 0.05) 0%, transparent 60%);
+}
+
+/* 100% Dark (High Contrast) */
+[data-theme="dark-hc"] {
+  --bg-dark: #000000;
+  --bg-panel: #000000;
+  --bg-surface: #0a0a0a;
+  --text-main: #ffffff;
+  --text-muted: #ffff00;
+  --border-color: #333333;
+
+  --hero-bg: #000000;
+  --hero-glow: none;
+}
+
+/* 100% Light (High Contrast) */
+[data-theme="light-hc"] {
+  --bg-dark: #ffffff;
+  --bg-panel: #ffffff;
+  --bg-surface: #f9fafb;
+  --text-main: #000000;
+  --text-muted: #0000ff;
+  --border-color: #000000;
+
+  --hero-bg: #ffffff;
+  --hero-glow: none;
 }
 
 html {
@@ -159,6 +203,12 @@ ol {
   background-color: rgba(var(--theme-color-rgb), 0.1);
 }
 
+.btn-outline.active {
+  background-color: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+
 /* Sidebar */
 .sidebar {
   width: var(--sidebar-width);
@@ -202,20 +252,23 @@ ol {
 }
 
 .nav-links li a {
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 1.5rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  color: var(--text-muted);
+  gap: 1rem;
+  color: var(--text-main);
+  opacity: 0.7;
   transition: var(--transition);
   font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .nav-links li a:hover,
 .nav-links li a.active {
   background-color: var(--bg-surface);
-  color: var(--electric-blue);
-  border-left: 3px solid var(--electric-blue);
+  color: var(--theme-color);
+  opacity: 1;
+  border-left: 4px solid var(--theme-color);
 }
 
 .nav-links li a i {
@@ -418,7 +471,7 @@ input[type="text"]:focus {
 .hero {
   text-align: center;
   padding: 4rem 2rem;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(0, 225, 255, 0.05));
+  background: var(--hero-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   margin-bottom: 3rem;
@@ -433,7 +486,7 @@ input[type="text"]:focus {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at center, rgba(0, 225, 255, 0.1) 0%, transparent 60%);
+  background: var(--hero-glow);
   z-index: 0;
   animation: pulse 10s infinite alternate;
 }
@@ -1331,11 +1384,12 @@ input[type="text"]:focus {
 @media (max-width: 900px) {
   .sidebar {
     transform: translateX(-100%);
-    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
   }
 
   .sidebar.open {
     transform: translateX(0);
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.3);
   }
 
   .main-content {
