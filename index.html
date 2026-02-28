@@ -628,6 +628,19 @@
               <p class="donation-desc mt-3">This platform is self-funded. Your contribution — however small — helps keep
                 it running. Here's a transparent breakdown of costs:</p>
 
+              <!-- Funding Progress Bar -->
+              <div class="funding-progress-container mb-4">
+                <div class="progress-labels">
+                  <span class="progress-text">Funding Status</span>
+                  <span class="progress-stats"><strong id="collected-amount">₹0</strong> / <span
+                      id="total-cost">₹1,798</span></span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div id="funding-progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <p class="progress-caption" id="progress-caption">Loading funding status...</p>
+              </div>
+
               <div class="expense-table-container">
                 <table class="expense-table">
                   <thead>
@@ -661,13 +674,20 @@
 
               <div class="upi-section">
                 <p class="upi-label">DONATE VIA UPI</p>
-                <div class="upi-copy-box">
-                  <span id="upi-id">sayanmaity@upi</span>
-                  <button class="copy-btn" onclick="copyUPI()"><i class="ph ph-copy"></i> Copy</button>
+
+                <div id="upi-auth-gate" class="center-content p-4">
+                  <i class="ph ph-lock-key" style="font-size: 2.5rem; color: var(--text-muted); opacity: 0.5;"></i>
+                  <p class="text-muted mt-2">Sign in to access donation options</p>
+                  <a href="auth.html" class="btn-primary btn-small mt-3">Sign In</a>
                 </div>
-                <div class="upi-apps mt-3">
-                  <button class="btn-gpay"><i class="ph ph-google-logo"></i> GPay</button>
-                  <button class="btn-phonepe"><i class="ph ph-phone"></i> PhonePe</button>
+
+                <div id="upi-action-area" class="upi-apps hidden">
+                  <button class="btn-gpay" onclick="openUPI('gpay')">
+                    <i class="ph ph-google-logo"></i> GPay
+                  </button>
+                  <button class="btn-phonepe" onclick="openUPI('phonepe')">
+                    <i class="ph ph-phone"></i> PhonePe
+                  </button>
                 </div>
               </div>
             </div>

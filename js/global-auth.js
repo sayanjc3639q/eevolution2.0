@@ -10,15 +10,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function checkAuth() {
     const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-    // UI Elements targets
     const navUnauth = document.getElementById('unauth-navbar-area');
     const navAuth = document.getElementById('auth-navbar-area');
     const feedComposer = document.getElementById('feed-composer');
     const profileSectionAuth = document.getElementById('profile-details');
     const profileSectionUnauth = document.querySelector('.not-logged-in');
+    const upiGate = document.getElementById('upi-auth-gate');
+    const upiAction = document.getElementById('upi-action-area');
 
     if (error || !session) {
         // Public State Context
+        if (upiGate) upiGate.classList.remove('hidden');
+        if (upiAction) upiAction.classList.add('hidden');
+
         if (navUnauth) navUnauth.classList.remove('hidden');
         if (navAuth) navAuth.classList.add('hidden');
         if (feedComposer) feedComposer.classList.add('hidden');
@@ -32,6 +36,9 @@ async function checkAuth() {
         // Private State Context
         currentSessionUser = session.user;
         window.isLoggedIn = true;
+
+        if (upiGate) upiGate.classList.add('hidden');
+        if (upiAction) upiAction.classList.remove('hidden');
 
         if (navUnauth) navUnauth.classList.add('hidden');
         if (navAuth) navAuth.classList.remove('hidden');
@@ -240,34 +247,34 @@ function initAvatarGrid(currentUrl) {
     if (!grid) return;
 
     const seeds = [
-  // --- Your Original 20 Seeds ---
-  "Felix", "Aneka", "Jack", "Luna", "Oliver", 
-  "Sophia", "Zoe", "Leo", "Milo", "Sasha", 
-  "Max", "Mia", "Toby", "Coco", "Ruby", 
-  "Nala", "Simba", "Bear", "Lucky", "Daisy",
+        // --- Your Original 20 Seeds ---
+        "Felix", "Aneka", "Jack", "Luna", "Oliver",
+        "Sophia", "Zoe", "Leo", "Milo", "Sasha",
+        "Max", "Mia", "Toby", "Coco", "Ruby",
+        "Nala", "Simba", "Bear", "Lucky", "Daisy",
 
-  // --- 40 Diverse Male & Female Seeds ---
-  "Priya", "Aanya", "Fatima", "Mei", "Aisha", 
-  "Nia", "Kavya", "Ananya", "Chloe", "Yuki", 
-  "Zara", "Isabella", "Riya", "Amina", "Leila", 
-  "Nina", "Maya", "Sita", "Elena", "Naomi",
-  "Aarav", "Kabir", "Tenzin", "Omar", "Kenji", 
-  "Liam", "Jamal", "Mateo", "Ravi", "Siddharth", 
-  "Zain", "Diego", "Chen", "Kofi", "Ivan", 
-  "Rahul", "Tariq", "Ali", "Carlos", "Vikram",
+        // --- 40 Diverse Male & Female Seeds ---
+        "Priya", "Aanya", "Fatima", "Mei", "Aisha",
+        "Nia", "Kavya", "Ananya", "Chloe", "Yuki",
+        "Zara", "Isabella", "Riya", "Amina", "Leila",
+        "Nina", "Maya", "Sita", "Elena", "Naomi",
+        "Aarav", "Kabir", "Tenzin", "Omar", "Kenji",
+        "Liam", "Jamal", "Mateo", "Ravi", "Siddharth",
+        "Zain", "Diego", "Chen", "Kofi", "Ivan",
+        "Rahul", "Tariq", "Ali", "Carlos", "Vikram",
 
-  // --- 50 New Gamified & Cute Seeds ---
-  "LunaBean", "MiloPixel", "CocoByte", "NovaPuff", "KikoStar", 
-  "TinyOrbit", "MochiDot", "PixelMochi", "NoriCloud", "PikoPop", 
-  "BobaSpark", "MintyNova", "DaisyBit", "SunnyByte", "PeachyDot", 
-  "LumaBun", "TofuPop", "BerryLoop", "PandaDot", "CherryByte", 
-  "KiraGlow", "NekoBit", "MapleStar", "ZuzuPixel", "HoneyDot", 
-  "CloverPop", "BunnyByte", "MochiNova", "KiwiSpark", "SoraDot", 
-  "PixelPanda", "MintGlow", "BibiStar", "AstroBean", "PeachNova", 
-  "LiloPixel", "NiniPop", "FrostyDot", "DodoByte", "CupcakeBit", 
-  "OrbitMuffin", "JellyPixel", "SukiGlow", "BlipStar", "PuddingDot", 
-  "TwinkleBit", "MangoGlow", "SnuggleDot", "CozyNova", "LumaByte"
-];
+        // --- 50 New Gamified & Cute Seeds ---
+        "LunaBean", "MiloPixel", "CocoByte", "NovaPuff", "KikoStar",
+        "TinyOrbit", "MochiDot", "PixelMochi", "NoriCloud", "PikoPop",
+        "BobaSpark", "MintyNova", "DaisyBit", "SunnyByte", "PeachyDot",
+        "LumaBun", "TofuPop", "BerryLoop", "PandaDot", "CherryByte",
+        "KiraGlow", "NekoBit", "MapleStar", "ZuzuPixel", "HoneyDot",
+        "CloverPop", "BunnyByte", "MochiNova", "KiwiSpark", "SoraDot",
+        "PixelPanda", "MintGlow", "BibiStar", "AstroBean", "PeachNova",
+        "LiloPixel", "NiniPop", "FrostyDot", "DodoByte", "CupcakeBit",
+        "OrbitMuffin", "JellyPixel", "SukiGlow", "BlipStar", "PuddingDot",
+        "TwinkleBit", "MangoGlow", "SnuggleDot", "CozyNova", "LumaByte"
+    ];
 
     grid.innerHTML = seeds.map(seed => {
         const url = `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}`;

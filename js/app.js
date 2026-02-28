@@ -37,6 +37,7 @@ async function initializeApp() {
     await renderHomeData();
     renderStudySection();
     renderUpdates(activeSubTabs.updates);
+    renderDonationProgress();
 
     // Initial state setup for history API
     if (!history.state) {
@@ -463,6 +464,34 @@ function renderDonators() {
     container.innerHTML = html;
 }
 
+function renderDonationProgress() {
+    if (!currentData || !currentData.donators) return;
+
+    const totalCost = 1798;
+    const collected = currentData.donators.reduce((sum, d) => {
+        const amount = parseFloat(d.amount.replace('₹', '').replace(',', '')) || 0;
+        return sum + amount;
+    }, 0);
+
+    const percentage = Math.min((collected / totalCost) * 100, 100);
+    const roundedPercentage = percentage.toFixed(1);
+
+    const collectedEl = document.getElementById('collected-amount');
+    const fillEl = document.getElementById('funding-progress-fill');
+    const captionEl = document.getElementById('progress-caption');
+
+    if (collectedEl) collectedEl.innerText = `₹${collected.toLocaleString()}`;
+    if (fillEl) fillEl.style.width = `${percentage}%`;
+    if (captionEl) {
+        if (percentage >= 100) {
+            captionEl.innerHTML = `<span class="ph ph-check-circle"></span> Goal Reached! Costs are fully covered for this year.`;
+            captionEl.style.color = "var(--theme-color)";
+        } else {
+            captionEl.innerText = `${roundedPercentage}% of annual costs covered. Help us reach our goal!`;
+        }
+    }
+}
+
 /* ================= INTERACTIONS / AUTH ================= */
 
 function setupInteractions() {
@@ -550,21 +579,7 @@ function setupInteractions() {
     });
 }
 
-function copyUPI() {
-    const upiId = document.getElementById('upi-id').innerText;
-    navigator.clipboard.writeText(upiId).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<i class="ph ph-check"></i> Copied!';
-        btn.classList.add('text-accent');
-        setTimeout(() => {
-            btn.innerHTML = originalHtml;
-            btn.classList.remove('text-accent');
-        }, 2000);
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-    });
-}
+
 
 /* ================= MOOCS LOAD ENGINE ================= */
 
@@ -637,3 +652,14 @@ async function loadMoocsTable() {
     }
 }
 
+
+/* ================= SECURE PAYMENT ENGINE ================= */
+
+window.openUPI = function (method) {
+    let pa = "jcsayan7@okicici"; // GPay (default)
+    if (method === 'phonepe') {
+        pa = "7363932735@ybl";
+    }
+    const upiUrl = `upi://pay?pa=${pa}&pn=Sayan%20Maity&tn=Donation%20for%20EEvolution&cu=INR`;
+    window.location.href = upiUrl;
+};
