@@ -203,10 +203,26 @@ ol {
   background-color: rgba(var(--theme-color-rgb), 0.1);
 }
 
-.btn-outline.active {
-  background-color: var(--accent-color);
-  color: #fff;
-  border-color: var(--accent-color);
+.btn-outline.liked {
+  background-color: rgba(var(--theme-color-rgb), 0.15);
+  color: var(--theme-color);
+  border-color: var(--theme-color);
+  font-weight: 700;
+}
+
+.btn-outline.disliked {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: #ef4444;
+  font-weight: 700;
+}
+
+[data-theme="light"] .btn-outline.liked {
+  background-color: rgba(var(--theme-color-rgb), 0.1);
+}
+
+[data-theme="light"] .btn-outline.disliked {
+  background-color: rgba(239, 68, 68, 0.08);
 }
 
 /* Sidebar */
@@ -441,10 +457,34 @@ input[type="text"]:focus {
 }
 
 .content-container {
-  padding: 2rem 3rem;
+  padding: 1.25rem 2rem;
   flex-grow: 1;
   position: relative;
   z-index: 5;
+}
+
+@media (min-width: 1200px) {
+  .content-container {
+    padding: 3rem 18%;
+    /* Significantly increased side padding for desktop gallery feel */
+  }
+}
+
+/* Fix for gallery/memory images on desktop to show full 4:3 aspect ratio */
+@media (min-width: 901px) {
+  .gallery-item {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .gallery-item img {
+    max-height: 75vh !important;
+    /* Allow up to 75% of screen height */
+    object-fit: contain !important;
+    /* Ensure full visibility */
+    background: #000;
+  }
 }
 
 .page-section {

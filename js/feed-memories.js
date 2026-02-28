@@ -150,12 +150,12 @@ async function renderSinglePost(post, prepend = false) {
             <p style="word-break: break-word; font-size: 1.05rem; line-height: 1.6; color: var(--text-main); margin-bottom: 0; white-space: pre-wrap;">${post.content}</p>
         </div>
         <div class="feed-actions" style="display:flex; gap:0.75rem; padding: 0.8rem 1.25rem; border-top: 1px solid var(--border-color); background: var(--bg-surface);">
-            <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
-                <i class="${hasLiked ? 'ph-fill text-accent' : 'ph'} ph-thumbs-up" style="font-size: 1.15rem;"></i> 
+            <button class="btn-outline btn-small ${hasLiked ? 'liked' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
+                <i class="${hasLiked ? 'ph-fill' : 'ph'} ph-thumbs-up" style="font-size: 1.15rem;"></i> 
                 <span id="likes-count-${post.id}" style="font-weight: 600;">${post.likes || 0}</span>
             </button>
-            <button class="btn-outline btn-small ${hasDisliked ? 'active' : ''}" onclick="handleFeedAction('${post.id}', 'dislikes')" style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
-                <i class="${hasDisliked ? 'ph-fill text-danger' : 'ph'} ph-thumbs-down" style="font-size: 1.15rem;"></i> 
+            <button class="btn-outline btn-small ${hasDisliked ? 'disliked' : ''}" onclick="handleFeedAction('${post.id}', 'dislikes')" style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
+                <i class="${hasDisliked ? 'ph-fill' : 'ph'} ph-thumbs-down" style="font-size: 1.15rem;"></i> 
                 <span id="dislikes-count-${post.id}" style="font-weight: 600;">${post.dislikes || 0}</span>
             </button>
         </div>
@@ -445,8 +445,8 @@ window.renderMemories = async function () {
             <div class="gallery-item-content" style="padding: 1rem;">
                 <p style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--text-main);"><strong>${m.caption}</strong></p>
                 <div class="gallery-actions" style="display:flex; gap:0.5rem; justify-content: space-between;">
-                    <button class="btn-outline btn-small ${hasLiked ? 'active' : ''}" onclick="likeMemory('${m.id}')" ${hasLiked ? 'disabled' : ''} style="flex: 1; justify-content: center;">
-                        <i class="${hasLiked ? 'ph-fill text-accent' : 'ph'} ph-heart"></i> ${lCount} Likes
+                    <button class="btn-outline btn-small ${hasLiked ? 'liked' : ''}" onclick="likeMemory('${m.id}')" ${hasLiked ? 'disabled' : ''} style="flex: 1; justify-content: center;">
+                        <i class="${hasLiked ? 'ph-fill' : 'ph'} ph-heart"></i> ${lCount} Likes
                     </button>
                     <button class="btn-outline btn-small" onclick="toggleComments('${m.id}')" style="flex: 1; justify-content: center;">Comments <i class="ph ph-chat-centered-text"></i></button>
                 </div>
