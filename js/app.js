@@ -305,6 +305,13 @@ async function renderHomeData() {
             document.getElementById('top-contributors').innerHTML = profiles.map((s, i) => `
                 <li><div><span class="primary-text">#${i + 1} ${s.name || 'Anonymous'}</span><span class="secondary-text">${s.roll_number}</span></div><div style="text-align:right"><span class="text-blue"><i class="ph ph-upload"></i> ${s.upload_count || 0}</span></div></li>
             `).join('');
+
+            // See more contributors link
+            document.getElementById('top-contributors-footer').innerHTML = `
+                <button class="btn-outline btn-small w-100" onclick="activeSubTabs['community'] = 'contributors'; navigateTo('community');">
+                    See More Contributors <i class="ph ph-arrow-right"></i>
+                </button>
+            `;
         }
     }
 
@@ -317,10 +324,18 @@ async function renderHomeData() {
             // Tie-breaker: Latest date first
             return new Date(b.date) - new Date(a.date);
         })
-        .slice(0, 3);
+        .slice(0, 4);
+
     document.getElementById('top-donators').innerHTML = donators.map((d) => `
     <li><div><span class="primary-text">${d.name}</span></div><div><span class="text-accent">${d.amount}</span></div></li>
   `).join('');
+
+    // See more donators link
+    document.getElementById('top-donators-footer').innerHTML = `
+        <button class="btn-outline btn-small w-100" onclick="activeSubTabs['support'] = 'donators'; navigateTo('support');">
+            See More Donators <i class="ph ph-hand-heart"></i>
+        </button>
+    `;
 
     // Render Reviews
     if (currentData.reviews) {

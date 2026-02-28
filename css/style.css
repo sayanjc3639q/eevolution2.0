@@ -457,17 +457,10 @@ input[type="text"]:focus {
 }
 
 .content-container {
-  padding: 1.25rem 2rem;
+  padding: 2rem 3rem;
   flex-grow: 1;
   position: relative;
   z-index: 5;
-}
-
-@media (min-width: 1200px) {
-  .content-container {
-    padding: 3rem 18%;
-    /* Significantly increased side padding for desktop gallery feel */
-  }
 }
 
 /* Fix for gallery/memory images on desktop to show full 4:3 aspect ratio */
@@ -674,6 +667,13 @@ input[type="text"]:focus {
   align-items: center;
   gap: 0.5rem;
   font-size: 1.1rem;
+}
+
+.panel-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  background: rgba(var(--theme-color-rgb), 0.02);
+  text-align: center;
 }
 
 .list-group {
