@@ -142,6 +142,14 @@ async function handleRegister(e) {
         return;
     }
 
+    // 2. Heuristic Email Validation
+    if (!isEmailGenuine(name, email)) {
+        showToast("Please use a personalized email address consisting of your name (e.g., firstname@gmail.com).", "error");
+        btn.disabled = false;
+        btn.innerHTML = 'Register <i class="ph ph-user-plus"></i>';
+        return;
+    }
+
     btn.innerHTML = 'Registering... <i class="ph ph-spinner ph-spin"></i>';
 
     const { data, error } = await supabaseClient.auth.signUp({
@@ -187,5 +195,23 @@ async function handleForgot(e) {
     }
     btn.disabled = false;
     btn.innerHTML = 'Send Reset Link <i class="ph ph-envelope-simple"></i>';
+}
+
+/**
+ * Heuristic Check: Ensures the email looks personalized to the student.
+ */
+function isEmailGenuine(fullName, email) {
+    if (!fullName || !email) return false;
+    const cleanName = fullName.toLowerCase().trim();
+    const emailPrefix = email.toLowerCase().split("@")[0];
+
+    const nameParts = cleanName.split(" ");
+    const firstName = nameParts[0];
+    const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+
+    const hasFirstName = emailPrefix.includes(firstName);
+    const hasLastName = lastName ? emailPrefix.includes(lastName) : false;
+
+    return hasFirstName || hasLastName;
 }
 
