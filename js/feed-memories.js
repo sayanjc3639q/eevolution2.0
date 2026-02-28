@@ -1,5 +1,22 @@
 // Centralized Feed & Memories UI logic interacting with Supabase
 
+/* ================= ABUSIVE LANGUAGE FILTER ================= */
+const BAD_WORDS_LIST = [
+    // English & Chat Phonetics
+    'fuck', 'shit', 'asshole', 'bastard', 'bitch', 'dick', 'pussy', 'slut', 'whore', 'cunt', 'faggot', 'nigger', 'dumbass', 'retard', 'fucker', 'fck', 'shit', 'sh*t', 'b*tch', 'stfu', 'f*ck', 'd*ck',
+    // Hindi (Phonetic & Shortened)
+    'chutiya', 'bhenchod', 'madarchod', 'gandu', 'harami', 'kamine', 'behenchod', 'saala', 'sala', 'randi', 'bhosadi', 'bhosadike', 'maderchod', 'terimaaki', 'lodu', 'gand', 'gaand', 'muth', 'muthiya', 'bakchod', 'chinaal', 'bc', 'mc', 'bsdk', 'ctya', 'mncd', 'bncd', 'gndu', 'bkchod', 'mcbc',
+    // Bengali (Phonetic & Shortened)
+    'khanki', 'magi', 'shala', 'sala', 'bal', 'lyadh', 'bokachoda', 'araal', 'khankimagi', 'nodi', 'jhant', 'baal', 'gadha', 'haraami', 'badmash', 'chuitya', 'pagol', 'khnk', 'mg', 'bkcd', 'jhnt'
+];
+
+function containsAbusiveLanguage(text) {
+    if (!text) return false;
+    const cleanText = text.toLowerCase().replace(/[^\w\s\u0980-\u09FF\u0900-\u097F]/g, ''); // Keep English, Bengali, Hindi chars
+    const words = cleanText.split(/\s+/);
+    return words.some(word => BAD_WORDS_LIST.includes(word));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Word counter for feed composer
     const feedText = document.getElementById('feed-text-input');
@@ -206,6 +223,12 @@ window.submitFeedPost = async function () {
     }
     if (!text) {
         showToast("Please write something to post.", "error");
+        return;
+    }
+
+    // Abusive Language Filter
+    if (containsAbusiveLanguage(text)) {
+        showToast("Post contains restricted language. Please keep it respectful.", "error");
         return;
     }
 
@@ -630,6 +653,12 @@ window.addComment = async function (photoId) {
 
     if (!text) {
         showToast("Enter comment text.", "error"); return;
+    }
+
+    // Abusive Language Filter
+    if (containsAbusiveLanguage(text)) {
+        showToast("Comment contains restricted language.", "error");
+        return;
     }
 
     const { error } = await supabaseClient
