@@ -1,7 +1,5 @@
 # EEvolution 2.0 | Digital Hub for Batch 2
 
-![EEvolution 2.0 Banner](https://api.dicebear.com/9.x/shapes/svg?seed=EEvolution2&backgroundColor=00e1ff)
-
 **EEvolution 2.0** is a centralized, live digital headquarters designed for students of the **Electrical Engineering Batch 2 at Haldia Institute of Technology**.
 
 ---
