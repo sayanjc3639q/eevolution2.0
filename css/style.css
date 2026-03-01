@@ -978,7 +978,6 @@ input[type="text"]:focus {
 
 .subject-card:hover {
   border-color: var(--electric-blue);
-  transform: translateY(-5px);
   background-color: var(--bg-surface);
 }
 
@@ -2457,7 +2456,6 @@ input[type="text"]:focus {
   background: var(--theme-color) !important;
   color: var(--bg-dark) !important;
   box-shadow: 0 0 15px rgba(var(--theme-color-rgb), 0.4);
-  transform: scale(1.03);
 }
 
 .file-view-btn i {

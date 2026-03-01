@@ -34,7 +34,7 @@
     },
     {
         "id": 201,
-        "subjectId": "",
+        "subjectId": "math",
         "category": "digest",
         "chapter": "Unit 2: Calculus",
         "name": "Lec 1: Math Basics",
@@ -43,5 +43,17 @@
         "uploadedBy": "Sayan Maity",
         "date": "2026-02-22",
         "link": "#"
+    },
+    {
+        "id": 1001,
+        "subjectId": "chemistry",
+        "category": "modules",
+        "chapter": "Module 1 : Thermodynamics",
+        "name": "Thermodynamics Practice Set",
+        "desc": "Practice set for Thermodynamics.",
+        "uploadedBy": "Sayantan Bhowmik",
+        "date": "2026-03-01",
+        "link": "https://drive.google.com/file/d/1JMj58ZPh8ZTToA_LS4AU5XYVxjFQ2ijo/view?usp=drive_link"
     }
+    
 ]
