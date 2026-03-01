@@ -2,6 +2,7 @@
 let currentData = null;
 let loggedInUser = null;
 let selectedSubject = null;
+let selectedChapter = null;
 let activeSubTabs = {
     study: 'modules',
     updates: 'notices',
@@ -223,9 +224,16 @@ function renderStudySection() {
     const subCategory = activeSubTabs.study;
     const backBtn = document.getElementById('study-back-btn');
 
-    if (selectedSubject) {
+    if (selectedChapter) {
         backBtn.classList.remove('hidden');
-        renderMaterialCards(subCategory, selectedSubject);
+        backBtn.querySelector('button').innerHTML = `<i class="ph ph-arrow-left"></i> Back to Chapters`;
+        backBtn.querySelector('button').setAttribute('onclick', 'studyGoBack()');
+        renderMaterialCards(subCategory, selectedSubject, selectedChapter);
+    } else if (selectedSubject) {
+        backBtn.classList.remove('hidden');
+        backBtn.querySelector('button').innerHTML = `<i class="ph ph-arrow-left"></i> Back to Subjects`;
+        backBtn.querySelector('button').setAttribute('onclick', 'studyGoBack()');
+        renderChapterCards(subCategory, selectedSubject);
     } else {
         backBtn.classList.add('hidden');
         renderSubjectCards(subCategory);
@@ -256,20 +264,58 @@ function renderSubjectCards(category) {
 
 function selectSubject(id) {
     selectedSubject = id;
+    selectedChapter = null;
     renderStudySection();
 }
 
-function backToSubjects() {
-    selectedSubject = null;
+function selectChapter(chapterName) {
+    selectedChapter = chapterName;
     renderStudySection();
 }
 
-function renderMaterialCards(category, subjectId) {
+function studyGoBack() {
+    if (selectedChapter) {
+        selectedChapter = null;
+    } else {
+        selectedSubject = null;
+    }
+    renderStudySection();
+}
+
+function renderChapterCards(category, subjectId) {
     const container = document.getElementById('study-content');
+    if (!currentData || !currentData.studyMaterials) return;
+
+    // Filter items for this subject/category and extract unique chapters
     const items = currentData.studyMaterials.filter(m => m.category === category && m.subjectId === subjectId);
 
+    // Get unique chapters, filter out undefined/empty
+    const chapters = [...new Set(items.map(m => m.chapter || 'Uncategorized'))];
+
+    if (chapters.length === 0) {
+        container.innerHTML = '<div class="empty-state">No chapters found for this subject.</div>';
+        return;
+    }
+
+    container.innerHTML = chapters.map(ch => `
+    <div class="subject-card chapter-card" onclick="selectChapter('${ch.replace(/'/g, "\\'")}')">
+      <i class="ph ph-folder-open"></i>
+      <h3>${ch}</h3>
+      <p class="text-muted">${items.filter(m => (m.chapter || 'Uncategorized') === ch).length} Documents</p>
+    </div>
+  `).join('');
+}
+
+function renderMaterialCards(category, subjectId, chapterName) {
+    const container = document.getElementById('study-content');
+    const items = currentData.studyMaterials.filter(m =>
+        m.category === category &&
+        m.subjectId === subjectId &&
+        (m.chapter || 'Uncategorized') === chapterName
+    );
+
     if (items.length === 0) {
-        container.innerHTML = '<div class="empty-state">No materials found for this subject yet.</div>';
+        container.innerHTML = '<div class="empty-state">No materials found in this chapter.</div>';
         return;
     }
 

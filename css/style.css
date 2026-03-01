@@ -2408,6 +2408,11 @@ input[type="text"]:focus {
   box-shadow: 0 10px 25px rgba(var(--theme-color-rgb), 0.1);
 }
 
+.chapter-card i {
+  color: var(--theme-color);
+  opacity: 0.8;
+}
+
 .file-card h4 {
   margin-bottom: 0.75rem;
   color: var(--text-main);

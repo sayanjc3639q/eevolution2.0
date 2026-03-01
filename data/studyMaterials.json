@@ -1,8 +1,9 @@
 [
     {
         "id": 101,
-        "subjectId": "bee",
+        "subjectId": "",
         "category": "modules",
+        "chapter": "Unit 1: DC Circuits",
         "name": "BEE Module 1: DC Circuits",
         "desc": "Analysis of DC circuits using KCL, KVL and Network Theorems.",
         "uploadedBy": "Sayan Maity",
@@ -11,8 +12,9 @@
     },
     {
         "id": 102,
-        "subjectId": "math",
+        "subjectId": "",
         "category": "resources",
+        "chapter": "PYQs",
         "name": "Math Question Bank",
         "desc": "Previous year questions and solutions.",
         "uploadedBy": "John Doe",
@@ -21,8 +23,9 @@
     },
     {
         "id": 103,
-        "subjectId": "bee_lab",
+        "subjectId": "",
         "category": "labs",
+        "chapter": "BEE Experiment",
         "name": "Exp 1: KCL Verification",
         "desc": "Manual and sample record for Experiment 1.",
         "uploadedBy": "Alice Smith",
@@ -31,8 +34,9 @@
     },
     {
         "id": 201,
-        "subjectId": "math",
+        "subjectId": "",
         "category": "digest",
+        "chapter": "Unit 2: Calculus",
         "name": "Lec 1: Math Basics",
         "desc": "Class notes by Dr. Smith on Feb 22.",
         "faculty": "Dr. Smith",
