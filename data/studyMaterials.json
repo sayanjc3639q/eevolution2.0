@@ -17,7 +17,7 @@
         "desc": "Previous year questions and solutions.",
         "uploadedBy": "John Doe",
         "date": "2026-01-15",
-        "link": "#"
+        "link": "https://drive.google.com/file/d/10QCZqGmd7b_eURXFfLl0_sf52fw5J1FB/view?usp=sharing"
     },
     {
         "id": 103,
@@ -39,5 +39,16 @@
         "uploadedBy": "Sayan Maity",
         "date": "2026-02-22",
         "link": "#"
+    },
+    {
+        "id": "",
+        "subjectId": "",
+        "category": "",
+        "name": "",
+        "desc": "",
+        "faculty": "",
+        "uploadedBy": "",
+        "date": "",
+        "link": ""
     }
 ]

@@ -2272,3 +2272,178 @@ input[type="text"]:focus {
 .avatar-grid::-webkit-scrollbar-thumb {
   background: var(--border-color);
 }
+
+/* PDF Viewer Modal Styles */
+.pdf-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+
+.pdf-modal.hidden {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pdf-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.pdf-modal-container {
+  position: relative;
+  width: 90%;
+  max-width: 1100px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-modal-header {
+  padding: 1rem 1.5rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pdf-modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--theme-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 1rem;
+}
+
+.pdf-close-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pdf-close-btn:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.pdf-modal-body {
+  height: 80vh;
+  background: #1a1a1a;
+}
+
+.pdf-modal-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.pdf-modal-footer {
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .pdf-modal-container {
+    width: 95%;
+    height: 95vh;
+  }
+}
+
+/* File Card Theme Implementation */
+.file-card {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  border-radius: 12px;
+  position: relative;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.file-card:hover {
+  border-color: var(--theme-color);
+  box-shadow: 0 10px 25px rgba(var(--theme-color-rgb), 0.1);
+}
+
+.file-card h4 {
+  margin-bottom: 0.75rem;
+  color: var(--text-main);
+  font-size: 1.15rem;
+}
+
+.file-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.file-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: auto;
+}
+
+.file-view-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 0.6rem 1.25rem !important;
+  font-size: 0.9rem !important;
+  border-radius: 6px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--theme-color);
+  border: 1.5px solid var(--theme-color);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.file-view-btn:hover {
+  background: var(--theme-color) !important;
+  color: var(--bg-dark) !important;
+  box-shadow: 0 0 15px rgba(var(--theme-color-rgb), 0.4);
+  transform: scale(1.03);
+}
+
+.file-view-btn i {
+  font-size: 1.1rem;
+}

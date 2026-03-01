@@ -281,8 +281,8 @@ function renderMaterialCards(category, subjectId) {
          <span>By: ${item.uploadedBy}</span>
          <span>${item.date} ${item.faculty ? `| ${item.faculty}` : ''}</span>
       </div>
-      <div class="file-actions">
-         <a href="${item.link}" class="btn-outline">${category === 'digest' ? 'View Notes' : 'Download'} <i class="ph ph-arrow-down"></i></a>
+      <div class="file-actions" style="margin-top: 1.5rem;">
+         <button onclick="openPdfModal('${item.name.replace(/'/g, "\\'")}', '${item.link}')" class="btn-outline file-view-btn">View Document <i class="ph ph-eye"></i></button>
       </div>
     </div>
   `).join('');
@@ -678,3 +678,49 @@ window.openUPI = function (method) {
     const upiUrl = `upi://pay?pa=${pa}&pn=Sayan%20Maity&tn=Donation%20for%20EEvolution&cu=INR`;
     window.location.href = upiUrl;
 };
+
+/* ================= PDF VIEWER MODAL LOGIC ================= */
+
+window.openPdfModal = function (title, previewLink) {
+    const modal = document.getElementById('pdf-modal');
+    const modalTitle = document.getElementById('pdf-modal-title');
+    const iframe = document.getElementById('pdf-iframe');
+
+    if (!modal || !iframe) return;
+
+    // Handle Google Drive links to ensure they open in "preview" mode if it's a view link
+    let refinedLink = previewLink;
+    if (previewLink && previewLink.includes('drive.google.com') && previewLink.includes('/view')) {
+        // Ensuring it uses the /preview endpoint for cleaner embedding
+        refinedLink = previewLink.replace('/view', '/preview');
+    }
+
+    if (modalTitle) modalTitle.innerText = title;
+    iframe.src = refinedLink;
+    modal.classList.remove('hidden');
+
+    // Prevent background scrolling
+    document.body.style.overflow = 'hidden';
+};
+
+window.closePdfModal = function () {
+    const modal = document.getElementById('pdf-modal');
+    const iframe = document.getElementById('pdf-iframe');
+
+    if (!modal || !iframe) return;
+
+    modal.classList.add('hidden');
+    iframe.src = ''; // Stop loading content
+
+    // Re-enable scrolling
+    document.body.style.overflow = 'auto';
+};
+
+// Initialize Modal Close Events
+document.addEventListener('DOMContentLoaded', () => {
+    const closeBtn = document.getElementById('pdf-close-btn');
+    const overlay = document.getElementById('pdf-modal-overlay');
+
+    if (closeBtn) closeBtn.addEventListener('click', () => window.closePdfModal());
+    if (overlay) overlay.addEventListener('click', () => window.closePdfModal());
+});

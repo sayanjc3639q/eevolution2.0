@@ -883,6 +883,24 @@
     </div>
   </main>
 
+  <!-- PDF VIEWER MODAL -->
+  <div id="pdf-modal" class="pdf-modal hidden">
+    <div id="pdf-modal-overlay" class="pdf-modal-overlay"></div>
+    <div class="pdf-modal-container">
+      <div class="pdf-modal-header">
+        <h3 id="pdf-modal-title">Document Preview</h3>
+        <button class="pdf-close-btn" id="pdf-close-btn"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="pdf-modal-body">
+        <iframe id="pdf-iframe" src="" frameborder="0"></iframe>
+      </div>
+      <div class="pdf-modal-footer">
+        <p class="text-muted" style="margin-bottom:0; font-size: 0.8rem;"><i class="ph ph-info"></i> If the PDF doesn't
+          load, use the direct link on the card.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/data.js"></script>
   <script src="js/supabase-config.js"></script>
