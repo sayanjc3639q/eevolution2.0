@@ -181,11 +181,16 @@ ol {
   align-items: center;
   gap: 0.5rem;
   transition: var(--transition);
+  outline: none;
 }
 
 .btn-primary:hover {
   filter: brightness(0.9);
   transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
 }
 
 .btn-outline {
@@ -197,6 +202,12 @@ ol {
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-outline:focus {
+  outline: none;
 }
 
 .btn-outline:hover {

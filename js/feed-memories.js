@@ -337,18 +337,18 @@ window.handleFeedAction = async function (postId, action) {
 
     // Update visuals instantly
     if (willLike) {
-        likeBtn.classList.add('active');
-        likeBtn.querySelector('i').className = 'ph-fill text-accent ph-thumbs-up';
+        likeBtn.classList.add('liked');
+        likeBtn.querySelector('i').className = 'ph-fill ph-thumbs-up';
     } else {
-        likeBtn.classList.remove('active');
+        likeBtn.classList.remove('liked');
         likeBtn.querySelector('i').className = 'ph ph-thumbs-up';
     }
 
     if (willDislike) {
-        dislikeBtn.classList.add('active');
-        dislikeBtn.querySelector('i').className = 'ph-fill text-danger ph-thumbs-down';
+        dislikeBtn.classList.add('disliked');
+        dislikeBtn.querySelector('i').className = 'ph-fill ph-thumbs-down';
     } else {
-        dislikeBtn.classList.remove('active');
+        dislikeBtn.classList.remove('disliked');
         dislikeBtn.querySelector('i').className = 'ph ph-thumbs-down';
     }
 
@@ -387,21 +387,21 @@ window.handleFeedAction = async function (postId, action) {
         dislikeCountSpan.innerText = currentDislikes;
 
         if (hasLiked) {
-            likeBtn.classList.add('active');
-            likeBtn.querySelector('i').className = 'ph-fill text-accent ph-thumbs-up';
+            likeBtn.classList.add('liked');
+            likeBtn.querySelector('i').className = 'ph-fill ph-thumbs-up';
             if (action === 'likes' || (action === 'dislikes' && !hasDisliked)) likedPosts.push(postId);
         } else {
-            likeBtn.classList.remove('active');
+            likeBtn.classList.remove('liked');
             likeBtn.querySelector('i').className = 'ph ph-thumbs-up';
             likedPosts = likedPosts.filter(id => id !== postId);
         }
 
         if (hasDisliked) {
-            dislikeBtn.classList.add('active');
-            dislikeBtn.querySelector('i').className = 'ph-fill text-danger ph-thumbs-down';
+            dislikeBtn.classList.add('disliked');
+            dislikeBtn.querySelector('i').className = 'ph-fill ph-thumbs-down';
             if (action === 'dislikes' || (action === 'likes' && !hasLiked)) dislikedPosts.push(postId);
         } else {
-            dislikeBtn.classList.remove('active');
+            dislikeBtn.classList.remove('disliked');
             dislikeBtn.querySelector('i').className = 'ph ph-thumbs-down';
             dislikedPosts = dislikedPosts.filter(id => id !== postId);
         }
@@ -684,25 +684,38 @@ window.addComment = async function (photoId) {
 };
 
 window.deleteFeedPost = async function (postId) {
-    if (!window.isLoggedIn || !window.currentProfile || !window.currentProfile.is_admin) return;
+    if (!window.isLoggedIn || !window.currentProfile || !window.currentProfile.is_admin) {
+        showToast("Admin privileges required.", "error");
+        return;
+    }
 
     if (!confirm("Are you sure you want to delete this post? This action cannot be undone.")) return;
 
-    const { error } = await supabaseClient
+    if (!window.supabaseClient) {
+        showToast("Supabase is not connected.", "error");
+        return;
+    }
+
+    const { data: deletedRows, error } = await window.supabaseClient
         .from('batch_feed')
         .delete()
-        .eq('id', postId);
+        .eq('id', postId)
+        .select();
 
     if (error) {
         console.error("Delete Error:", error);
         showToast("Failed to delete post: " + error.message, "error");
+    } else if (!deletedRows || deletedRows.length === 0) {
+        console.warn("No rows deleted. Potentially an ID mismatch or RLS policy block.");
+        showToast("Failed to delete: Post not found or unauthorized.", "error");
     } else {
         showToast("Post deleted successfully.", "success");
-        // Remove from UI immediately or refresh
+        // Remove from UI immediately with animation
         const card = document.getElementById(`post-${postId}`);
         if (card) {
             card.style.opacity = '0';
             card.style.transform = 'scale(0.9)';
+            card.style.transition = 'all 0.3s ease';
             setTimeout(() => card.remove(), 300);
         }
     }
