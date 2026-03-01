@@ -688,13 +688,33 @@
                   <a href="auth.html" class="btn-primary btn-small mt-3">Sign In</a>
                 </div>
 
-                <div id="upi-action-area" class="upi-apps hidden">
-                  <button class="btn-gpay" onclick="openUPI('gpay')">
-                    <i class="ph ph-google-logo"></i> GPay
-                  </button>
-                  <button class="btn-phonepe" onclick="openUPI('phonepe')">
-                    <i class="ph ph-phone"></i> PhonePe
-                  </button>
+                <div id="upi-action-area" class="upi-container hidden">
+                  <div class="upi-reveal-wrapper">
+                    <button class="btn-primary reveal-btn" onclick="revealUPIDetails()" id="reveal-upi-btn">
+                      <i class="ph ph-eye"></i> Reveal Official UPI ID
+                    </button>
+
+                    <div id="upi-details-revealed" class="hidden upi-details-box">
+                      <div class="upi-id-card">
+                        <label>Merchant UPI Address</label>
+                        <div class="upi-copy-row">
+                          <code id="upi-id-text">nanditabhow91@pingpay</code>
+                          <button class="copy-btn" onclick="copyUPI()" title="Copy ID">
+                            <i class="ph ph-copy"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="wa-verify-banner">
+                        <i class="ph-fill ph-whatsapp-logo"></i>
+                        <div class="banner-text">
+                          <strong>Payment Verification</strong>
+                          <p>Share your payment screenshot in the official EEvolution WhatsApp group to claim your
+                            Evo-Coins.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

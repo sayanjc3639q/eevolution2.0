@@ -1065,14 +1065,50 @@ async function loadMoocsTable() {
 
 /* ================= SECURE PAYMENT ENGINE ================= */
 
-window.openUPI = function (method) {
-    let pa = "jcsayan7@okicici"; // GPay (default)
-    if (method === 'phonepe') {
-        pa = "7363932735@ybl";
+window.revealUPIDetails = function () {
+    const details = document.getElementById('upi-details-revealed');
+    const btn = document.getElementById('reveal-upi-btn');
+    if (details && btn) {
+        details.classList.remove('hidden');
+        btn.classList.add('hidden');
     }
-    const upiUrl = `upi://pay?pa=${pa}&pn=Sayan%20Maity&tn=Donation%20for%20EEvolution&cu=INR`;
-    window.location.href = upiUrl;
 };
+
+window.copyUPI = function () {
+    const upiText = document.getElementById('upi-id-text').innerText;
+    const btn = document.querySelector('.copy-btn');
+    const icon = btn.querySelector('i');
+
+    function updateUI() {
+        if (window.showToast) window.showToast("UPI ID copied to clipboard!", "success");
+        icon.classList.replace('ph-copy', 'ph-check-circle');
+        icon.style.color = '#22c55e';
+        setTimeout(() => {
+            icon.classList.replace('ph-check-circle', 'ph-copy');
+            icon.style.color = '';
+        }, 2000);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(upiText).then(updateUI).catch(() => fallbackCopy(upiText, updateUI));
+    } else {
+        fallbackCopy(upiText, updateUI);
+    }
+};
+
+function fallbackCopy(text, callback) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        callback();
+    } catch (err) {
+        console.error('Fallback copy failed', err);
+    }
+    document.body.removeChild(textArea);
+}
 
 /* ================= PDF VIEWER MODAL LOGIC ================= */
 
