@@ -46,6 +46,11 @@ let feedChannelActive = false;
 async function fetchFeed() {
     if (!window.supabaseClient) return;
 
+    // Run auto-cleanup for admins to maintain storage efficiency
+    if (window.isLoggedIn && window.currentProfile && window.currentProfile.is_admin) {
+        autoCleanupBatchFeed();
+    }
+
     const container = document.getElementById('feed-container');
     if (!container) return;
 
@@ -702,3 +707,26 @@ window.deleteFeedPost = async function (postId) {
         }
     }
 };
+
+/**
+ * AUTO CLEANUP: Deletes batch feed posts older than 30 days
+ * This helps keep the Supabase storage usage low and the feed relevant.
+ */
+async function autoCleanupBatchFeed() {
+    if (!window.isLoggedIn || !window.currentProfile || !window.currentProfile.is_admin) return;
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Perform delete on old records
+    const { error } = await supabaseClient
+        .from('batch_feed')
+        .delete()
+        .lt('created_at', thirtyDaysAgo.toISOString());
+
+    if (error) {
+        console.error("Auto-Cleanup Error:", error);
+    } else {
+        console.log("Auto-Cleanup: Checked for posts older than 30 days.");
+    }
+}
