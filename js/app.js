@@ -349,18 +349,25 @@ async function renderHomeData() {
 
     if (typeof renderLiveSchedule === 'function') renderLiveSchedule();
 
-    // Fetch top contributors from Supabase
+    // Fetch top contributors and and potential donator avatars from Supabase
+    let profileMap = {};
     if (window.supabaseClient) {
         const { data: profiles } = await supabaseClient
             .from('profiles')
-            .select('name, roll_number, upload_count')
-            .order('upload_count', { ascending: false })
-            .limit(3);
+            .select('name, roll_number, upload_count, avatar_url')
+            .order('upload_count', { ascending: false });
 
         if (profiles) {
-            document.getElementById('top-contributors').innerHTML = profiles.map((s, i) => `
+            // Render Top Contributors (Top 3)
+            const topContributors = profiles.slice(0, 3);
+            document.getElementById('top-contributors').innerHTML = topContributors.map((s, i) => `
                 <li><div><span class="primary-text">#${i + 1} ${s.name || 'Anonymous'}</span><span class="secondary-text">${s.roll_number}</span></div><div style="text-align:right"><span class="text-blue"><i class="ph ph-upload"></i> ${s.upload_count || 0}</span></div></li>
             `).join('');
+
+            // Build map for donators
+            profiles.forEach(p => {
+                if (p.name) profileMap[p.name.toUpperCase()] = p.avatar_url;
+            });
 
             // See more contributors link
             document.getElementById('top-contributors-footer').innerHTML = `
@@ -377,14 +384,26 @@ async function renderHomeData() {
             const amtA = parseFloat(a.amount.replace('₹', '')) || 0;
             const amtB = parseFloat(b.amount.replace('₹', '')) || 0;
             if (amtB !== amtA) return amtB - amtA;
-            // Tie-breaker: Latest date first
             return new Date(b.date) - new Date(a.date);
         })
         .slice(0, 4);
 
-    document.getElementById('top-donators').innerHTML = donators.map((d) => `
-    <li><div><span class="primary-text">${d.name}</span></div><div><span class="text-accent">${d.amount}</span></div></li>
-  `).join('');
+    document.getElementById('top-donators').innerHTML = donators.map((d) => {
+        const avatarUrl = profileMap[d.name.toUpperCase()];
+        const iconHtml = avatarUrl
+            ? `<img src="${avatarUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`
+            : `<i class="ph ph-heart text-accent"></i>`;
+
+        return `
+            <li>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    ${iconHtml}
+                    <span class="primary-text">${d.name}</span>
+                </div>
+                <div><span class="text-accent">${d.amount}</span></div>
+            </li>
+        `;
+    }).join('');
 
     // See more donators link
     document.getElementById('top-donators-footer').innerHTML = `
@@ -824,7 +843,7 @@ async function renderContributors() {
     }
 }
 
-function renderDonators() {
+async function renderDonators() {
     if (!currentData) return;
     const container = document.getElementById('full-donators-list');
     if (!container) return;
@@ -846,29 +865,49 @@ function renderDonators() {
     // Convert to array and sort
     const sortedDonators = Object.values(totals).sort((a, b) => {
         if (b.amount !== a.amount) return b.amount - a.amount;
-        // Tie-breaker: Latest donation date first
         return new Date(b.lastDate) - new Date(a.lastDate);
     });
+
+    // Fetch matching profiles to get avatars if they are registered
+    let profileMap = {};
+    if (window.supabaseClient) {
+        const { data: profiles } = await supabaseClient
+            .from('profiles')
+            .select('name, avatar_url');
+
+        if (profiles) {
+            profiles.forEach(p => {
+                if (p.name) profileMap[p.name.toUpperCase()] = p.avatar_url;
+            });
+        }
+    }
 
     let html = `
     <div class="leaderboard-header">
         <h4><i class="ph ph-hands-clapping"></i> Hall of Heroes</h4>
-        <p>A huge thank you to everyone listed below. Your contributions directly fuel the server and hosting costs of EEvolution 2.0. We couldn't do this without you!</p>
+        <p>A huge thank you to everyone listed below. Your contributions directly fuel the server and hosting costs of EEvolution 2.0.</p>
     </div>
     <div class="leaderboard-list">
     `;
 
-    html += sortedDonators.map((d) => `
-    <div class="leaderboard-item simple-donator">
-        <div class="donator-icon">
-            <i class="ph ph-heart text-accent"></i>
-        </div>
-        <div class="donator-info">
-            <span class="donator-name">${d.name}</span>
-        </div>
-        <div class="donation-badge">₹${d.amount}</div>
-    </div>
-    `).join('');
+    html += sortedDonators.map((d) => {
+        const avatarUrl = profileMap[d.name.toUpperCase()];
+        const iconHtml = avatarUrl
+            ? `<img src="${avatarUrl}" class="donator-avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
+            : `<i class="ph ph-heart text-accent"></i>`;
+
+        return `
+            <div class="leaderboard-item simple-donator">
+                <div class="donator-icon">
+                    ${iconHtml}
+                </div>
+                <div class="donator-info">
+                    <span class="donator-name">${d.name}</span>
+                </div>
+                <div class="donation-badge">₹${d.amount}</div>
+            </div>
+        `;
+    }).join('');
 
     html += `</div>`;
     container.innerHTML = html;
