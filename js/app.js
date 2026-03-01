@@ -143,7 +143,7 @@ function updateActiveNav(activeElement) {
 
 const subTitleMap = {
     'modules': 'Modules', 'digest': 'Evo Digest', 'labs': 'Lab Notes', 'resources': 'Resources',
-    'notices': 'Notices', 'events': 'Events', 'routine': 'Class Routine', 'holidays': 'Holidays',
+    'notices': 'Notices', 'events': 'Events', 'routine': 'Class Routine', 'holidays': 'Holidays', 'exams': 'Exam Schedule',
     'mar': 'MAR Points', 'moocs': 'MOOCs Points',
     'batchFeed': 'Batch Feed', 'memories': 'Memories', 'upload': 'Upload Docs', 'contributors': 'Contributors',
     'donate': 'Donations', 'donators': 'Donators List'
@@ -452,6 +452,8 @@ function renderUpdates(tab) {
         if (typeof renderFullRoutine === 'function') renderFullRoutine();
     } else if (tab === 'holidays') {
         if (typeof renderHolidayList === 'function') renderHolidayList();
+    } else if (tab === 'exams') {
+        if (typeof renderExamSchedule === 'function') renderExamSchedule();
     }
 }
 
@@ -463,10 +465,23 @@ function renderLiveSchedule() {
     const data = currentData.schedule;
     const now = new Date();
 
+    const timeToMins = (tStr) => {
+        if (!tStr) return 0;
+        const [h, m] = tStr.split(':').map(Number);
+        return h * 60 + m;
+    };
+
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
     const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    const tomYyyy = tomorrow.getFullYear();
+    const tomMm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const tomDd = String(tomorrow.getDate()).padStart(2, '0');
+    const tomorrowStr = `${tomYyyy}-${tomMm}-${tomDd}`;
 
     const currentTimeMins = now.getHours() * 60 + now.getMinutes();
     const dayOfWeek = now.toLocaleString('en-US', { weekday: 'long' });
@@ -479,54 +494,109 @@ function renderLiveSchedule() {
         <div class="schedule-body">
     `;
 
-    if (dayOfWeek === 'Saturday' || dayOfWeek === 'Sunday') {
-        html += `<div class="status-card">🏖️ Weekend - No Classes Today</div>`;
-    } else if (data.exams && data.exams.find(e => e.date === todayStr)) {
-        const exam = data.exams.find(e => e.date === todayStr);
-        html += `<div class="status-card exam">📝 Exam Today: ${exam.title} (${exam.time})</div>`;
-    } else if (data.unlistedHolidays && data.unlistedHolidays.includes(todayStr)) {
-        html += `<div class="status-card">🏖️ No Classes Today</div>`;
-    } else if (data.holidays && data.holidays.find(h => h.date === todayStr)) {
-        const holiday = data.holidays.find(h => h.date === todayStr);
-        html += `<div class="status-card holiday">🎉 Holiday Today: ${holiday.name}</div>`;
-    } else {
-        const todayRoutine = data.routine ? (data.routine[dayOfWeek] || []) : [];
-        if (todayRoutine.length === 0) {
-            html += `<div class="status-card">No classes scheduled for today.</div>`;
+    // 1. Check for TODAY'S EXAMS first (Highest Priority)
+    const todayExams = data.exams ? data.exams.filter(e => e.date === todayStr && e.display !== false).sort((a, b) => timeToMins(a.start) - timeToMins(b.start)) : [];
+
+    // 2. Check for TOMORROW'S EXAMS (Upcoming Alert)
+    const tomorrowExams = data.exams ? data.exams.filter(e => e.date === tomorrowStr && e.display !== false) : [];
+
+    if (todayExams.length > 0) {
+        let currentExam = todayExams.find(e => currentTimeMins >= timeToMins(e.start) && currentTimeMins <= timeToMins(e.end));
+        let nextExam = todayExams.find(e => timeToMins(e.start) > currentTimeMins);
+        let allExamsFinished = todayExams.every(e => currentTimeMins > timeToMins(e.end));
+
+        if (currentExam) {
+            html += `
+            <div class="status-card live-card" style="border-color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                <div class="live-badge" style="display: inline-flex; margin-bottom: 10px;">🔴 LIVE EXAM</div>
+                <h4 style="color: var(--text-main); font-size: 1.25rem; margin-bottom: 8px;">${currentExam.title}</h4>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">
+                    <i class="ph ph-clock"></i> ${currentExam.start} - ${currentExam.end} | <i class="ph ph-map-pin"></i> ${currentExam.room}
+                </div>
+            </div>`;
+        } else if (nextExam) {
+            html += `
+            <div class="status-card exam" style="border-color: #8b5cf6;">
+                <div style="color: #8b5cf6; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px;">Next Upcoming Exam</div>
+                <h4 style="color: var(--text-main); font-size: 1.15rem; margin-bottom: 8px;">${nextExam.title}</h4>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">
+                    <i class="ph ph-clock"></i> Starts at ${nextExam.start} | <i class="ph ph-map-pin"></i> ${nextExam.room}
+                </div>
+            </div>`;
+        } else if (allExamsFinished) {
+            html += `<div class="status-card" style="border-color: var(--theme-color); color: var(--theme-color);">✅ Today's exam completed.</div>`;
         } else {
-            html += `<div class="routine-list">`;
-            let classesOver = true;
+            // Case where it's early morning before the first exam
+            const firstExam = todayExams[0];
+            html += `
+             <div class="status-card exam" style="border-color: #8b5cf6;">
+                 <div style="color: #8b5cf6; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px;">Upcoming Exam Today</div>
+                 <h4 style="color: var(--text-main); font-size: 1.15rem; margin-bottom: 8px;">${firstExam.title}</h4>
+                 <div style="color: var(--text-muted); font-size: 0.9rem;">
+                     <i class="ph ph-clock"></i> ${firstExam.start} - ${firstExam.end} | <i class="ph ph-map-pin"></i> ${firstExam.room}
+                 </div>
+             </div>`;
+        }
+    } else if (tomorrowExams.length > 0) {
+        // Upcoming Exam Tomorrow Alert (Temporary Tab Logic)
+        const ex = tomorrowExams[0];
+        html += `
+        <div class="status-card" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.05); margin-bottom: 1.5rem;">
+            <div style="color: #f59e0b; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px;">⚠️ Upcoming Exam Tomorrow</div>
+            <h4 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 5px;">${ex.title}</h4>
+            <div style="color: var(--text-muted); font-size: 0.85rem;">Starts at ${ex.start} | Room: ${ex.room}</div>
+        </div>
+        `;
 
-            const timeToMins = (tStr) => {
-                const [h, m] = tStr.split(':').map(Number);
-                return h * 60 + m;
-            };
+        // Show routine as well if today is a weekday
+        renderStandardRoutine();
+    } else {
+        renderStandardRoutine();
+    }
 
-            todayRoutine.forEach(cls => {
-                const startMins = timeToMins(cls.start);
-                const endMins = timeToMins(cls.end);
-                const isLive = currentTimeMins >= startMins && currentTimeMins <= endMins;
-                if (currentTimeMins <= endMins) classesOver = false;
+    function renderStandardRoutine() {
+        if (dayOfWeek === 'Saturday' || dayOfWeek === 'Sunday') {
+            html += `<div class="status-card">🏖️ Weekend - No Classes Today</div>`;
+        } else if (data.unlistedHolidays && data.unlistedHolidays.includes(todayStr)) {
+            html += `<div class="status-card">🏖️ No Classes Today</div>`;
+        } else if (data.holidays && data.holidays.find(h => h.date === todayStr)) {
+            const holiday = data.holidays.find(h => h.date === todayStr);
+            html += `<div class="status-card holiday">🎉 Holiday Today: ${holiday.name}</div>`;
+        } else {
+            const todayRoutine = data.routine ? (data.routine[dayOfWeek] || []) : [];
+            if (todayRoutine.length === 0) {
+                html += `<div class="status-card">No classes scheduled for today.</div>`;
+            } else {
+                html += `<div class="routine-list">`;
+                let classesOver = true;
 
-                html += `
-                <div class="class-card ${isLive ? 'live-card' : ''}">
-                    <div class="class-time">${cls.start} - ${cls.end}</div>
-                    <div class="class-details">
-                        <div class="class-subject">${cls.subject} ${isLive ? '<span class="live-badge">🔴 LIVE NOW</span>' : ''}</div>
-                        <div class="class-meta">
-                            <span><i class="ph ph-user"></i> ${cls.prof}</span>
-                            <span><i class="ph ph-map-pin"></i> ${cls.room}</span>
+                todayRoutine.forEach(cls => {
+                    const startMins = timeToMins(cls.start);
+                    const endMins = timeToMins(cls.end);
+                    const isLive = currentTimeMins >= startMins && currentTimeMins <= endMins;
+                    if (currentTimeMins <= endMins) classesOver = false;
+
+                    html += `
+                    <div class="class-card ${isLive ? 'live-card' : ''}">
+                        <div class="class-time">${cls.start} - ${cls.end}</div>
+                        <div class="class-details">
+                            <div class="class-subject">${cls.subject} ${isLive ? '<span class="live-badge">🔴 LIVE NOW</span>' : ''}</div>
+                            <div class="class-meta">
+                                <span><i class="ph ph-user"></i> ${cls.prof}</span>
+                                <span><i class="ph ph-map-pin"></i> ${cls.room}</span>
+                            </div>
                         </div>
-                    </div>
-                </div>`;
-            });
-            html += `</div>`;
+                    </div>`;
+                });
+                html += `</div>`;
 
-            if (classesOver && todayRoutine.length > 0 && currentTimeMins > timeToMins(todayRoutine[todayRoutine.length - 1].end)) {
-                html += `<div class="classes-over-msg text-muted mt-3 text-center" style="font-size: 0.9rem;">Classes are over for today.</div>`;
+                if (classesOver && todayRoutine.length > 0 && currentTimeMins > timeToMins(todayRoutine[todayRoutine.length - 1].end)) {
+                    html += `<div class="classes-over-msg text-muted mt-3 text-center" style="font-size: 0.9rem;">Classes are over for today.</div>`;
+                }
             }
         }
     }
+
     html += `</div>`;
     container.innerHTML = html;
 }
@@ -536,40 +606,67 @@ function renderFullRoutine() {
     if (!currentData || !currentData.schedule || !container) return;
 
     const routine = currentData.schedule.routine || {};
-    let html = `<div class="card"><h3 style="margin-bottom: 1rem;"><i class="ph ph-calendar text-accent"></i> Full Class Routine</h3>
-    <div style="overflow-x: auto;">
-        <table class="full-routine-table">
-            <thead>
-                <tr>
-                    <th>Day</th>
-                    <th>Classes</th>
-                </tr>
-            </thead>
-            <tbody>`;
-
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const now = new Date();
+    const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
+
+    let html = `<div class="card">
+        <h3 style="margin-bottom: 1.5rem;"><i class="ph ph-calendar text-accent"></i> Weekly Class Routine</h3>
+        <p class="text-muted mb-4" style="font-size: 0.9rem;">Click on a day to view its classes.</p>
+        
+        <div class="routine-accordion">`;
+
     days.forEach(day => {
-        if (routine[day]) {
-            html += `<tr>
-                <td style="font-weight: 600; width: 120px; vertical-align: top;">${day}</td>
-                <td>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        ${routine[day].map(c => `
-                        <div class="routine-table-item">
-                            <div class="time">${c.start} - ${c.end}</div>
-                            <div class="subject">${c.subject}</div>
-                            <div class="meta"><i class="ph ph-user"></i> ${c.prof}</div>
-                            <div class="meta"><i class="ph ph-map-pin"></i> ${c.room}</div>
-                        </div>`).join('')}
+        const isToday = day === currentDay;
+        const classes = routine[day] || [];
+
+        html += `
+            <div class="accordion-item ${isToday ? 'active' : ''}" id="accordion-${day}">
+                <div class="accordion-header" onclick="toggleRoutineAccordion('${day}')">
+                    <div class="day-info">
+                        <i class="ph ph-calendar-blank" style="color: ${isToday ? 'var(--theme-color)' : 'var(--text-muted)'}"></i>
+                        <h4>${day} ${isToday ? '<span class="accent" style="font-size: 0.8rem; margin-left: 8px;">(Today)</span>' : ''}</h4>
                     </div>
-                </td>
-            </tr>`;
-        }
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">${classes.length} Classes</span>
+                        <i class="ph ph-caret-down chevron"></i>
+                    </div>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-inner">
+                        ${classes.length > 0 ? classes.map(c => `
+                            <div class="compact-class-row">
+                                <div class="row-time">${c.start} - ${c.end}</div>
+                                <div class="row-details">
+                                    <div class="row-subject">${c.subject}</div>
+                                    <div class="row-meta">
+                                        <span><i class="ph ph-user"></i> ${c.prof}</span>
+                                        <span style="margin-left: 12px;"><i class="ph ph-map-pin"></i> ${c.room}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('') : '<div class="text-muted p-3">No classes scheduled for this day.</div>'}
+                    </div>
+                </div>
+            </div>`;
     });
 
-    html += `</tbody></table></div></div>`;
+    html += `</div></div>`;
     container.innerHTML = html;
 }
+
+window.toggleRoutineAccordion = function (day) {
+    const item = document.getElementById(`accordion-${day}`);
+    const isActive = item.classList.contains('active');
+
+    // Close all others (optional, but keeps it very compact)
+    document.querySelectorAll('.accordion-item').forEach(el => el.classList.remove('active'));
+
+    // Toggle current
+    if (!isActive) {
+        item.classList.add('active');
+    }
+};
 
 function renderHolidayList() {
     const container = document.getElementById('updates-content');
@@ -592,6 +689,42 @@ function renderHolidayList() {
             </tbody>
         </table>
     </div>`;
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+function renderExamSchedule() {
+    const container = document.getElementById('updates-content');
+    if (!currentData || !currentData.schedule || !container) return;
+
+    const exams = (currentData.schedule.exams || []).filter(e => e.display !== false);
+
+    let html = `<div class="card"><h3 style="margin-bottom: 1.5rem;"><i class="ph ph-notebook text-accent"></i> Exam Schedule</h3>`;
+
+    if (exams.length === 0) {
+        html += `<div class="empty-state" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+            <i class="ph ph-calendar-x" style="font-size: 3.5rem; margin-bottom: 1.25rem; display: block; opacity: 0.3;"></i>
+            <p style="font-size: 1.1rem;">Currently no exams available.</p>
+        </div>`;
+    } else {
+        html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem;">`;
+        exams.forEach(ex => {
+            const examDate = new Date(ex.date);
+            const dayName = examDate.toLocaleString('en-US', { weekday: 'long' });
+
+            html += `
+            <div class="exam-card-item" style="padding: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-color); border-left: 4px solid #8b5cf6; border-radius: 12px; transition: var(--transition); cursor: default;">
+                <div style="font-size: 0.8rem; color: #8b5cf6; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">${dayName}, ${formatFullDate(ex.date)}</div>
+                <h4 style="margin-bottom: 12px; font-size: 1.2rem; color: var(--text-main);">${ex.title}</h4>
+                <div style="font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 15px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                    <span style="display: flex; align-items: center; gap: 6px;"><i class="ph ph-clock"></i> ${ex.start} - ${ex.end}</span>
+                    <span style="display: flex; align-items: center; gap: 6px;"><i class="ph ph-map-pin"></i> ${ex.room}</span>
+                </div>
+            </div>`;
+        });
+        html += `</div>`;
+    }
 
     html += `</div>`;
     container.innerHTML = html;
