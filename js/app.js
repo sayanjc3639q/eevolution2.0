@@ -143,7 +143,7 @@ function updateActiveNav(activeElement) {
 
 const subTitleMap = {
     'modules': 'Modules', 'digest': 'Evo Digest', 'labs': 'Lab Notes', 'resources': 'Resources',
-    'notices': 'Notices', 'events': 'Events',
+    'notices': 'Notices', 'events': 'Events', 'routine': 'Class Routine', 'holidays': 'Holidays',
     'mar': 'MAR Points', 'moocs': 'MOOCs Points',
     'batchFeed': 'Batch Feed', 'memories': 'Memories', 'upload': 'Upload Docs', 'contributors': 'Contributors',
     'donate': 'Donations', 'donators': 'Donators List'
@@ -339,6 +339,8 @@ function renderMaterialCards(category, subjectId, chapterName) {
 async function renderHomeData() {
     if (!currentData) return;
 
+    if (typeof renderLiveSchedule === 'function') renderLiveSchedule();
+
     // Fetch top contributors from Supabase
     if (window.supabaseClient) {
         const { data: profiles } = await supabaseClient
@@ -423,7 +425,7 @@ function renderUpdates(tab) {
           </div>` : ''}
       </div>
     `).join('');
-    } else {
+    } else if (tab === 'events') {
         let html = `
         <div class="card event-submission-banner mb-4" style="border: 1px dashed var(--border-color); background: var(--bg-surface); display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: 1.5rem;">
             <div style="flex: 1; min-width: 200px;">
@@ -446,7 +448,153 @@ function renderUpdates(tab) {
     `).join('');
 
         container.innerHTML = html;
+    } else if (tab === 'routine') {
+        if (typeof renderFullRoutine === 'function') renderFullRoutine();
+    } else if (tab === 'holidays') {
+        if (typeof renderHolidayList === 'function') renderHolidayList();
     }
+}
+
+/* ================= SCHEDULE WIDGET LOGIC ================= */
+function renderLiveSchedule() {
+    const container = document.getElementById('daily-schedule-widget');
+    if (!container || !currentData.schedule) return;
+
+    const data = currentData.schedule;
+    const now = new Date();
+
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    const currentTimeMins = now.getHours() * 60 + now.getMinutes();
+    const dayOfWeek = now.toLocaleString('en-US', { weekday: 'long' });
+
+    let html = `
+        <div class="schedule-header">
+            <h3 style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem;"><i class="ph ph-calendar-check text-accent"></i> Today's Schedule</h3>
+            <span class="date-badge"><i class="ph ph-calendar-blank"></i> ${todayStr}</span>
+        </div>
+        <div class="schedule-body">
+    `;
+
+    if (dayOfWeek === 'Saturday' || dayOfWeek === 'Sunday') {
+        html += `<div class="status-card">🏖️ Weekend - No Classes Today</div>`;
+    } else if (data.exams && data.exams.find(e => e.date === todayStr)) {
+        const exam = data.exams.find(e => e.date === todayStr);
+        html += `<div class="status-card exam">📝 Exam Today: ${exam.title} (${exam.time})</div>`;
+    } else if (data.unlistedHolidays && data.unlistedHolidays.includes(todayStr)) {
+        html += `<div class="status-card">🏖️ No Classes Today</div>`;
+    } else if (data.holidays && data.holidays.find(h => h.date === todayStr)) {
+        const holiday = data.holidays.find(h => h.date === todayStr);
+        html += `<div class="status-card holiday">🎉 Holiday Today: ${holiday.name}</div>`;
+    } else {
+        const todayRoutine = data.routine ? (data.routine[dayOfWeek] || []) : [];
+        if (todayRoutine.length === 0) {
+            html += `<div class="status-card">No classes scheduled for today.</div>`;
+        } else {
+            html += `<div class="routine-list">`;
+            let classesOver = true;
+
+            const timeToMins = (tStr) => {
+                const [h, m] = tStr.split(':').map(Number);
+                return h * 60 + m;
+            };
+
+            todayRoutine.forEach(cls => {
+                const startMins = timeToMins(cls.start);
+                const endMins = timeToMins(cls.end);
+                const isLive = currentTimeMins >= startMins && currentTimeMins <= endMins;
+                if (currentTimeMins <= endMins) classesOver = false;
+
+                html += `
+                <div class="class-card ${isLive ? 'live-card' : ''}">
+                    <div class="class-time">${cls.start} - ${cls.end}</div>
+                    <div class="class-details">
+                        <div class="class-subject">${cls.subject} ${isLive ? '<span class="live-badge">🔴 LIVE NOW</span>' : ''}</div>
+                        <div class="class-meta">
+                            <span><i class="ph ph-user"></i> ${cls.prof}</span>
+                            <span><i class="ph ph-map-pin"></i> ${cls.room}</span>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            html += `</div>`;
+
+            if (classesOver && todayRoutine.length > 0 && currentTimeMins > timeToMins(todayRoutine[todayRoutine.length - 1].end)) {
+                html += `<div class="classes-over-msg text-muted mt-3 text-center" style="font-size: 0.9rem;">Classes are over for today.</div>`;
+            }
+        }
+    }
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+function renderFullRoutine() {
+    const container = document.getElementById('updates-content');
+    if (!currentData || !currentData.schedule || !container) return;
+
+    const routine = currentData.schedule.routine || {};
+    let html = `<div class="card"><h3 style="margin-bottom: 1rem;"><i class="ph ph-calendar text-accent"></i> Full Class Routine</h3>
+    <div style="overflow-x: auto;">
+        <table class="full-routine-table">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Classes</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    days.forEach(day => {
+        if (routine[day]) {
+            html += `<tr>
+                <td style="font-weight: 600; width: 120px; vertical-align: top;">${day}</td>
+                <td>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        ${routine[day].map(c => `
+                        <div class="routine-table-item">
+                            <div class="time">${c.start} - ${c.end}</div>
+                            <div class="subject">${c.subject}</div>
+                            <div class="meta"><i class="ph ph-user"></i> ${c.prof}</div>
+                            <div class="meta"><i class="ph ph-map-pin"></i> ${c.room}</div>
+                        </div>`).join('')}
+                    </div>
+                </td>
+            </tr>`;
+        }
+    });
+
+    html += `</tbody></table></div></div>`;
+    container.innerHTML = html;
+}
+
+function renderHolidayList() {
+    const container = document.getElementById('updates-content');
+    if (!currentData || !currentData.schedule || !container) return;
+
+    const holidays = currentData.schedule.holidays || [];
+    const unlisted = currentData.schedule.unlistedHolidays || [];
+
+    let html = `<div class="card"><h3 style="margin-bottom: 1rem;"><i class="ph ph-calendar-star text-gold"></i> Official Holidays</h3>
+    <div style="overflow-x: auto;">
+        <table class="holiday-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Occasion</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${holidays.map(h => `<tr><td style="font-weight: 500;">${formatFullDate(h.date)}</td><td>${h.name}</td></tr>`).join('')}
+            </tbody>
+        </table>
+    </div>`;
+
+    html += `</div>`;
+    container.innerHTML = html;
 }
 
 async function renderContributors() {

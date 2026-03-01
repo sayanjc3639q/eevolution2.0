@@ -8,7 +8,8 @@ async function fetchJSONData() {
             events: 'data/events.json',
             subjects: 'data/subjects.json',
             studyMaterials: 'data/studyMaterials.json',
-            reviews: 'data/reviews.json'
+            reviews: 'data/reviews.json',
+            schedule: 'data/scheduleData.json'
         };
 
         const fetchPromises = Object.entries(urls).map(async ([key, url]) => {
@@ -35,7 +36,8 @@ async function fetchJSONData() {
             events: [],
             subjects: { theory: [], lab: [] },
             studyMaterials: [],
-            reviews: []
+            reviews: [],
+            schedule: { routine: {}, holidays: [], unlistedHolidays: [], exams: [] }
         };
     }
 }
