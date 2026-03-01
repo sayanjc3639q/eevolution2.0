@@ -482,7 +482,7 @@ function renderDonators() {
 function renderDonationProgress() {
     if (!currentData || !currentData.donators) return;
 
-    const totalCost = 1798;
+    const totalCost = 2198;
     const collected = currentData.donators.reduce((sum, d) => {
         const amount = parseFloat(d.amount.replace('₹', '').replace(',', '')) || 0;
         return sum + amount;
