@@ -2530,9 +2530,10 @@ input[type="text"]:focus {
   gap: 1.25rem;
   background-color: var(--bg-surface);
   padding: 1.25rem;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--border-color);
   transition: var(--transition);
+  flex-shrink: 0;
 }
 
 .class-card:hover {
@@ -2762,4 +2763,107 @@ input[type="text"]:focus {
     align-items: flex-start;
     gap: 0.5rem;
   }
+
+  /* Horizontal Swipe for Today's Schedule on Home */
+  .routine-list {
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
+    gap: 0.75rem;
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .routine-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .class-card {
+    flex-direction: column;
+    width: 260px;
+    gap: 0.75rem;
+    padding: 1rem;
+    scroll-snap-align: center;
+  }
+
+  .class-time {
+    min-width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding-right: 0;
+    padding-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .class-subject {
+    font-size: 1rem;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .class-meta {
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+}
+
+.break-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.break-card::after {
+  content: '☕';
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  font-size: 5rem;
+  opacity: 0.05;
+  transform: rotate(-15deg);
+}
+
+.break-timer {
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+  animation: glow-gold 2s infinite alternate;
+}
+
+@keyframes glow-gold {
+  from {
+    text-shadow: 0 0 5px rgba(251, 191, 36, 0.2);
+  }
+
+  to {
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  }
+}
+
+.completed-card {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+  border-style: dashed !important;
+  background-color: rgba(var(--bg-panel-rgb), 0.5) !important;
+}
+
+.completed-card .class-time {
+  color: var(--text-muted) !important;
+  text-decoration: line-through;
+}
+
+.done-badge {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }

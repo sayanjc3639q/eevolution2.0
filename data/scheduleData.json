@@ -44,199 +44,185 @@
         "room": "A204"
       }
     ],
-    "Tuesday": [
-      {
-        "start": "09:40",
-        "end": "12:10",
-        "subject": "ES-ME 292 (Graphics Lab-II)",
-        "prof": "DDA / SRG",
-        "room": "ME Lab"
-      },
-      {
-        "start": "13:50",
-        "end": "14:40",
-        "subject": "HS-MC201",
-        "prof": "NK (SASH)",
-        "room": "A204"
-      },
-      {
-        "start": "14:40",
-        "end": "15:30",
-        "subject": "ES-CS 201",
-        "prof": "JDS (DS)",
-        "room": "A204"
-      },
-      {
-        "start": "15:30",
-        "end": "16:20",
-        "subject": "BS-CH 201",
-        "prof": "DKD (CHEM)",
-        "room": "A204"
-      },
-      {
-        "start": "16:20",
-        "end": "17:10",
-        "subject": "BS-M 201",
-        "prof": "ASM (Math)",
-        "room": "A204"
-      },
-      {
-        "start": "17:10",
-        "end": "18:00",
-        "subject": "AU-202",
-        "prof": "AG (EE)",
-        "room": "A204"
-      }
-    ],
-    "Wednesday": [
-      {
-        "start": "09:40",
-        "end": "12:10",
-        "subject": "ES-ME 292 (Graphics Lab-II)",
-        "prof": "DDA / SRG",
-        "room": "ME Lab"
-      },
-      {
-        "start": "13:50",
-        "end": "14:40",
-        "subject": "HS-MC201",
-        "prof": "NK (SASH)",
-        "room": "A204"
-      },
-      {
-        "start": "14:40",
-        "end": "15:30",
-        "subject": "ES-CS 201",
-        "prof": "JDS (DS)",
-        "room": "A204"
-      },
-      {
-        "start": "15:30",
-        "end": "16:20",
-        "subject": "BS-CH 201",
-        "prof": "DKD (CHEM)",
-        "room": "A204"
-      },
-      {
-        "start": "16:20",
-        "end": "17:10",
-        "subject": "BS-M 201",
-        "prof": "ASM (Math)",
-        "room": "A204"
-      },
-      {
-        "start": "17:10",
-        "end": "18:00",
-        "subject": "AU-202",
-        "prof": "AG (EE)",
-        "room": "A204"
-      }
-    ],
-    "Thursday": [
-      {
-        "start": "09:40",
-        "end": "12:10",
-        "subject": "ES-ME 292 (Graphics Lab-II)",
-        "prof": "DDA / SRG",
-        "room": "ME Lab"
-      },
-      {
-        "start": "13:50",
-        "end": "14:40",
-        "subject": "HS-MC201",
-        "prof": "NK (SASH)",
-        "room": "A204"
-      },
-      {
-        "start": "14:40",
-        "end": "15:30",
-        "subject": "ES-CS 201",
-        "prof": "JDS (DS)",
-        "room": "A204"
-      },
-      {
-        "start": "15:30",
-        "end": "16:20",
-        "subject": "BS-CH 201",
-        "prof": "DKD (CHEM)",
-        "room": "A204"
-      },
-      {
-        "start": "16:20",
-        "end": "17:10",
-        "subject": "BS-M 201",
-        "prof": "ASM (Math)",
-        "room": "A204"
-      },
-      {
-        "start": "17:10",
-        "end": "18:00",
-        "subject": "AU-202",
-        "prof": "AG (EE)",
-        "room": "A204"
-      }
-    ],
-    "Friday": [
-      {
-        "start": "09:40",
-        "end": "12:10",
-        "subject": "ES-ME 292 (Graphics Lab-II)",
-        "prof": "DDA / SRG",
-        "room": "ME Lab"
-      },
-      {
-        "start": "13:50",
-        "end": "14:40",
-        "subject": "HS-MC201",
-        "prof": "NK (SASH)",
-        "room": "A204"
-      },
-      {
-        "start": "14:40",
-        "end": "15:30",
-        "subject": "ES-CS 201",
-        "prof": "JDS (DS)",
-        "room": "A204"
-      },
-      {
-        "start": "15:30",
-        "end": "16:20",
-        "subject": "BS-CH 201",
-        "prof": "DKD (CHEM)",
-        "room": "A204"
-      },
-      {
-        "start": "16:20",
-        "end": "17:10",
-        "subject": "BS-M 201",
-        "prof": "ASM (Math)",
-        "room": "A204"
-      },
-      {
-        "start": "17:10",
-        "end": "18:00",
-        "subject": "AU-202",
-        "prof": "AG (EE)",
-        "room": "A204"
-      }
-    ]
-  },
-  "holidays": [
+  "Tuesday": [
     {
-      "date": "2026-01-01",
-      "name": "New Year's Day"
+      "start": "09:40",
+      "end": "11:20",
+      "subject": "HM-HU 291 (Language Lab)",
+      "prof": "Gr.A PN(ENG) / Gr.B OS(ENG)",
+      "room": "Language Lab"
     },
     {
-      "date": "2026-01-12",
-      "name": "Birthday of Swami Vivekananda"
+      "start": "11:20",
+      "end": "12:10",
+      "subject": "BS-M 201",
+      "prof": "ASM (Math)",
+      "room": "A204"
     },
     {
-      "date": "2026-01-26",
-      "name": "Republic Day"
+      "start": "12:10",
+      "end": "13:00",
+      "subject": "ES-CS 201",
+      "prof": "JDS(DS)",
+      "room": "A204"
     }
   ],
+  "Wednesday": [
+    {
+      "start": "09:40",
+      "end": "10:30",
+      "subject": "BS-M 201",
+      "prof": "ASM (Math)",
+      "room": "A204"
+    },
+    {
+      "start": "10:30",
+      "end": "11:20",
+      "subject": "ES-CS 201",
+      "prof": "JDS(DS)",
+      "room": "A204"
+    },
+    {
+      "start": "11:20",
+      "end": "12:10",
+      "subject": "AU-202",
+      "prof": "AG(EE)",
+      "room": "A204"
+    },
+    {
+      "start": "12:10",
+      "end": "13:00",
+      "subject": "BS-CH 201",
+      "prof": "AC(CHEM)",
+      "room": "A204"
+    },
+    {
+      "start": "13:00",
+      "end": "13:50",
+      "subject": "PDCC",
+      "prof": "OS(ENG)",
+      "room": "A204"
+    }
+  ],
+  "Thursday": [
+    {
+      "start": "09:40",
+      "end": "12:10",
+      "subject": "ES-CS 291 (Software Lab)",
+      "prof": "SG(DS) / KM(DS) / ABS(TA) / PC(TA) / SKM(TA)",
+      "room": "Software Lab.(CSE)"
+    },
+    {
+      "start": "14:40",
+      "end": "15:30",
+      "subject": "BS-CH 201",
+      "prof": "DKD(CHEM)",
+      "room": "A204"
+    },
+    {
+      "start": "15:30",
+      "end": "16:20",
+      "subject": "BS-M 201",
+      "prof": "ASM (Math)",
+      "room": "A204"
+    },
+    {
+      "start": "16:20",
+      "end": "17:10",
+      "subject": "HM-HU 201",
+      "prof": "GJ(SASH)",
+      "room": "A204"
+    },
+    {
+      "start": "17:10",
+      "end": "18:00",
+      "subject": "MNT",
+      "prof": "ASM (Math) / GJ(SASH) / BD(PHY)",
+      "room": "A204"
+    }
+  ],
+  "Friday": [
+    {
+      "start": "09:40",
+      "end": "12:10",
+      "subject": "BS-CH 291 (Chemistry Lab)",
+      "prof": "DKD(CHEM) / GRM(SASH)",
+      "room": "Chemistry-Lab1(SASH)"
+    },
+    {
+      "start": "13:50",
+      "end": "14:40",
+      "subject": "HS-MC201",
+      "prof": "NK(SASH)",
+      "room": "A204"
+    },
+    {
+      "start": "14:40",
+      "end": "15:30",
+      "subject": "BS-CH 201",
+      "prof": "AC(CHEM)",
+      "room": "A204"
+    },
+    {
+      "start": "15:30",
+      "end": "16:20",
+      "subject": "HM-HU 201",
+      "prof": "GJ(SASH)",
+      "room": "A204"
+    },
+    {
+      "start": "16:20",
+      "end": "17:10",
+      "subject": "ES-CS 201",
+      "prof": "JDS(DS)",
+      "room": "A204"
+    }
+  ] },
+  "holidays": [
+  { "date": "2026-01-01", "name": "New Year's Day" },
+  { "date": "2026-01-12", "name": "Birth Day of Swami Vivekananda" },
+  { "date": "2026-01-23", "name": "Birthday of Netaji Subhas Ch. Bose" },
+  { "date": "2026-01-23", "name": "Shree Panchami" },
+  { "date": "2026-01-26", "name": "Republic Day" },
+  { "date": "2026-02-04", "name": "Sab-e-Barat" },
+  { "date": "2026-02-15", "name": "Shivaratri" },
+  { "date": "2026-03-03", "name": "Doljatra" },
+  { "date": "2026-03-04", "name": "Holi" },
+  { "date": "2026-03-21", "name": "Id-ul-Fitre" },
+  { "date": "2026-03-31", "name": "Mahavir Jayanti" },
+  { "date": "2026-04-03", "name": "Good Friday" },
+  { "date": "2026-04-14", "name": "Birthday of Dr. B. R. Ambedkar" },
+  { "date": "2026-04-15", "name": "Bengali New Year's Day" },
+  { "date": "2026-05-01", "name": "May Day" },
+  { "date": "2026-05-01", "name": "Buddha Purnima" },
+  { "date": "2026-05-09", "name": "Birthday of Rabindranath Tagore" },
+  { "date": "2026-05-27", "name": "Id-Uz-Zoha" },
+  { "date": "2026-06-26", "name": "Muharram" },
+  { "date": "2026-08-15", "name": "Independence Day" },
+  { "date": "2026-08-26", "name": "Fateha Doaz Daham" },
+  { "date": "2026-09-04", "name": "Janmastami" },
+  { "date": "2026-09-17", "name": "Viswakarma Puja" },
+  { "date": "2026-10-02", "name": "Birthday of Gandhiji" },
+  { "date": "2026-10-10", "name": "Mahalaya" },
+  { "date": "2026-10-17", "name": "Durgapuja to Lakshmi Puja" },
+  { "date": "2026-10-18", "name": "Durgapuja to Lakshmi Puja" },
+  { "date": "2026-10-19", "name": "Durgapuja to Lakshmi Puja" },
+  { "date": "2026-10-20", "name": "Durgapuja to Lakshmi Puja" },
+  { "date": "2026-10-21", "name": "Durgapuja to Lakshmi Puja" },
+  { "date": "2026-10-22", "name": "Durgapuja to Lakshmi Puja" },
+  { "date": "2026-10-23", "name": "Durgapuja to Lakshmi Puja" },
+  { "date": "2026-10-24", "name": "Durgapuja to Lakshmi Puja" },
+  { "date": "2026-10-25", "name": "Durgapuja to Lakshmi Puja" },
+  { "date": "2026-11-08", "name": "Kalipuja, Diwali & Bhatridwitiya" },
+  { "date": "2026-11-09", "name": "Kalipuja, Diwali & Bhatridwitiya" },
+  { "date": "2026-11-10", "name": "Kalipuja, Diwali & Bhatridwitiya" },
+  { "date": "2026-11-11", "name": "Kalipuja, Diwali & Bhatridwitiya" },
+  { "date": "2026-11-15", "name": "Chhat Puja" },
+  { "date": "2026-11-24", "name": "Birthday of Guru Nanak" },
+  { "date": "2026-12-25", "name": "Christmas Day" }
+],
   "unlistedHolidays": [
-    "2026-03-02"
+    "2026-03-01"
   ],
   "exams": [
     {

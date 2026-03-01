@@ -51,6 +51,14 @@ async function initializeApp() {
         }
         navigateTo(section, true);
     }
+
+    // Refresh schedule timer every 60 seconds (local update, NO Supabase hits)
+    setInterval(() => {
+        const homeSection = document.getElementById('section-home');
+        if (homeSection && !homeSection.classList.contains('hidden')) {
+            if (typeof renderLiveSchedule === 'function') renderLiveSchedule();
+        }
+    }, 60000);
 }
 
 // Popstate listener to handle browser back/forward buttons
@@ -567,6 +575,43 @@ function renderLiveSchedule() {
             if (todayRoutine.length === 0) {
                 html += `<div class="status-card">No classes scheduled for today.</div>`;
             } else {
+                const firstClassStart = timeToMins(todayRoutine[0].start);
+                const lastClassEnd = timeToMins(todayRoutine[todayRoutine.length - 1].end);
+
+                // Check for early morning
+                if (currentTimeMins < firstClassStart) {
+                    const diff = firstClassStart - currentTimeMins;
+                    html += `
+                    <div class="status-card" style="border-color: var(--electric-blue); background: rgba(var(--theme-color-rgb), 0.05); margin-bottom: 1.5rem;">
+                        <div style="color: var(--electric-blue); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px;">Coming Up</div>
+                        <h4 style="color: var(--text-main); font-size: 1.15rem; margin-bottom: 8px;">Classes start at ${todayRoutine[0].start}</h4>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Starting in ${Math.floor(diff / 60)}h ${diff % 60}m</div>
+                    </div>`;
+                }
+
+                // Check for Breaks
+                let activeBreak = null;
+                for (let i = 0; i < todayRoutine.length - 1; i++) {
+                    const endMins = timeToMins(todayRoutine[i].end);
+                    const nextStartMins = timeToMins(todayRoutine[i + 1].start);
+                    if (currentTimeMins >= endMins && currentTimeMins < nextStartMins) {
+                        activeBreak = { start: todayRoutine[i].end, end: todayRoutine[i + 1].start, remMins: nextStartMins - currentTimeMins };
+                        break;
+                    }
+                }
+
+                if (activeBreak) {
+                    html += `
+                    <div class="status-card break-card" style="border-color: var(--gold-color); background: rgba(251, 191, 36, 0.05); margin-bottom: 1.5rem; text-align: center;">
+                        <div style="color: var(--gold-color); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 8px;">☕ Taking a Break</div>
+                        <h3 style="color: var(--text-main); font-size: 1.5rem; margin-bottom: 8px;">Intermission</h3>
+                        <div class="break-timer" style="font-size: 2rem; font-weight: 800; color: var(--gold-color); font-family: 'Courier New', monospace;">
+                            ${activeBreak.remMins} <span style="font-size: 1rem; opacity: 0.7;">MINS LEFT</span>
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Next Class: ${activeBreak.end}</div>
+                    </div>`;
+                }
+
                 html += `<div class="routine-list">`;
                 let classesOver = true;
 
@@ -574,23 +619,28 @@ function renderLiveSchedule() {
                     const startMins = timeToMins(cls.start);
                     const endMins = timeToMins(cls.end);
                     const isLive = currentTimeMins >= startMins && currentTimeMins <= endMins;
+                    const isCompleted = currentTimeMins > endMins;
                     if (currentTimeMins <= endMins) classesOver = false;
 
                     html += `
-                    <div class="class-card ${isLive ? 'live-card' : ''}">
+                    <div class="class-card ${isLive ? 'live-card' : ''} ${isCompleted ? 'completed-card' : ''}">
                         <div class="class-time">${cls.start} - ${cls.end}</div>
                         <div class="class-details">
-                            <div class="class-subject">${cls.subject} ${isLive ? '<span class="live-badge">🔴 LIVE NOW</span>' : ''}</div>
+                            <div class="class-subject">
+                                ${cls.subject} 
+                                ${isLive ? '<span class="live-badge">🔴 LIVE NOW</span>' : ''}
+                                ${isCompleted ? '<span class="done-badge"><i class="ph ph-check-circle"></i> Done</span>' : ''}
+                            </div>
                             <div class="class-meta">
                                 <span><i class="ph ph-user"></i> ${cls.prof}</span>
-                                <span><i class="ph ph-map-pin"></i> ${cls.room}</span>
+                                <span style="margin-left:auto"><i class="ph ph-map-pin"></i> ${cls.room}</span>
                             </div>
                         </div>
                     </div>`;
                 });
                 html += `</div>`;
 
-                if (classesOver && todayRoutine.length > 0 && currentTimeMins > timeToMins(todayRoutine[todayRoutine.length - 1].end)) {
+                if (classesOver && todayRoutine.length > 0 && currentTimeMins > lastClassEnd) {
                     html += `<div class="classes-over-msg text-muted mt-3 text-center" style="font-size: 0.9rem;">Classes are over for today.</div>`;
                 }
             }
