@@ -415,7 +415,12 @@ function renderUpdates(tab) {
         <div class="feed-hashtags">${n.hashtags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
         <p>${n.content}</p>
         ${n.img ? `<img src="${n.img}" class="feed-img">` : ''}
-        ${n.pdf !== '#' ? `<a href="${n.pdf}" class="btn-outline mt-3">Read Full PDF <i class="ph ph-file-pdf"></i></a>` : ''}
+        ${n.pdf !== '#' ? `
+          <div style="text-align: left; margin-top: 1rem;">
+            <button onclick="openPdfModal('${n.title.replace(/'/g, "\\'")}', '${n.pdf}')" class="btn-outline btn-small">
+              Read Full PDF <i class="ph ph-file-pdf"></i>
+            </button>
+          </div>` : ''}
       </div>
     `).join('');
     } else {
