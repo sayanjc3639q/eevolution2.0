@@ -649,6 +649,19 @@ function renderLiveSchedule() {
 
     html += `</div>`;
     container.innerHTML = html;
+
+    // Auto-scroll to LIVE or first UPCOMING class on mobile
+    if (window.innerWidth <= 600) {
+        setTimeout(() => {
+            const list = container.querySelector('.routine-list');
+            const targetCard = container.querySelector('.live-card') || container.querySelector('.class-card:not(.completed-card)');
+            if (list && targetCard) {
+                // Center the target card
+                const scrollPos = targetCard.offsetLeft - (list.offsetWidth / 2) + (targetCard.offsetWidth / 2);
+                list.scrollTo({ left: scrollPos, behavior: 'smooth' });
+            }
+        }, 300); // Small delay to ensure rendering is complete
+    }
 }
 
 function renderFullRoutine() {

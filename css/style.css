@@ -2580,7 +2580,9 @@ input[type="text"]:focus {
 
 .live-card {
   border-color: #ef4444;
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+  border-width: 2px;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+  background-color: rgba(239, 68, 68, 0.02);
 }
 
 .live-badge {
@@ -2590,25 +2592,12 @@ input[type="text"]:focus {
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 700;
-  animation: pulse-red 1.5s infinite;
   display: flex;
   align-items: center;
   gap: 0.35rem;
 }
 
-@keyframes pulse-red {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-  }
 
-  70% {
-    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
-}
 
 .full-routine-table,
 .holiday-table {
