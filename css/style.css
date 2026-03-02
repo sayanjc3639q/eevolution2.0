@@ -263,16 +263,34 @@ ol {
 
 .logo {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   color: var(--text-main);
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
 }
 
 .logo i {
   color: var(--electric-blue);
+  filter: drop-shadow(0 0 10px rgba(var(--theme-color-rgb), 0.5));
 }
+
+.logo span {
+  background: linear-gradient(135deg, var(--text-main) 30%, var(--electric-blue) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo .accent {
+  -webkit-text-fill-color: var(--electric-blue);
+  text-shadow: 0 0 15px rgba(var(--theme-color-rgb), 0.3);
+}
+
+
+
 
 .nav-links {
   padding: 1.5rem 0;
@@ -547,9 +565,23 @@ input[type="text"]:focus {
 }
 
 .hero h1 {
-  font-size: 3rem;
+  font-size: 3.5rem;
+  font-weight: 800;
   margin-bottom: 1rem;
+  letter-spacing: -1.5px;
+  background: linear-gradient(to right, #fff, var(--electric-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
 }
+
+
+.hero h1 .accent {
+  -webkit-text-fill-color: var(--electric-blue);
+  text-shadow: 0 0 20px rgba(var(--theme-color-rgb), 0.4);
+}
+
 
 .hero p {
   font-size: 1.2rem;
