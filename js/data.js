@@ -66,6 +66,23 @@ async function fetchJSONData() {
                 } else {
                     siteData.events = [];
                 }
+
+
+                // Fetch Donations
+                const { data: supabaseDonations, error: donError } = await supabaseClient
+                    .from('donations')
+                    .select('*')
+                    .order('date', { ascending: false });
+
+                if (!donError && supabaseDonations && supabaseDonations.length > 0) {
+                    siteData.donators = supabaseDonations.map(d => ({
+                        name: d.name,
+                        amount: `₹${d.amount}`,
+                        date: d.date
+                    }));
+                }
+                // If supabase is empty, siteData.donators remains from donators.json (initial fetch)
+
             } catch (err) {
                 console.warn("Could not fetch data from Supabase.", err);
                 siteData.studyMaterials = siteData.studyMaterials || [];

@@ -60,7 +60,16 @@
         .admin-pane {
             margin-top: 1rem;
         }
+
+        .search-item:hover {
+            background: var(--bg-hover) !important;
+        }
+
+        #don-search-results::-webkit-scrollbar {
+            width: 6px;
+        }
     </style>
+
 </head>
 
 <body class="dark-theme" style="min-height: 100dvh; background: var(--bg-dark);">
@@ -83,9 +92,57 @@
                 <button class="btn-primary btn-small" onclick="showAdminTab('materials')">Manage Materials</button>
                 <button class="btn-primary btn-small" onclick="showAdminTab('notices')">Manage Notices</button>
                 <button class="btn-primary btn-small" onclick="showAdminTab('events')">Manage Events</button>
+                <button class="btn-primary btn-small" style="background: var(--accent-color);"
+                    onclick="showAdminTab('donations')">Manage Donations</button>
                 <button class="btn-primary btn-small" style="background: #ef4444;"
                     onclick="showAdminTab('settings')">System Settings</button>
             </div>
+
+            <!-- DONATIONS PANEL -->
+            <div id="admin-pane-donations" class="admin-pane hidden">
+                <div class="card mb-4">
+                    <h3><i class="ph ph-hand-heart"></i> Add New Donation</h3>
+                    <form id="add-donation-form" onsubmit="handleAddDonation(event)"
+                        style="display: grid; gap: 1rem; margin-top: 1rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 150px; gap: 1rem;">
+                            <div style="position: relative;">
+                                <input type="text" id="don-student-search" placeholder="Search Student Name or Roll..."
+                                    class="form-input" autocomplete="off" oninput="filterDonationSearch()">
+                                <div id="don-search-results" class="hidden"
+                                    style="position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; z-index: 50; max-height: 200px; overflow-y: auto; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+                                    <!-- Results via JS -->
+                                </div>
+                                <input type="hidden" id="don-student-name" required>
+                                <input type="hidden" id="don-student-roll" required>
+                            </div>
+                            <input type="text" id="don-amount" placeholder="Amount (e.g. 500)" required
+                                class="form-input">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <input type="date" id="don-date" class="form-input" required>
+                            <button type="submit" id="btn-add-donation" class="btn-primary">Add Donation <i
+                                    class="ph ph-heart-straight"></i></button>
+                        </div>
+                    </form>
+                </div>
+                <h3>Hall of Heroes (Donations)</h3>
+                <div class="admin-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Donor Name</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donations-table-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
 
             <!-- SYSTEM SETTINGS PANEL -->
             <div id="admin-pane-settings" class="admin-pane hidden">

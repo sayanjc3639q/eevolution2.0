@@ -33,7 +33,17 @@ async function initAdmin() {
     loadUsers();
     loadAdminSubjects();
     loadSystemSettings();
+    loadStudentsForDonations();
 }
+
+let studentsDict = {};
+async function loadStudentsForDonations() {
+    try {
+        const response = await fetch('data/students.json');
+        studentsDict = await response.json();
+    } catch (e) { console.error("Failed to load students for donations", e); }
+}
+
 
 // System Settings Logic (Utilizing 'notices' table to bypass RLS on 'profiles')
 let testModeActive = false;
@@ -143,7 +153,9 @@ window.showAdminTab = function (tabName) {
     if (tabName === 'materials') loadAdminMaterials();
     if (tabName === 'notices') loadAdminNotices();
     if (tabName === 'events') loadAdminEvents();
+    if (tabName === 'donations') loadAdminDonations();
 };
+
 
 async function loadAdminEvents() {
     const tbody = document.getElementById('events-table-body');
@@ -433,4 +445,136 @@ window.saveUser = async function (userId) {
         showToast("User updated successfully!", "success");
     }
 };
+
+/* ================= DONATION MANAGEMENT ================= */
+
+window.filterDonationSearch = function () {
+    const input = document.getElementById('don-student-search');
+    const results = document.getElementById('don-search-results');
+    if (!input || !results) return;
+    const query = input.value ? input.value.toLowerCase().trim() : "";
+
+    if (query.length < 2) {
+        results.classList.add('hidden');
+        return;
+    }
+
+    const matches = Object.entries(studentsDict || {})
+        .filter(([roll, name]) => name.toLowerCase().includes(query) || roll.includes(query))
+        .slice(0, 10);
+
+    if (matches.length > 0) {
+        results.innerHTML = matches.map(([roll, name]) => `
+            <div class="search-item" onclick="selectDonationStudent('${name.replace(/'/g, "\\'")}', '${roll}')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-size: 0.9rem;">
+                <strong>${name}</strong> <span class="text-muted">(${roll})</span>
+            </div>
+        `).join('');
+        results.classList.remove('hidden');
+    } else {
+        results.classList.add('hidden');
+    }
+};
+
+window.selectDonationStudent = function (name, roll) {
+    document.getElementById('don-student-search').value = `${name} (${roll})`;
+    document.getElementById('don-student-name').value = name;
+    document.getElementById('don-student-roll').value = roll;
+    document.getElementById('don-search-results').classList.add('hidden');
+};
+
+async function loadAdminDonations() {
+    const tbody = document.getElementById('donations-table-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center">Loading...</td></tr>`;
+
+    const { data, error } = await supabaseClient
+        .from('donations')
+        .select('*')
+        .order('date', { ascending: false });
+
+    if (error) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-error">Error: ${error.message}</td></tr>`;
+        return;
+    }
+
+    if (!data || !data.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No donations recorded in Supabase yet.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = data.map(d => `
+        <tr>
+            <td><strong>${d.name}</strong><br><small class="text-muted">${d.roll_number || 'No Roll'}</small></td>
+            <td class="text-accent">₹${d.amount}</td>
+            <td class="text-sm">${d.date}</td>
+            <td>
+                <button class="btn-outline btn-small" style="color: #ef4444;" onclick="handleDeleteDonation('${d.id}')">
+                    <i class="ph ph-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.handleAddDonation = async function (e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-add-donation');
+    const originalText = btn.innerHTML;
+
+    const name = document.getElementById('don-student-name').value;
+    const roll = document.getElementById('don-student-roll').value;
+    const amountStr = document.getElementById('don-amount').value.replace('₹', '').trim();
+    const date = document.getElementById('don-date').value;
+
+    if (!name || !amountStr || !date) {
+        showToast("Please select a student from results and fill all fields", "error");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = `Adding... <i class="ph ph-spinner ph-spin"></i>`;
+
+    const { error } = await supabaseClient
+        .from('donations')
+        .insert([{
+            name: name,
+            roll_number: roll,
+            amount: parseFloat(amountStr),
+            date: date
+        }]);
+
+    if (error) {
+        showToast("Failed to add donation: " + error.message, "error");
+    } else {
+        showToast("Donation added successfully!", "success");
+        e.target.reset();
+        document.getElementById('don-student-search').value = "";
+        loadAdminDonations();
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+};
+
+window.handleDeleteDonation = async function (id) {
+    if (!confirm("Are you sure you want to delete this donation record?")) return;
+
+    const { error } = await supabaseClient
+        .from('donations')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        showToast("Failed to delete: " + error.message, "error");
+    } else {
+        showToast("Donation record deleted.", "success");
+        loadAdminDonations();
+    }
+};
+
+// Set default date for donation form
+const donDateInput = document.getElementById('don-date');
+if (donDateInput) donDateInput.value = new Date().toISOString().split('T')[0];
+
 
