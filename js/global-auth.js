@@ -187,10 +187,26 @@ async function checkAuth() {
 const logoutBtn = document.getElementById('nav-logout-btn');
 const mainLogoutBtn = document.getElementById('logout-btn');
 
-const handleLogout = async () => {
-    await supabaseClient.auth.signOut();
+const handleLogout = () => {
+    // 1. Optimistic UI update: Hide authenticated areas immediately for "instant" feel
+    const authElements = document.querySelectorAll('#auth-navbar-area, #profile-details, #feed-composer, #admin-panel-btn');
+    const unauthElements = document.querySelectorAll('#unauth-navbar-area, .not-logged-in, #upi-auth-gate');
+
+    authElements.forEach(el => el.classList.add('hidden'));
+    unauthElements.forEach(el => el.classList.remove('hidden'));
+
+    // Reset global state flags
+    window.isLoggedIn = false;
+    window.currentProfile = null;
+
+    // 2. Trigger background sign out (storage is usually cleared synchronously)
+    supabaseClient.auth.signOut();
+
+    // 3. Immediately reload to ensure a clean application state
+    // We don't await because the storage is already wiped and we want to stop user interaction instantly
     window.location.reload();
 };
+
 
 if (logoutBtn) logoutBtn.onclick = handleLogout;
 if (mainLogoutBtn) mainLogoutBtn.onclick = handleLogout;
