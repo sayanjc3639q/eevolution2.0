@@ -425,12 +425,13 @@ async function renderHomeData() {
             ${'<i class="ph-fill ph-star"></i>'.repeat(r.rating)}${'<i class="ph ph-star"></i>'.repeat(5 - r.rating)}
           </div>
         </div>
-        <p class="review-text">"${r.review}"</p>
+        <p class="review-text">"${escapeHTML(r.review)}"</p>
         <div class="review-author">
-          <strong>${r.name}</strong>
-          <div>${r.roll}</div>
+          <strong>${escapeHTML(r.name)}</strong>
+          <div>${escapeHTML(r.roll)}</div>
         </div>
       </div>
+
     `).join('');
     }
 }
@@ -444,11 +445,12 @@ function renderUpdates(tab) {
 
       <div class="feed-item notice-item">
         <div class="feed-header">
-            <h3>${n.title}</h3>
+            <h3>${escapeHTML(n.title)}</h3>
             <span class="date-badge"><i class="ph ph-calendar-blank"></i> ${formatFullDate(n.date)}</span>
         </div>
-        <div class="feed-hashtags">${n.hashtags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-        <p>${n.content}</p>
+        <div class="feed-hashtags">${n.hashtags.map(t => `<span class="tag">${escapeHTML(t)}</span>`).join('')}</div>
+
+        <p>${escapeHTML(n.content)}</p>
         ${n.img ? `<img src="${n.img}" class="feed-img">` : ''}
         ${n.pdf !== '#' ? `
           <div style="text-align: left; margin-top: 1rem;">

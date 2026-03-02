@@ -2,6 +2,17 @@
 const supabaseUrl = 'https://ee-db-proxy.electricalevolution2-0.workers.dev';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ua3l0Z3lndXNmeG5ncmRuc2VnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NTg2MzAsImV4cCI6MjA4NzMzNDYzMH0.A_upRIOaFRCFVMPVX2VVXornCtG3pGVQ7qLYBwijIUs';
 
+// Global Security Utils
+window.escapeHTML = function (str) {
+    if (!str) return "";
+    return str.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+};
+
 // Initialize Supabase Client
 // We attach it to the window object so other scripts can access it globally.
 window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {

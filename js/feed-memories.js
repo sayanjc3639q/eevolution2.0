@@ -163,9 +163,10 @@ async function renderSinglePost(post, prepend = false) {
                     <img src="${avatarUrl}" class="avatar-img" style="width: 100%; height: 100%;" alt="Avatar">
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                    <strong style="font-size: 1.05rem; color: var(--text-main); font-weight: 600;">${displayName}</strong>
+                    <strong style="font-size: 1.05rem; color: var(--text-main); font-weight: 600;">${escapeHTML(displayName)}</strong>
                     <span class="feed-date text-muted" style="font-size:0.8rem; margin-top: 3px;">${timeString}</span>
                 </div>
+
             </div>
             ${window.currentProfile && window.currentProfile.is_admin ? `
                 <button class="btn-outline btn-small text-danger" title="Delete Post" onclick="deleteFeedPost('${post.id}')" style="padding: 0.4rem; min-width: 32px; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);">
@@ -174,8 +175,9 @@ async function renderSinglePost(post, prepend = false) {
             ` : ''}
         </div>
         <div style="padding: 1.25rem; background: var(--bg-surface);">
-            <p style="word-break: break-word; font-size: 1.05rem; line-height: 1.6; color: var(--text-main); margin-bottom: 0; white-space: pre-wrap;">${post.content}</p>
+            <p style="word-break: break-word; font-size: 1.05rem; line-height: 1.6; color: var(--text-main); margin-bottom: 0; white-space: pre-wrap;">${escapeHTML(post.content)}</p>
         </div>
+
         <div class="feed-actions" style="display:flex; gap:0.75rem; padding: 0.8rem 1.25rem; border-top: 1px solid var(--border-color); background: var(--bg-surface);">
             <button class="btn-outline btn-small ${hasLiked ? 'liked' : ''}" onclick="handleFeedAction('${post.id}', 'likes')" style="border-radius: 20px; display: flex; align-items: center; gap: 0.5rem; flex: 1; justify-content: center; padding: 0.5rem;">
                 <i class="${hasLiked ? 'ph-fill' : 'ph'} ph-thumbs-up" style="font-size: 1.15rem;"></i> 
@@ -469,14 +471,16 @@ window.renderMemories = async function () {
                         <img src="${userAvatar}" class="avatar-img" style="width: 100%; height: 100%;" alt="Avatar">
                     </div>
                     <div style="display: flex; flex-direction: column;">
-                        <strong style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;">${posterName} (${m.roll_number || 'N/A'})</strong>
+                        <strong style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;">${escapeHTML(posterName)} (${escapeHTML(m.roll_number || 'N/A')})</strong>
                         ${timeString ? `<span class="text-muted" style="font-size:0.75rem; margin-top: 2px;">${timeString}</span>` : ''}
                     </div>
+
                 </div>
             </div>
-            <img src="${m.image_url}" alt="${m.caption}" style="width: 100%; display: block; object-fit: cover; max-height: 400px;">
+            <img src="${escapeHTML(m.image_url)}" alt="${escapeHTML(m.caption)}" style="width: 100%; display: block; object-fit: cover; max-height: 400px;">
             <div class="gallery-item-content" style="padding: 1rem;">
-                <p style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--text-main);"><strong>${m.caption}</strong></p>
+                <p style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--text-main);"><strong>${escapeHTML(m.caption)}</strong></p>
+
                 <div class="gallery-actions" style="display:flex; gap:0.5rem; justify-content: space-between;">
                     <button class="btn-outline btn-small ${hasLiked ? 'liked' : ''}" onclick="likeMemory('${m.id}')" ${hasLiked ? 'disabled' : ''} style="flex: 1; justify-content: center;">
                         <i class="${hasLiked ? 'ph-fill' : 'ph'} ph-heart"></i> ${lCount} Likes
@@ -643,10 +647,11 @@ window.fetchComments = async function (photoId) {
             const displayName = profileMap[c.roll_number] ? `${profileMap[c.roll_number]} (${c.roll_number})` : c.roll_number;
             html += `
               <div style="background:var(--bg-surface); padding: 0.75rem; border-radius:4px; font-size:0.85rem; border:1px solid var(--border-color);">
-                 <strong><i class="ph ph-user"></i> ${displayName}</strong><br>
-                 <span style="color:var(--text-main); display:inline-block; margin-top:4px;">${c.comment_text}</span>
+                 <strong><i class="ph ph-user"></i> ${escapeHTML(displayName)}</strong><br>
+                 <span style="color:var(--text-main); display:inline-block; margin-top:4px;">${escapeHTML(c.comment_text)}</span>
                  <div style="font-size:0.7rem; color:var(--text-muted); margin-top:6px; text-align:right;">${new Date(c.created_at).toLocaleString()}</div>
               </div>
+
             `;
         });
         html += `</div>`;
