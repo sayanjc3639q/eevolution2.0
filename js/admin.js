@@ -32,7 +32,109 @@ async function initAdmin() {
 
     loadUsers();
     loadAdminSubjects();
+    loadSystemSettings();
 }
+
+// System Settings Logic (Utilizing 'notices' table to bypass RLS on 'profiles')
+let testModeActive = false;
+async function loadSystemSettings() {
+    const { data, error } = await supabaseClient
+        .from('notices')
+        .select('*')
+        .eq('title', '[SYSTEM_CONFIG_TEST_MODE]')
+        .maybeSingle();
+
+    if (data) {
+        testModeActive = true;
+        updateTestUI(true, data.content || 'NOT_GENERATED');
+    } else {
+        testModeActive = false;
+        updateTestUI(false, 'NOT_GENERATED');
+    }
+}
+
+window.toggleTestMode = async function () {
+    const newState = !testModeActive;
+    let codeToSave = document.getElementById('current-test-code').innerText;
+
+    if (newState) {
+        if (codeToSave === 'NOT_GENERATED' || codeToSave === 'INIT') {
+            codeToSave = Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        // Optimistic UI
+        updateTestUI(true, codeToSave);
+
+        const { error } = await supabaseClient
+            .from('notices')
+            .insert([{
+                title: '[SYSTEM_CONFIG_TEST_MODE]',
+                content: codeToSave,
+                date: new Date().toISOString().split('T')[0],
+                hashtags: ['#system']
+            }]);
+
+        if (error) {
+            showToast("Error enabling test mode: " + error.message, "error");
+            loadSystemSettings();
+        } else {
+            testModeActive = true;
+            showToast("Test Mode Enabled", "success");
+        }
+    } else {
+        // Optimistic UI
+        updateTestUI(false, 'NOT_GENERATED');
+
+        const { error } = await supabaseClient
+            .from('notices')
+            .delete()
+            .eq('title', '[SYSTEM_CONFIG_TEST_MODE]');
+
+        if (error) {
+            showToast("Error disabling test mode: " + error.message, "error");
+            loadSystemSettings();
+        } else {
+            testModeActive = false;
+            showToast("Test Mode Disabled", "success");
+        }
+    }
+};
+
+window.generateTestCode = async function () {
+    const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    document.getElementById('current-test-code').innerText = newCode;
+
+    const { error } = await supabaseClient
+        .from('notices')
+        .update({ content: newCode })
+        .eq('title', '[SYSTEM_CONFIG_TEST_MODE]');
+
+    if (error) showToast("Error saving code: " + error.message, "error");
+    else showToast("New code generated!", "success");
+};
+
+
+function updateTestUI(active, code) {
+    const btn = document.getElementById('test-mode-toggle');
+    const status = document.getElementById('test-mode-status');
+    const generator = document.getElementById('test-code-generator');
+    const codeDisplay = document.getElementById('current-test-code');
+
+    if (active) {
+        btn.innerHTML = `<i class="ph ph-toggle-right text-success"></i> Test Mode: ON`;
+        status.innerText = 'Status: ACTIVE';
+        status.className = 'text-success';
+        generator.classList.remove('hidden');
+        if (code !== 'STAYS_SAME') codeDisplay.innerText = code;
+    } else {
+        btn.innerHTML = `<i class="ph ph-toggle-left"></i> Test Mode: OFF`;
+        status.innerText = 'Status: INACTIVE';
+        status.className = 'text-error';
+        generator.classList.add('hidden');
+        codeDisplay.innerText = 'NOT_GENERATED';
+    }
+}
+
 
 // Tab Switching
 window.showAdminTab = function (tabName) {
@@ -132,12 +234,14 @@ async function loadAdminNotices() {
         return;
     }
 
-    if (!data || !data.length) {
+    const visibleNotices = data.filter(n => n.title !== '[SYSTEM_CONFIG_TEST_MODE]');
+    if (!visibleNotices.length) {
         tbody.innerHTML = `<tr><td colspan="3" class="text-center">No notices yet.</td></tr>`;
         return;
     }
 
-    tbody.innerHTML = data.map(n => `
+    tbody.innerHTML = visibleNotices.map(n => `
+
         <tr>
             <td>${n.title}</td>
             <td class="text-sm text-muted">${n.date}</td>

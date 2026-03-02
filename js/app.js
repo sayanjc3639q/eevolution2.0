@@ -431,7 +431,9 @@ function renderUpdates(tab) {
     const container = document.getElementById('updates-content');
     if (!currentData || !container) return;
     if (tab === 'notices') {
-        container.innerHTML = currentData.notices.map(n => `
+        const visibleNotices = currentData.notices.filter(n => n.title !== '[SYSTEM_CONFIG_TEST_MODE]');
+        container.innerHTML = visibleNotices.map(n => `
+
       <div class="feed-item notice-item">
         <div class="feed-header">
             <h3>${n.title}</h3>

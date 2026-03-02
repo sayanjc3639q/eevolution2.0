@@ -83,7 +83,41 @@
                 <button class="btn-primary btn-small" onclick="showAdminTab('materials')">Manage Materials</button>
                 <button class="btn-primary btn-small" onclick="showAdminTab('notices')">Manage Notices</button>
                 <button class="btn-primary btn-small" onclick="showAdminTab('events')">Manage Events</button>
+                <button class="btn-primary btn-small" style="background: #ef4444;"
+                    onclick="showAdminTab('settings')">System Settings</button>
             </div>
+
+            <!-- SYSTEM SETTINGS PANEL -->
+            <div id="admin-pane-settings" class="admin-pane hidden">
+                <div class="card mb-4" style="border-left: 4px solid #ef4444;">
+                    <h3><i class="ph ph-gear"></i> Developer Test Mode</h3>
+                    <p class="text-muted mb-4">Enable special registration access for roll number 000. When off, 000
+                        acts as an invalid entry.</p>
+
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <button id="test-mode-toggle" class="btn-outline" onclick="toggleTestMode()">
+                            <i class="ph ph-toggle-left"></i> Test Mode: OFF
+                        </button>
+                        <span id="test-mode-status" class="text-error" style="font-weight: 600;">Status: INACTIVE</span>
+                    </div>
+
+                    <div id="test-code-generator" class="hidden">
+                        <div class="card" style="background: var(--bg-surface); padding: 1.5rem;">
+                            <h4 style="margin-bottom: 1rem;"><i class="ph ph-key"></i> Current Access Code</h4>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <code id="current-test-code"
+                                    style="flex: 1; padding: 1rem; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; font-size: 1.2rem; text-align: center; letter-spacing: 2px;">NOT_GENERATED</code>
+                                <button class="btn-primary" onclick="generateTestCode()">Generate New Code <i
+                                        class="ph ph-arrows-counter-clockwise"></i></button>
+                            </div>
+                            <p class="text-muted mt-3" style="font-size: 0.85rem;"><i class="ph ph-info"></i> This code
+                                is required to register with roll number 000. It expires when test mode is turned off.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             <!-- USERS PANEL -->
             <div id="admin-pane-users" class="admin-pane active">

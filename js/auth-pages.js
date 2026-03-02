@@ -41,12 +41,8 @@ function setupVerificationListener() {
             const rollNum = parseInt(val);
 
             if (val === "000") {
-                // 1. Invalid Roll (000)
-                rollMessage.innerText = "Invalid roll number.";
-                rollMessage.classList.add("text-error");
-                nameInput.value = "";
-                nameInput.readOnly = false;
-                isVerified = false;
+                // Check if test mode is active
+                checkTestModeStatus();
             } else if (rollNum >= 1 && rollNum <= 72) {
                 // 2. Batch 1 Logic (001 to 072)
                 rollMessage.innerText = "Batch 1 members cannot register currently. Ask Admin for access.";
@@ -62,6 +58,7 @@ function setupVerificationListener() {
                 verifyCheck.classList.add('active');
                 isVerified = true;
                 registerBtn.disabled = false; // ENABLE ONLY HERE
+                document.getElementById('test-code-area').classList.add('hidden');
             } else {
                 // 4. Unknown Roll
                 rollMessage.innerText = "Roll number not found. Access denied.";
@@ -69,6 +66,7 @@ function setupVerificationListener() {
                 nameInput.value = "";
                 nameInput.readOnly = false;
                 isVerified = false;
+                document.getElementById('test-code-area').classList.add('hidden');
             }
         } else {
             // Partial input
@@ -77,9 +75,53 @@ function setupVerificationListener() {
                 nameInput.readOnly = false;
             }
             isVerified = false;
+            document.getElementById('test-code-area').classList.add('hidden');
         }
     });
 }
+
+async function checkTestModeStatus() {
+    const rollMessage = document.getElementById('roll-message');
+    const nameInput = document.getElementById('user-name');
+    const testArea = document.getElementById('test-code-area');
+    const registerBtn = document.getElementById('btn-register');
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('notices')
+            .select('*')
+            .eq('title', '[SYSTEM_CONFIG_TEST_MODE]')
+            .maybeSingle();
+
+        if (data) {
+            rollMessage.innerText = "Test Hub Access Detected.";
+            rollMessage.className = "text-sm mt-1 text-success";
+            nameInput.value = "Fetching Test Identity...";
+            nameInput.readOnly = true;
+            testArea.classList.remove('hidden');
+
+            // Fetch next test user number
+            const { count } = await supabaseClient
+                .from('profiles')
+                .select('*', { count: 'exact', head: true })
+                .ilike('name', 'Test User %');
+
+            nameInput.value = `Test User ${(count || 0) + 1}`;
+            registerBtn.disabled = false;
+            window.activeTestCode = data.content; // The code is stored in notice content
+        } else {
+            rollMessage.innerText = "Invalid roll number.";
+            rollMessage.classList.add("text-error");
+            nameInput.value = "";
+            nameInput.readOnly = false;
+            testArea.classList.add('hidden');
+        }
+    } catch (e) {
+
+        console.error("Test mode check failed", e);
+    }
+}
+
 
 function toggleAuthForm(formId) {
     document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
@@ -121,26 +163,40 @@ async function handleRegister(e) {
 
     const fullRoll = `25/EE/${rollLast3}`;
 
+    // 0. Test User Validation
+    if (rollLast3 === '000') {
+        const inputCode = document.getElementById('test-code-input').value.trim();
+        if (inputCode !== window.activeTestCode) {
+            showToast("Invalid Test Activation Code. Ask admin for the current code.", "error");
+            btn.disabled = false;
+            btn.innerHTML = 'Register <i class="ph ph-user-plus"></i>';
+            return;
+        }
+    }
+
     btn.disabled = true;
     btn.innerHTML = 'Checking... <i class="ph ph-spinner ph-spin"></i>';
 
-    // 1. Check if roll number is already registered
-    const { data: existingUser, error: checkError } = await supabaseClient
-        .from('profiles')
-        .select('id')
-        .eq('roll_number', fullRoll)
-        .maybeSingle();
+    // 1. Check if roll number is already registered (skip for test users to allow infinite testing)
+    if (rollLast3 !== '000') {
+        const { data: existingUser, error: checkError } = await supabaseClient
+            .from('profiles')
+            .select('id')
+            .eq('roll_number', fullRoll)
+            .maybeSingle();
 
-    if (checkError) {
-        console.error("Database check failed:", checkError);
+        if (checkError) {
+            console.error("Database check failed:", checkError);
+        }
+
+        if (existingUser) {
+            showToast("Roll Number already registered. Please login.", "error");
+            btn.disabled = false;
+            btn.innerHTML = 'Register <i class="ph ph-user-plus"></i>';
+            return;
+        }
     }
 
-    if (existingUser) {
-        showToast("Roll Number already registered. Please login.", "error");
-        btn.disabled = false;
-        btn.innerHTML = 'Register <i class="ph ph-user-plus"></i>';
-        return;
-    }
 
     // 2. Heuristic Email Validation
     if (!isEmailGenuine(name, email)) {
@@ -152,17 +208,21 @@ async function handleRegister(e) {
 
     btn.innerHTML = 'Registering... <i class="ph ph-spinner ph-spin"></i>';
 
+    // For test users, we append a timestamp to allow multiple '000' registrations in the DB
+    const finalRoll = rollLast3 === '000' ? `${fullRoll}-${Date.now()}` : fullRoll;
+
     const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: pass,
         options: {
             data: {
                 name: name,
-                roll_number: fullRoll,
-                is_batch2_verified: isVerified // Save verification flag
+                roll_number: finalRoll,
+                is_batch2_verified: rollLast3 === '000' ? true : isVerified // Test users are auto-verified
             }
         }
     });
+
 
     if (error) {
         showToast(error.message, "error");
@@ -202,7 +262,12 @@ async function handleForgot(e) {
  */
 function isEmailGenuine(fullName, email) {
     if (!fullName || !email) return false;
+
+    // Bypass for Test Users
+    if (fullName.startsWith('Test User')) return true;
+
     const cleanName = fullName.toLowerCase().trim();
+
     const emailPrefix = email.toLowerCase().split("@")[0];
 
     const nameParts = cleanName.split(" ");

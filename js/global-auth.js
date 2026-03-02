@@ -94,9 +94,9 @@ async function checkAuth() {
 
                 const isVerifiedUser = profile.is_batch2_verified === true ||
                     profile.is_admin === true ||
-                    (profile.role === 'admin') ||
                     isVerifiedByDict ||
                     (currentSessionUser.user_metadata && currentSessionUser.user_metadata.is_batch2_verified === true);
+
 
                 if (!isVerifiedUser) {
                     console.log("Member [Guest Mode]: Restricted access.");
@@ -187,8 +187,8 @@ async function checkAuth() {
 const logoutBtn = document.getElementById('nav-logout-btn');
 const mainLogoutBtn = document.getElementById('logout-btn');
 
-const handleLogout = () => {
-    // 1. Optimistic UI update: Hide authenticated areas immediately for "instant" feel
+const handleLogout = async () => {
+    // 1. Optimistic UI update: Instant visual feedback
     const authElements = document.querySelectorAll('#auth-navbar-area, #profile-details, #feed-composer, #admin-panel-btn');
     const unauthElements = document.querySelectorAll('#unauth-navbar-area, .not-logged-in, #upi-auth-gate');
 
@@ -199,13 +199,26 @@ const handleLogout = () => {
     window.isLoggedIn = false;
     window.currentProfile = null;
 
-    // 2. Trigger background sign out (storage is usually cleared synchronously)
-    supabaseClient.auth.signOut();
+    try {
+        // 2. Clear local session keys manually for extra safety and "instant" effect
+        // This ensures that even if reload is fast, the session is definitely gone
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.includes('supabase.auth.token')) {
+                localStorage.removeItem(key);
+            }
+        }
 
-    // 3. Immediately reload to ensure a clean application state
-    // We don't await because the storage is already wiped and we want to stop user interaction instantly
-    window.location.reload();
+        // 3. Await the official sign out to revoke the token on the server
+        await supabaseClient.auth.signOut();
+    } catch (err) {
+        console.error("Sign out error:", err);
+    } finally {
+        // 4. Force a hard reload to a clean state
+        window.location.href = 'index.html';
+    }
 };
+
 
 
 if (logoutBtn) logoutBtn.onclick = handleLogout;
