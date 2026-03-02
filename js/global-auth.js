@@ -75,12 +75,11 @@ async function checkAuth() {
 
                 // Header display
                 const headerName = document.getElementById('nav-user-first-name');
-                const headerCoins = document.getElementById('nav-user-coins');
                 if (headerName) {
                     const firstName = (profile.name || "Student").split(' ')[0];
                     headerName.innerText = firstName;
                 }
-                if (headerCoins) headerCoins.innerHTML = `<i class="ph-fill ph-coins"></i> ${profile.evo_coins || 0}`;
+
 
                 // GUEST MODE ENFORCEMENT logic
                 // 1. Load local dictionary to verify existing users who might have null flags

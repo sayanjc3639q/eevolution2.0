@@ -153,7 +153,9 @@ window.showAdminTab = function (tabName) {
     if (tabName === 'materials') loadAdminMaterials();
     if (tabName === 'notices') loadAdminNotices();
     if (tabName === 'events') loadAdminEvents();
+    if (tabName === 'holidays') loadAdminHolidays();
     if (tabName === 'donations') loadAdminDonations();
+
 };
 
 
@@ -578,3 +580,100 @@ const donDateInput = document.getElementById('don-date');
 if (donDateInput) donDateInput.value = new Date().toISOString().split('T')[0];
 
 
+
+/* ================= HOLIDAY MANAGEMENT ================= */
+
+async function loadAdminHolidays() {
+    const tbody = document.getElementById('holidays-table-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = `<tr><td colspan="3" class="text-center">Loading...</td></tr>`;
+
+    // --- Cleanup: Auto-delete past dates ---
+    const todayStr = new Date().toISOString().split('T')[0];
+    await supabaseClient
+        .from('holidays')
+        .delete()
+        .lt('date', todayStr);
+
+    const { data, error } = await supabaseClient
+        .from('holidays')
+        .select('*')
+        .order('date', { ascending: true });
+
+    if (error) {
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center text-error">Error: ${error.message}</td></tr>`;
+        return;
+    }
+
+    if (!data || !data.length) {
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">No unofficial holidays scheduled.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = data.map(h => `
+        <tr>
+            <td class="text-accent">${h.date}</td>
+            <td>${h.name || '<span class="text-muted">(No Name)</span>'}</td>
+            <td>
+                <button class="btn-outline btn-small" style="color: #ef4444;" onclick="handleDeleteHoliday('${h.id}')">
+                    <i class="ph ph-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.handleAddHoliday = async function (e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-add-holiday');
+    const originalText = btn.innerHTML;
+
+    const date = document.getElementById('hol-date').value;
+    const name = document.getElementById('hol-name').value;
+
+    if (!date) {
+        showToast("Please select a date", "error");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = `Adding... <i class="ph ph-spinner ph-spin"></i>`;
+
+    const { error } = await supabaseClient
+        .from('holidays')
+        .insert([{
+            date: date,
+            name: name || null
+        }]);
+
+    if (error) {
+        showToast("Failed to add holiday: " + error.message, "error");
+    } else {
+        showToast("Holiday added successfully!", "success");
+        e.target.reset();
+        loadAdminHolidays();
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+};
+
+window.handleDeleteHoliday = async function (id) {
+    if (!confirm("Are you sure you want to delete this holiday?")) return;
+
+    const { error } = await supabaseClient
+        .from('holidays')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        showToast("Failed to delete: " + error.message, "error");
+    } else {
+        showToast("Holiday removed.", "success");
+        loadAdminHolidays();
+    }
+};
+
+const holDateInput = document.getElementById('hol-date');
+if (holDateInput) holDateInput.value = new Date().toISOString().split('T')[0];

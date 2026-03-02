@@ -92,8 +92,10 @@
                 <button class="btn-primary btn-small" onclick="showAdminTab('materials')">Manage Materials</button>
                 <button class="btn-primary btn-small" onclick="showAdminTab('notices')">Manage Notices</button>
                 <button class="btn-primary btn-small" onclick="showAdminTab('events')">Manage Events</button>
+                <button class="btn-primary btn-small" onclick="showAdminTab('holidays')">Manage Holidays</button>
                 <button class="btn-primary btn-small" style="background: var(--accent-color);"
                     onclick="showAdminTab('donations')">Manage Donations</button>
+
                 <button class="btn-primary btn-small" style="background: #ef4444;"
                     onclick="showAdminTab('settings')">System Settings</button>
             </div>
@@ -310,8 +312,41 @@
                     </table>
                 </div>
             </div>
+            <!-- HOLIDAYS PANEL -->
+            <div id="admin-pane-holidays" class="admin-pane hidden">
+                <div class="card mb-4">
+                    <h3><i class="ph ph-calendar-x"></i> Add Unofficial Holiday</h3>
+                    <p class="text-muted mb-4">Add a date when classes will be cancelled (e.g., local holidays,
+                        strikes). Past dates will be automatically cleaned up.</p>
+                    <form id="add-holiday-form" onsubmit="handleAddHoliday(event)"
+                        style="display: grid; gap: 1rem; margin-top: 1rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <input type="date" id="hol-date" class="form-input" required>
+                            <input type="text" id="hol-name" placeholder="Name/Reason (Optional)" class="form-input">
+                        </div>
+                        <button type="submit" id="btn-add-holiday" class="btn-primary">Add Holiday <i
+                                class="ph ph-calendar-plus"></i></button>
+                    </form>
+                </div>
+                <h3>Unofficial Holidays List</h3>
+                <div class="admin-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name / Reason</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="holidays-table-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
+
 
     <script src="js/supabase-config.js"></script>
     <script src="js/admin.js"></script>

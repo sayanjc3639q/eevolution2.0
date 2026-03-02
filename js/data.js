@@ -68,6 +68,28 @@ async function fetchJSONData() {
                 }
 
 
+                // Fetch Holidays
+                try {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    // Auto-cleanup: Delete expired holidays from Supabase
+                    await supabaseClient.from('holidays').delete().lt('date', todayStr);
+
+                    const { data: supabaseHolidays, error: holError } = await supabaseClient
+                        .from('holidays')
+                        .select('*');
+
+                    if (!holError && supabaseHolidays) {
+                        siteData.schedule.holidays = [
+                            ...(siteData.schedule.holidays || []),
+                            ...supabaseHolidays.map(h => ({
+                                date: h.date,
+                                name: h.name || "Unofficial Holiday"
+                            }))
+                        ];
+                    }
+                } catch (e) { console.warn("Holiday sync failed", e); }
+
+
                 // Fetch Donations
                 const { data: supabaseDonations, error: donError } = await supabaseClient
                     .from('donations')
@@ -81,7 +103,10 @@ async function fetchJSONData() {
                         date: d.date
                     }));
                 }
+
+
                 // If supabase is empty, siteData.donators remains from donators.json (initial fetch)
+
 
             } catch (err) {
                 console.warn("Could not fetch data from Supabase.", err);
