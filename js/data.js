@@ -2,10 +2,8 @@
 async function fetchJSONData() {
     try {
         const urls = {
-            notices: 'data/notices.json',
             students: 'data/students.json',
             donators: 'data/donators.json',
-            events: 'data/events.json',
             subjects: 'data/subjects.json',
             reviews: 'data/reviews.json',
             schedule: 'data/scheduleData.json'
@@ -24,14 +22,15 @@ async function fetchJSONData() {
         // Convert array of entries back into a single object
         const siteData = Object.fromEntries(results);
 
-        // --- MIGRATION: Fetch Study Materials from Supabase instead of JSON ---
+        // --- MIGRATION: Fetch from Supabase ---
         if (window.supabaseClient) {
             try {
-                const { data: supabaseMaterials, error } = await supabaseClient
+                // Fetch Study Materials
+                const { data: supabaseMaterials, error: matError } = await supabaseClient
                     .from('study_materials')
                     .select('*');
 
-                if (!error && supabaseMaterials) {
+                if (!matError && supabaseMaterials) {
                     siteData.studyMaterials = supabaseMaterials.map(m => ({
                         ...m,
                         subjectId: m.subject_id,
@@ -40,8 +39,38 @@ async function fetchJSONData() {
                 } else {
                     siteData.studyMaterials = [];
                 }
+
+                // Fetch Notices
+                const { data: supabaseNotices, error: noticeError } = await supabaseClient
+                    .from('notices')
+                    .select('*')
+                    .order('date', { ascending: false });
+
+                if (!noticeError && supabaseNotices) {
+                    siteData.notices = supabaseNotices;
+                } else {
+                    siteData.notices = [];
+                }
+
+                // Fetch Events
+                const { data: supabaseEvents, error: eventError } = await supabaseClient
+                    .from('events')
+                    .select('*')
+                    .order('date', { ascending: true });
+
+                if (!eventError && supabaseEvents) {
+                    siteData.events = supabaseEvents.map(e => ({
+                        ...e,
+                        desc: e.description
+                    }));
+                } else {
+                    siteData.events = [];
+                }
             } catch (err) {
-                console.warn("Could not fetch study materials from Supabase, using JSON fallback.", err);
+                console.warn("Could not fetch data from Supabase.", err);
+                siteData.studyMaterials = siteData.studyMaterials || [];
+                siteData.notices = siteData.notices || [];
+                siteData.events = siteData.events || [];
             }
         }
 

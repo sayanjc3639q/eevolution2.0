@@ -82,6 +82,7 @@
                 <button class="btn-primary btn-small" onclick="showAdminTab('users')">Manage Users</button>
                 <button class="btn-primary btn-small" onclick="showAdminTab('materials')">Manage Materials</button>
                 <button class="btn-primary btn-small" onclick="showAdminTab('notices')">Manage Notices</button>
+                <button class="btn-primary btn-small" onclick="showAdminTab('events')">Manage Events</button>
             </div>
 
             <!-- USERS PANEL -->
@@ -146,10 +147,76 @@
                 </div>
             </div>
 
-            <!-- NOTICES PANEL (Future proofing) -->
+            <!-- NOTICES PANEL -->
             <div id="admin-pane-notices" class="admin-pane hidden">
-                <div class="card p-4">
-                    <p class="text-muted">Notices migration pending. Currently managed via notices.json.</p>
+                <div class="card mb-4">
+                    <h3><i class="ph ph-bell"></i> Create New Notice</h3>
+                    <form id="add-notice-form" onsubmit="handleAddNotice(event)"
+                        style="display: grid; gap: 1rem; margin-top: 1rem;">
+                        <input type="text" id="nt-title" placeholder="Notice Title..." required class="form-input">
+                        <textarea id="nt-content" placeholder="Content... (Mention important details)" required
+                            class="form-input" style="min-height: 100px; resize: vertical;"></textarea>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <input type="text" id="nt-hashtags" placeholder="Hashtags (comma separated: #News, #HIT)"
+                                class="form-input">
+                            <input type="date" id="nt-date" class="form-input">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <input type="url" id="nt-pdf" placeholder="PDF Link (Optional)" class="form-input">
+                            <input type="url" id="nt-img" placeholder="Image Link (Optional)" class="form-input">
+                        </div>
+                        <button type="submit" class="btn-primary">Post Notice <i
+                                class="ph ph-paper-plane-tilt"></i></button>
+                    </form>
+                </div>
+                <h3>Recent Notices</h3>
+                <div class="admin-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notices-table-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- EVENTS PANEL -->
+            <div id="admin-pane-events" class="admin-pane hidden">
+                <div class="card mb-4">
+                    <h3><i class="ph ph-calendar-plus"></i> Add New Event</h3>
+                    <form id="add-event-form" onsubmit="handleAddEvent(event)"
+                        style="display: grid; gap: 1rem; margin-top: 1rem;">
+                        <input type="text" id="ev-title" placeholder="Event Title..." required class="form-input">
+                        <textarea id="ev-desc" placeholder="Brief description..." required class="form-input"
+                            style="min-height: 80px; resize: vertical;"></textarea>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <input type="date" id="ev-date" required class="form-input">
+                            <input type="url" id="ev-link" placeholder="Registration Link (Optional)"
+                                class="form-input">
+                        </div>
+                        <button type="submit" class="btn-primary">Add Event <i class="ph ph-plus"></i></button>
+                    </form>
+                </div>
+                <h3>Scheduled Events</h3>
+                <div class="admin-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-table-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
