@@ -88,12 +88,12 @@ async function checkTestModeStatus() {
 
     try {
         const { data, error } = await supabaseClient
-            .from('notices')
-            .select('*')
-            .eq('title', '[SYSTEM_CONFIG_TEST_MODE]')
+            .from('system_config')
+            .select('value')
+            .eq('key', 'test_mode_code')
             .maybeSingle();
 
-        if (data) {
+        if (data && data.value && data.value !== 'DISABLED' && data.value !== 'INIT') {
             rollMessage.innerText = "Test Hub Access Detected.";
             rollMessage.className = "text-sm mt-1 text-success";
             nameInput.value = "Fetching Test Identity...";
@@ -108,7 +108,7 @@ async function checkTestModeStatus() {
 
             nameInput.value = `Test User ${(count || 0) + 1}`;
             registerBtn.disabled = false;
-            window.activeTestCode = data.content; // The code is stored in notice content
+            window.activeTestCode = data.value;
         } else {
             rollMessage.innerText = "Invalid roll number.";
             rollMessage.classList.add("text-error");
@@ -117,10 +117,10 @@ async function checkTestModeStatus() {
             testArea.classList.add('hidden');
         }
     } catch (e) {
-
         console.error("Test mode check failed", e);
     }
 }
+
 
 
 function toggleAuthForm(formId) {

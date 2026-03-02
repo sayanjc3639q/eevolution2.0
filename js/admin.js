@@ -48,20 +48,25 @@ async function loadStudentsForDonations() {
 // System Settings Logic (Utilizing 'notices' table to bypass RLS on 'profiles')
 let testModeActive = false;
 async function loadSystemSettings() {
-    const { data, error } = await supabaseClient
-        .from('notices')
-        .select('*')
-        .eq('title', '[SYSTEM_CONFIG_TEST_MODE]')
-        .maybeSingle();
+    try {
+        const { data, error } = await supabaseClient
+            .from('system_config')
+            .select('value')
+            .eq('key', 'test_mode_code')
+            .maybeSingle();
 
-    if (data) {
-        testModeActive = true;
-        updateTestUI(true, data.content || 'NOT_GENERATED');
-    } else {
-        testModeActive = false;
-        updateTestUI(false, 'NOT_GENERATED');
+        if (data && data.value && data.value !== 'DISABLED' && data.value !== 'INIT') {
+            testModeActive = true;
+            updateTestUI(true, data.value);
+        } else {
+            testModeActive = false;
+            updateTestUI(false, 'NOT_GENERATED');
+        }
+    } catch (e) {
+        console.error("Failed to load system settings", e);
     }
 }
+
 
 window.toggleTestMode = async function () {
     const newState = !testModeActive;
@@ -75,40 +80,36 @@ window.toggleTestMode = async function () {
         // Optimistic UI
         updateTestUI(true, codeToSave);
 
+        // Upsert into secure system_config table
         const { error } = await supabaseClient
-            .from('notices')
-            .insert([{
-                title: '[SYSTEM_CONFIG_TEST_MODE]',
-                content: codeToSave,
-                date: new Date().toISOString().split('T')[0],
-                hashtags: ['#system']
-            }]);
+            .from('system_config')
+            .upsert({ key: 'test_mode_code', value: codeToSave });
 
         if (error) {
             showToast("Error enabling test mode: " + error.message, "error");
             loadSystemSettings();
         } else {
             testModeActive = true;
-            showToast("Test Mode Enabled", "success");
+            showToast("Test Mode enabled & secured", "success");
         }
     } else {
         // Optimistic UI
         updateTestUI(false, 'NOT_GENERATED');
 
         const { error } = await supabaseClient
-            .from('notices')
-            .delete()
-            .eq('title', '[SYSTEM_CONFIG_TEST_MODE]');
+            .from('system_config')
+            .upsert({ key: 'test_mode_code', value: 'DISABLED' });
 
         if (error) {
             showToast("Error disabling test mode: " + error.message, "error");
             loadSystemSettings();
         } else {
             testModeActive = false;
-            showToast("Test Mode Disabled", "success");
+            showToast("Test Mode disabled", "success");
         }
     }
 };
+
 
 window.generateTestCode = async function () {
     const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
