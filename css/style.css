@@ -262,15 +262,18 @@ ol {
 }
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 800;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   color: var(--text-main);
   letter-spacing: -0.5px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
+
+
 
 .logo i {
   color: var(--electric-blue);
