@@ -7,7 +7,6 @@ async function fetchJSONData() {
             donators: 'data/donators.json',
             events: 'data/events.json',
             subjects: 'data/subjects.json',
-            studyMaterials: 'data/studyMaterials.json',
             reviews: 'data/reviews.json',
             schedule: 'data/scheduleData.json'
         };
@@ -24,6 +23,28 @@ async function fetchJSONData() {
 
         // Convert array of entries back into a single object
         const siteData = Object.fromEntries(results);
+
+        // --- MIGRATION: Fetch Study Materials from Supabase instead of JSON ---
+        if (window.supabaseClient) {
+            try {
+                const { data: supabaseMaterials, error } = await supabaseClient
+                    .from('study_materials')
+                    .select('*');
+
+                if (!error && supabaseMaterials) {
+                    siteData.studyMaterials = supabaseMaterials.map(m => ({
+                        ...m,
+                        subjectId: m.subject_id,
+                        desc: m.description
+                    }));
+                } else {
+                    siteData.studyMaterials = [];
+                }
+            } catch (err) {
+                console.warn("Could not fetch study materials from Supabase, using JSON fallback.", err);
+            }
+        }
+
         return siteData;
 
     } catch (error) {

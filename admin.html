@@ -39,6 +39,27 @@
             border-color: var(--electric-blue);
             outline: none;
         }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            border-color: var(--electric-blue);
+            outline: none;
+            background: var(--bg-hover);
+        }
+
+        .admin-pane {
+            margin-top: 1rem;
+        }
     </style>
 </head>
 
@@ -56,20 +77,80 @@
         </div>
 
         <div id="admin-content" class="hidden">
-            <div class="admin-table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Roll Number</th>
-                            <th>Coins</th>
-                            <th>Upload Count</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-table-body">
-                        <!-- Rendered by JS -->
-                    </tbody>
-                </table>
+            <!-- TABS FOR ADMIN PANELS -->
+            <div class="card mb-4 mt-4" style="display: flex; gap: 1rem; padding: 1rem;">
+                <button class="btn-primary btn-small" onclick="showAdminTab('users')">Manage Users</button>
+                <button class="btn-primary btn-small" onclick="showAdminTab('materials')">Manage Materials</button>
+                <button class="btn-primary btn-small" onclick="showAdminTab('notices')">Manage Notices</button>
+            </div>
+
+            <!-- USERS PANEL -->
+            <div id="admin-pane-users" class="admin-pane active">
+                <h3 class="mb-3">Update Student Stats</h3>
+                <div class="admin-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Coins</th>
+                                <th>Uploads</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MATERIALS PANEL -->
+            <div id="admin-pane-materials" class="admin-pane hidden">
+                <div class="card mb-4">
+                    <h3><i class="ph ph-plus-circle"></i> Add New Material</h3>
+                    <form id="add-material-form" onsubmit="handleAddMaterial(event)"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <input type="text" id="mat-name" placeholder="Name (e.g., Lec 1: Math Basics)" required
+                            class="form-input">
+                        <select id="mat-subject" required class="form-input">
+                            <option value="" disabled selected>Select Subject...</option>
+                            <!-- Populater via JS -->
+                        </select>
+                        <select id="mat-category" required class="form-input">
+                            <option value="digest">Evo Digest</option>
+                            <option value="modules">Modules</option>
+                            <option value="labs">Lab Notes</option>
+                            <option value="resources">Resources</option>
+                        </select>
+                        <input type="text" id="mat-chapter" placeholder="Chapter (Unit 1...)" class="form-input">
+                        <input type="text" id="mat-desc" placeholder="Brief description..." class="form-input">
+                        <input type="url" id="mat-link" placeholder="Gdrive/External Link" required class="form-input">
+                        <button type="submit" class="btn-primary" style="grid-column: 1 / -1;">Add Material <i
+                                class="ph ph-plus"></i></button>
+                    </form>
+                </div>
+                <h3>Existing Materials</h3>
+                <div class="admin-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Subject</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materials-table-body">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- NOTICES PANEL (Future proofing) -->
+            <div id="admin-pane-notices" class="admin-pane hidden">
+                <div class="card p-4">
+                    <p class="text-muted">Notices migration pending. Currently managed via notices.json.</p>
+                </div>
             </div>
         </div>
     </div>

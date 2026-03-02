@@ -331,10 +331,6 @@ function renderMaterialCards(category, subjectId, chapterName) {
     <div class="file-card">
       <h4>${item.name}</h4>
       <p>${item.desc}</p>
-      <div class="file-meta">
-         <span>By: ${item.uploadedBy}</span>
-         <span>${item.date} ${item.faculty ? `| ${item.faculty}` : ''}</span>
-      </div>
       <div class="file-actions" style="margin-top: 1.5rem;">
          <button onclick="openPdfModal('${item.name.replace(/'/g, "\\'")}', '${item.link}')" class="btn-outline file-view-btn">View Document <i class="ph ph-eye"></i></button>
       </div>
