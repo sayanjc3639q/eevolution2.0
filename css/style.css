@@ -576,10 +576,19 @@ input[type="text"]:focus {
   line-height: 1.1;
 }
 
+[data-theme="light"] .hero h1 {
+  background: linear-gradient(to right, var(--text-main), var(--electric-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
 
 .hero h1 .accent {
   -webkit-text-fill-color: var(--electric-blue);
   text-shadow: 0 0 20px rgba(var(--theme-color-rgb), 0.4);
+}
+
+[data-theme="light"] .hero h1 .accent {
+  text-shadow: 0 0 10px rgba(var(--theme-color-rgb), 0.2);
 }
 
 
