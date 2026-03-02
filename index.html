@@ -32,8 +32,22 @@
 </head>
 
 <body class="dark-theme">
+  <!-- Preloader for stable first paint -->
+  <div id="preloader">
+    <div class="loader-container">
+      <div class="loader-thunder">
+        <i class="ph-fill ph-lightning"></i>
+        <div class="loader-thunder-fill">
+          <i class="ph-fill ph-lightning"></i>
+        </div>
+      </div>
+    </div>
+    <div class="loader-text">EVOLVING...</div>
+  </div>
+
   <!-- Sidebar Navigation -->
   <nav id="sidebar" class="sidebar">
+
     <div class="sidebar-header">
       <div class="logo">
         <i class="ph ph-lightning"></i>
@@ -194,8 +208,9 @@
               <h3><i class="ph ph-trophy"></i> Top Contributors</h3>
             </div>
             <ul id="top-contributors" class="list-group">
-              <!-- Rendered via JS -->
+              <li class="skeleton" style="height: 50px; margin: 10px;"></li>
             </ul>
+
             <div id="top-contributors-footer" class="panel-footer"></div>
           </div>
           <div class="panel leaderboard-panel">
@@ -203,8 +218,9 @@
               <h3><i class="ph ph-hand-heart"></i> Top Donators</h3>
             </div>
             <ul id="top-donators" class="list-group">
-              <!-- Rendered via JS -->
+              <li class="skeleton" style="height: 50px; margin: 10px;"></li>
             </ul>
+
             <div id="top-donators-footer" class="panel-footer"></div>
           </div>
         </div>
@@ -245,9 +261,10 @@
           </div>
         </div>
         <div id="study-content" class="dynamic-grid">
-          <!-- Rendered via JS -->
-          <div class="empty-state">Loading study materials...</div>
+          <div class="skeleton" style="height: 200px;"></div>
+          <div class="skeleton" style="height: 200px;"></div>
         </div>
+
       </section>
 
       <!-- UPDATES SECTION -->

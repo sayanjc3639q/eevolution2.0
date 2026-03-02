@@ -59,7 +59,15 @@ async function initializeApp() {
             if (typeof renderLiveSchedule === 'function') renderLiveSchedule();
         }
     }, 60000);
+
+    // Fade out preloader after init
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        preloader.classList.add('fade-out');
+        setTimeout(() => preloader.remove(), 600);
+    }
 }
+
 
 // Popstate listener to handle browser back/forward buttons
 window.addEventListener('popstate', (event) => {

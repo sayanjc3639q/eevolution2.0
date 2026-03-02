@@ -69,6 +69,8 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
 }
 
 * {
@@ -341,10 +343,11 @@ ol {
   color: var(--accent-color);
 }
 
-/* Main Content */
 .main-content {
   margin-left: var(--sidebar-width);
-  width: calc(100% - var(--sidebar-width));
+  flex: 1;
+  /* More stable than calc() width */
+  min-width: 0;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -3079,5 +3082,114 @@ input[type="text"]:focus {
   .supporter-img-wrapper {
     width: 100%;
     height: 300px;
+  }
+}
+
+/* ================= PRELOADER & SKELETON ================= */
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#preloader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.loader-thunder {
+  font-size: 80px;
+  color: var(--bg-surface);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader-thunder-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  color: var(--electric-blue);
+  overflow: hidden;
+  animation: thunderFill 2s infinite ease-in-out;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.loader-thunder-fill i {
+  font-size: 80px;
+}
+
+@keyframes thunderFill {
+  0% {
+    height: 0%;
+  }
+
+  50% {
+    height: 100%;
+  }
+
+  100% {
+    height: 100%;
+    opacity: 0;
+  }
+}
+
+.loader-text {
+  margin-top: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--text-main);
+  font-size: 0.8rem;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 50%, var(--bg-surface) 75%);
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s infinite;
+  border-radius: var(--border-radius);
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes skeletonLoading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
   }
 }
