@@ -3,163 +3,184 @@ let currentProfile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (window.supabaseClient) {
+        // 1. Initial manual check for immediate UI update
         await checkAuth();
+
+        // 2. Setup background listener to handle token refreshes (important for long sessions)
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            console.log("Auth State Event:", event);
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+                await checkAuth();
+            } else if (event === 'SIGNED_OUT') {
+                await checkAuth(); // Re-run to update UI to logged out state
+            }
+        });
     }
 });
 
+let isCheckingAuth = false;
 async function checkAuth() {
-    const { data: { session }, error } = await supabaseClient.auth.getSession();
+    if (isCheckingAuth) return;
+    isCheckingAuth = true;
 
-    const navUnauth = document.getElementById('unauth-navbar-area');
-    const navAuth = document.getElementById('auth-navbar-area');
-    const feedComposer = document.getElementById('feed-composer');
-    const profileSectionAuth = document.getElementById('profile-details');
-    const profileSectionUnauth = document.querySelector('.not-logged-in');
-    const upiGate = document.getElementById('upi-auth-gate');
-    const upiAction = document.getElementById('upi-action-area');
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-    if (error || !session) {
-        // Public State Context
-        if (upiGate) upiGate.classList.remove('hidden');
-        if (upiAction) upiAction.classList.add('hidden');
+        const navUnauth = document.getElementById('unauth-navbar-area');
+        const navAuth = document.getElementById('auth-navbar-area');
+        const feedComposer = document.getElementById('feed-composer');
+        const profileSectionAuth = document.getElementById('profile-details');
+        const profileSectionUnauth = document.querySelector('.not-logged-in');
+        const upiGate = document.getElementById('upi-auth-gate');
+        const upiAction = document.getElementById('upi-action-area');
 
-        if (navUnauth) navUnauth.classList.remove('hidden');
-        if (navAuth) navAuth.classList.add('hidden');
-        if (feedComposer) feedComposer.classList.add('hidden');
+        if (error || !session) {
+            // Public State Context
+            if (upiGate) upiGate.classList.remove('hidden');
+            if (upiAction) upiAction.classList.add('hidden');
 
-        if (profileSectionUnauth) profileSectionUnauth.classList.remove('hidden');
-        if (profileSectionAuth) profileSectionAuth.classList.add('hidden');
+            if (navUnauth) navUnauth.classList.remove('hidden');
+            if (navAuth) navAuth.classList.add('hidden');
+            if (feedComposer) feedComposer.classList.add('hidden');
 
-        window.isLoggedIn = false;
-        window.currentProfile = null;
-    } else {
-        // Private State Context
-        currentSessionUser = session.user;
-        window.isLoggedIn = true;
+            if (profileSectionUnauth) profileSectionUnauth.classList.remove('hidden');
+            if (profileSectionAuth) profileSectionAuth.classList.add('hidden');
 
-        if (upiGate) upiGate.classList.add('hidden');
-        if (upiAction) upiAction.classList.remove('hidden');
+            window.isLoggedIn = false;
+            window.currentProfile = null;
+        } else {
+            // Private State Context
+            currentSessionUser = session.user;
+            window.isLoggedIn = true;
 
-        if (navUnauth) navUnauth.classList.add('hidden');
-        if (navAuth) navAuth.classList.remove('hidden');
-        if (feedComposer) feedComposer.classList.remove('hidden');
+            if (upiGate) upiGate.classList.add('hidden');
+            if (upiAction) upiAction.classList.remove('hidden');
 
-        if (profileSectionUnauth) profileSectionUnauth.classList.add('hidden');
-        if (profileSectionAuth) profileSectionAuth.classList.remove('hidden');
+            if (navUnauth) navUnauth.classList.add('hidden');
+            if (navAuth) navAuth.classList.remove('hidden');
+            if (feedComposer) feedComposer.classList.remove('hidden');
 
-        // Fetch User Profile Mapping
-        const { data: profile } = await supabaseClient
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+            if (profileSectionUnauth) profileSectionUnauth.classList.add('hidden');
+            if (profileSectionAuth) profileSectionAuth.classList.remove('hidden');
 
-        if (profile) {
-            window.currentProfile = profile;
+            // Fetch User Profile Mapping
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
 
-            // Header display
-            const headerName = document.getElementById('nav-user-first-name');
-            const headerCoins = document.getElementById('nav-user-coins');
-            if (headerName) {
-                const firstName = (profile.name || "Student").split(' ')[0];
-                headerName.innerText = firstName;
-            }
-            if (headerCoins) headerCoins.innerHTML = `<i class="ph-fill ph-coins"></i> ${profile.evo_coins || 0}`;
+            if (profile) {
+                window.currentProfile = profile;
 
-            // GUEST MODE ENFORCEMENT logic
-            // 1. Load local dictionary to verify existing users who might have null flags
-            let isVerifiedByDict = false;
-            try {
-                const resp = await fetch('data/students.json');
-                const dict = await resp.json();
-                const rollKey = profile.roll_number ? profile.roll_number.split('/').pop() : null;
-                if (rollKey && dict[rollKey]) isVerifiedByDict = true;
-            } catch (e) { console.warn("Dict check failed", e); }
+                // Header display
+                const headerName = document.getElementById('nav-user-first-name');
+                const headerCoins = document.getElementById('nav-user-coins');
+                if (headerName) {
+                    const firstName = (profile.name || "Student").split(' ')[0];
+                    headerName.innerText = firstName;
+                }
+                if (headerCoins) headerCoins.innerHTML = `<i class="ph-fill ph-coins"></i> ${profile.evo_coins || 0}`;
 
-            const isVerifiedUser = profile.is_batch2_verified === true ||
-                profile.is_admin === true ||
-                (profile.role === 'admin') ||
-                isVerifiedByDict ||
-                (currentSessionUser.user_metadata && currentSessionUser.user_metadata.is_batch2_verified === true);
+                // GUEST MODE ENFORCEMENT logic
+                // 1. Load local dictionary to verify existing users who might have null flags
+                let isVerifiedByDict = false;
+                try {
+                    const resp = await fetch('data/students.json');
+                    const dict = await resp.json();
+                    const rollKey = profile.roll_number ? profile.roll_number.split('/').pop() : null;
+                    if (rollKey && dict[rollKey]) isVerifiedByDict = true;
+                } catch (e) { console.warn("Dict check failed", e); }
 
-            if (!isVerifiedUser) {
-                console.log("Member [Guest Mode]: Restricted access.");
-                const composer = document.getElementById('feed-composer') || document.getElementById('share-update-container');
-                if (composer) {
-                    composer.remove();
-                    const feedContainer = document.getElementById('feed-container');
-                    if (feedContainer) {
-                        const banner = document.createElement('div');
-                        banner.className = 'card mb-4';
-                        banner.style.border = '1px dashed var(--border-color)';
-                        banner.style.background = 'rgba(var(--theme-color-rgb), 0.03)';
-                        banner.style.padding = '1rem';
-                        banner.style.textAlign = 'center';
-                        banner.innerHTML = `<p class="text-muted" style="margin:0;"><i class="ph ph-mask-happy"></i> <strong>Guest Mode:</strong> Read-only access. Only verified Batch 2 members can post.</p>`;
-                        feedContainer.prepend(banner);
+                const isVerifiedUser = profile.is_batch2_verified === true ||
+                    profile.is_admin === true ||
+                    (profile.role === 'admin') ||
+                    isVerifiedByDict ||
+                    (currentSessionUser.user_metadata && currentSessionUser.user_metadata.is_batch2_verified === true);
+
+                if (!isVerifiedUser) {
+                    console.log("Member [Guest Mode]: Restricted access.");
+                    const composer = document.getElementById('feed-composer') || document.getElementById('share-update-container');
+                    if (composer) {
+                        composer.remove();
+                        const feedContainer = document.getElementById('feed-container');
+                        if (feedContainer) {
+                            const banner = document.createElement('div');
+                            banner.className = 'card mb-4';
+                            banner.style.border = '1px dashed var(--border-color)';
+                            banner.style.background = 'rgba(var(--theme-color-rgb), 0.03)';
+                            banner.style.padding = '1rem';
+                            banner.style.textAlign = 'center';
+                            banner.innerHTML = `<p class="text-muted" style="margin:0;"><i class="ph ph-mask-happy"></i> <strong>Guest Mode:</strong> Read-only access. Only verified Batch 2 members can post.</p>`;
+                            feedContainer.prepend(banner);
+                        }
                     }
+
+                    // Hide Memory/Event Submission Buttons for guests
+                    document.querySelectorAll('button').forEach(btn => {
+                        const text = btn.innerText.toLowerCase();
+                        if (text.includes('submit memory') || text.includes('upload memory') || text.includes('submit event')) {
+                            const parentCard = btn.closest('.event-submission-banner');
+                            if (parentCard) parentCard.style.display = 'none';
+                            else btn.style.display = 'none';
+                        }
+                    });
+                } else {
+                    console.log("Member [Verified]: Full access granted.");
+                    const composer = document.getElementById('feed-composer');
+                    if (composer) composer.classList.remove('hidden');
                 }
 
-                // Hide Memory/Event Submission Buttons for guests
-                document.querySelectorAll('button').forEach(btn => {
-                    const text = btn.innerText.toLowerCase();
-                    if (text.includes('submit memory') || text.includes('upload memory') || text.includes('submit event')) {
-                        const parentCard = btn.closest('.event-submission-banner');
-                        if (parentCard) parentCard.style.display = 'none';
-                        else btn.style.display = 'none';
-                    }
-                });
-            } else {
-                console.log("Member [Verified]: Full access granted.");
-                const composer = document.getElementById('feed-composer');
-                if (composer) composer.classList.remove('hidden');
-            }
+                // Profile display
+                const profRoll = document.getElementById('profile-roll');
+                const profCoins = document.getElementById('profile-coins');
+                const profUploads = document.getElementById('profile-uploads');
+                const profName = document.getElementById('profile-name');
+                const adminPanelBtn = document.getElementById('admin-panel-btn');
 
-            // Profile display
-            const profRoll = document.getElementById('profile-roll');
-            const profCoins = document.getElementById('profile-coins');
-            const profUploads = document.getElementById('profile-uploads');
-            const profName = document.getElementById('profile-name');
-            const adminPanelBtn = document.getElementById('admin-panel-btn');
+                if (profRoll) profRoll.innerText = profile.roll_number || 'N/A';
+                if (profCoins) profCoins.innerHTML = `<i class="ph-fill ph-coins text-gold"></i> ${profile.evo_coins || 0}`;
+                if (profUploads) profUploads.innerHTML = `<i class="ph ph-upload text-blue"></i> ${profile.upload_count || 0}`;
+                if (profName) profName.innerText = profile.name || "Student Portal";
 
-            if (profRoll) profRoll.innerText = profile.roll_number || 'N/A';
-            if (profCoins) profCoins.innerHTML = `<i class="ph-fill ph-coins text-gold"></i> ${profile.evo_coins || 0}`;
-            if (profUploads) profUploads.innerHTML = `<i class="ph ph-upload text-blue"></i> ${profile.upload_count || 0}`;
-            if (profName) profName.innerText = profile.name || "Student Portal";
-
-            // Update Avatars in UI
-            const avatarUrl = profile.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${profile.roll_number || 'default'}`;
-            const headerAvatarContainer = document.getElementById('nav-user-avatar');
-            if (headerAvatarContainer) {
-                headerAvatarContainer.innerHTML = `<img src="${avatarUrl}" class="avatar-img" style="width:100%; height:100%;" alt="Avatar">`;
-            }
-            const profileAvatarContainer = document.getElementById('profile-avatar-container');
-            if (profileAvatarContainer) {
-                let img = profileAvatarContainer.querySelector('img');
-                if (!img) {
-                    img = document.createElement('img');
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.borderRadius = '50%';
-                    img.style.objectFit = 'cover';
-                    profileAvatarContainer.prepend(img);
-                    const icon = profileAvatarContainer.querySelector('.ph-user');
-                    if (icon) icon.remove();
+                // Update Avatars in UI
+                const avatarUrl = profile.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${profile.roll_number || 'default'}`;
+                const headerAvatarContainer = document.getElementById('nav-user-avatar');
+                if (headerAvatarContainer) {
+                    headerAvatarContainer.innerHTML = `<img src="${avatarUrl}" class="avatar-img" style="width:100%; height:100%;" alt="Avatar">`;
                 }
-                img.src = avatarUrl;
+                const profileAvatarContainer = document.getElementById('profile-avatar-container');
+                if (profileAvatarContainer) {
+                    let img = profileAvatarContainer.querySelector('img');
+                    if (!img) {
+                        img = document.createElement('img');
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.borderRadius = '50%';
+                        img.style.objectFit = 'cover';
+                        profileAvatarContainer.prepend(img);
+                        const icon = profileAvatarContainer.querySelector('.ph-user');
+                        if (icon) icon.remove();
+                    }
+                    img.src = avatarUrl;
+                }
+
+                // Init Avatar Grid
+                initAvatarGrid(profile.avatar_url);
+
+                // Unhide Admin Button if applicable
+                if (profile.is_admin && adminPanelBtn) {
+                    adminPanelBtn.classList.remove('hidden');
+                }
+
+                // Sync with Memories Admin Panel
+                if (window.checkAdminForMemories) window.checkAdminForMemories();
             }
-
-            // Init Avatar Grid
-            initAvatarGrid(profile.avatar_url);
-
-            // Unhide Admin Button if applicable
-            if (profile.is_admin && adminPanelBtn) {
-                adminPanelBtn.classList.remove('hidden');
-            }
-
-            // Sync with Memories Admin Panel
-            if (window.checkAdminForMemories) window.checkAdminForMemories();
         }
+    } catch (err) {
+        console.error("Auth check error:", err);
+    } finally {
+        isCheckingAuth = false;
     }
 }
 
