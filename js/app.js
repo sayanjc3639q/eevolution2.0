@@ -824,29 +824,39 @@ async function renderContributors() {
     const tableBody = document.getElementById('all-contributors-table');
     if (!tableBody) return;
 
-    tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted"><i class="ph ph-spinner ph-spin"></i> Fetching contributors...</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="3" class="text-center text-muted"><i class="ph ph-spinner ph-spin"></i> Fetching contributors...</td></tr>`;
 
     if (window.supabaseClient) {
         const { data: profiles, error } = await supabaseClient
             .from('profiles')
-            .select('name, roll_number, upload_count, evo_coins')
+            .select('name, roll_number, upload_count, avatar_url')
             .order('upload_count', { ascending: false });
 
         if (error) {
             console.error("Error fetching contributors:", error);
-            tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Failed to load contributors.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">Failed to load contributors.</td></tr>`;
             return;
         }
 
         if (profiles) {
-            tableBody.innerHTML = profiles.map((s, i) => `
+            tableBody.innerHTML = profiles.map((s, i) => {
+                const avatarUrl = s.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${s.roll_number || 'default'}`;
+                return `
                 <tr>
                     <td>${i + 1}</td>
-                    <td><strong>${s.name || 'Anonymous'}</strong><br><small class="text-muted">${s.roll_number}</small></td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <img src="${avatarUrl}" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); object-fit: cover;">
+                            <div>
+                                <strong style="display: block;">${s.name || 'Anonymous'}</strong>
+                                <small class="text-muted">${s.roll_number}</small>
+                            </div>
+                        </div>
+                    </td>
                     <td>${s.upload_count || 0}</td>
-                    <td class="text-gold">${s.evo_coins || 0} <i class="ph-fill ph-coins"></i></td>
                 </tr>
-            `).join('');
+            `;
+            }).join('');
         }
     }
 }
