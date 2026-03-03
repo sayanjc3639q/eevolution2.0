@@ -11,6 +11,12 @@ let activeSubTabs = {
     support: 'donate'
 };
 
+// PERSISTENCE: Track scroll positions for nested navigation
+let studyScrollPositions = {
+    subjects: 0,
+    chapters: 0
+};
+
 function formatFullDate(dateString) {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -202,7 +208,10 @@ function navigateTo(sectionId, isPopState = false) {
         history.pushState({ section: sectionId, sub: sub }, "", hash);
     }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Smooth scroll to top for main section changes, except when internal state handles it
+    if (sectionId !== 'study' || (!selectedSubject && !selectedChapter)) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 }
 
 /* ================= CONTENT MGR ================= */
@@ -279,23 +288,41 @@ function renderSubjectCards(category) {
 }
 
 function selectSubject(id) {
+    // Save scroll position of the subject list
+    studyScrollPositions.subjects = window.scrollY;
     selectedSubject = id;
     selectedChapter = null;
     renderStudySection();
+    window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 function selectChapter(chapterName) {
+    // Save scroll position of the chapter list
+    studyScrollPositions.chapters = window.scrollY;
     selectedChapter = chapterName;
     renderStudySection();
+    window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 function studyGoBack() {
+    let targetScroll = 0;
     if (selectedChapter) {
         selectedChapter = null;
+        targetScroll = studyScrollPositions.chapters;
     } else {
         selectedSubject = null;
+        targetScroll = studyScrollPositions.subjects;
     }
+
     renderStudySection();
+
+    // Restore scroll position after rendering
+    setTimeout(() => {
+        window.scrollTo({
+            top: targetScroll,
+            behavior: 'instant'
+        });
+    }, 10);
 }
 
 function renderChapterCards(category, subjectId) {
