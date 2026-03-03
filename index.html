@@ -132,6 +132,7 @@
             <input type="text" id="global-search-input" placeholder="Search features or documents..."
               autocomplete="off">
           </div>
+          <button class="mobile-search-close" onclick="toggleMobileSearch(false)"><i class="ph ph-x"></i></button>
           <div id="search-results-dropdown" class="search-results-dropdown">
             <!-- Results injected via JS -->
           </div>
@@ -139,6 +140,8 @@
       </div>
 
       <div class="header-right" style="display:flex; align-items:center; gap: 0.75rem;">
+        <button class="search-toggle-btn" onclick="toggleMobileSearch(true)"><i
+            class="ph ph-magnifying-glass"></i></button>
         <div id="unauth-navbar-area" class="hidden">
           <a href="auth.html" class="btn-primary btn-small">Sign In <i class="ph ph-sign-in"></i></a>
         </div>

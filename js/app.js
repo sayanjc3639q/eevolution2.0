@@ -78,7 +78,13 @@ function setupSearch() {
 function renderSearchResults(features, docs) {
     const dropdown = document.getElementById('search-results-dropdown');
     if (features.length === 0 && docs.length === 0) {
-        dropdown.innerHTML = '<div class="search-empty-state"><i class="ph ph-magnifying-glass" style="font-size: 2rem; opacity: 0.2; display: block; margin-bottom: 0.5rem;"></i>No results found</div>';
+        dropdown.innerHTML = `
+            <div class="search-empty-state">
+                <i class="ph ph-bird"></i>
+                <span>No Results Found</span>
+                <p>We couldn't find anything matching your search. Try a different keyword!</p>
+            </div>
+        `;
     } else {
         let html = '';
 
@@ -120,11 +126,32 @@ function renderSearchResults(features, docs) {
     dropdown.classList.add('active');
 }
 
+window.toggleMobileSearch = function (show) {
+    const searchCenter = document.querySelector('.header-center');
+    const input = document.getElementById('global-search-input');
+    if (!searchCenter || !input) return;
+
+    if (show) {
+        searchCenter.classList.add('active');
+        setTimeout(() => input.focus(), 100);
+    } else {
+        searchCenter.classList.remove('active');
+        input.value = '';
+        const dropdown = document.getElementById('search-results-dropdown');
+        if (dropdown) dropdown.classList.remove('active');
+    }
+};
+
 window.handleSearchAction = function (type, p1, p2) {
     const dropdown = document.getElementById('search-results-dropdown');
     const input = document.getElementById('global-search-input');
-    dropdown.classList.remove('active');
-    input.value = '';
+    if (dropdown) dropdown.classList.remove('active');
+    if (input) input.value = '';
+
+    // Close mobile search if active
+    if (window.innerWidth <= 600) {
+        window.toggleMobileSearch(false);
+    }
 
     if (type === 'feature') {
         const feature = SEARCHABLE_FEATURES[p1];
