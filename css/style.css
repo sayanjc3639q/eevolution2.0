@@ -661,7 +661,17 @@ ol {
   border-radius: 20px;
   color: var(--text-main);
   font-size: 0.9rem;
-  transition: var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Remove default search decorations */
+#global-search-input::-webkit-search-decoration,
+#global-search-input::-webkit-search-cancel-button,
+#global-search-input::-webkit-search-results-button,
+#global-search-input::-webkit-search-results-decoration {
+  display: none;
+  -webkit-appearance: none;
 }
 
 #global-search-input:focus {
@@ -945,7 +955,10 @@ ol {
   background-color: var(--bg-hover);
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="search"],
+input[type="password"],
+input[type="email"] {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   color: var(--text-main);
@@ -953,9 +966,14 @@ input[type="text"] {
   border-radius: var(--border-radius);
   outline: none;
   font-size: 0.9rem;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
   border-color: var(--accent-color);
 }
 
