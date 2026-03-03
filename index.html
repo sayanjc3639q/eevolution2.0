@@ -129,6 +129,11 @@
           <a href="auth.html" class="btn-primary btn-small">Sign In <i class="ph ph-sign-in"></i></a>
         </div>
         <div id="auth-navbar-area" class="hidden" style="display:flex; align-items:center; gap: 0.75rem;">
+          <button class="btn-icon-nav" onclick="navigateTo('community'); renderGenericTabPanes('community', 'upload')"
+            title="Upload Documents">
+            <i class="ph ph-upload-simple"></i>
+            <span class="nav-btn-text">Upload</span>
+          </button>
           <div class="user-avatar" id="nav-user-avatar"
             style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 1px solid var(--border-color); background: var(--bg-surface);">
             <!-- Avatar JS -->
@@ -177,6 +182,11 @@
           <div class="link-card" onclick="navigateTo('community'); renderGenericTabPanes('community', 'memories')">
             <i class="ph ph-camera"></i>
             <span>Memories</span>
+          </div>
+          <div class="link-card highlight"
+            onclick="navigateTo('community'); renderGenericTabPanes('community', 'upload')">
+            <i class="ph ph-cloud-arrow-up"></i>
+            <span>Upload Docs</span>
           </div>
           <div class="link-card" onclick="navigateTo('points')">
             <i class="ph ph-star"></i>
@@ -1018,6 +1028,11 @@
               </div>
             </div>
             <div class="profile-actions">
+              <button class="btn-primary"
+                onclick="navigateTo('community'); renderGenericTabPanes('community', 'upload')"
+                style="grid-column: 1 / -1; justify-content: center; margin-bottom: 0.5rem; background: var(--gold-color); color: #000; border: none;">
+                Upload Documents & Earn Coins <i class="ph ph-upload-simple"></i>
+              </button>
               <a href="admin.html" class="btn-outline hidden" id="admin-panel-btn">Admin Panel <i
                   class="ph ph-shield"></i></a>
               <button class="btn-outline">Buy Featured Slot (500 Coins)</button>

@@ -238,6 +238,49 @@ ol {
   background-color: rgba(239, 68, 68, 0.08);
 }
 
+/* Header Quick Actions */
+.btn-icon-nav {
+  background: rgba(var(--theme-color-rgb), 0.1);
+  border: 1px solid rgba(var(--theme-color-rgb), 0.2);
+  color: var(--theme-color);
+  padding: 0.4rem 0.85rem;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+}
+
+.btn-icon-nav:hover {
+  background: var(--theme-color);
+  color: #000;
+  border-color: var(--theme-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--theme-color-rgb), 0.3);
+}
+
+.btn-icon-nav i {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 600px) {
+  .nav-btn-text {
+    display: none;
+  }
+
+  .btn-icon-nav {
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    justify-content: center;
+    border-radius: 50%;
+  }
+}
+
 /* Sidebar */
 .sidebar {
   width: var(--sidebar-width);
@@ -651,6 +694,32 @@ input[type="text"]:focus {
 
 .link-card:hover i {
   transform: scale(1.1);
+}
+
+.link-card.highlight {
+  border-color: rgba(var(--theme-color-rgb), 0.5);
+  background: linear-gradient(135deg, var(--bg-panel), rgba(var(--theme-color-rgb), 0.05));
+  position: relative;
+}
+
+.link-card.highlight::before {
+  content: 'BONUS COINS';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--gold-color);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.link-card.highlight i {
+  color: var(--gold-color);
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.3));
 }
 
 .link-card span {
