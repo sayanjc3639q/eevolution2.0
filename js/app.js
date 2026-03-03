@@ -17,6 +17,126 @@ let studyScrollPositions = {
     chapters: 0
 };
 
+/* ================= GLOBAL SEARCH ENGINE ================= */
+
+const SEARCHABLE_FEATURES = [
+    { title: 'Modules', target: 'study', sub: 'modules', icon: 'ph-book-open', desc: 'Theory & Syllabus' },
+    { title: 'Evo Digest', target: 'study', sub: 'digest', icon: 'ph-article', desc: 'Shortened notes & guides' },
+    { title: 'Lab Notes', target: 'study', sub: 'labs', icon: 'ph-test-tube', desc: 'Practical & Lab manuals' },
+    { title: 'Resources', target: 'study', sub: 'resources', icon: 'ph-folders', desc: 'Question papers & books' },
+    { title: 'Notices', target: 'updates', sub: 'notices', icon: 'ph-bell', desc: 'Latest announcements' },
+    { title: 'Events', target: 'updates', sub: 'events', icon: 'ph-calendar-star', desc: 'Upcoming college events' },
+    { title: 'Class Routine', target: 'updates', sub: 'routine', icon: 'ph-clock', desc: 'Daily lecture schedule' },
+    { title: 'Exams', target: 'updates', sub: 'exams', icon: 'ph-file-text', desc: 'Exam dates & seating' },
+    { title: 'MAR Points', target: 'points', sub: 'mar', icon: 'ph-star', desc: 'Track your MAR activities' },
+    { title: 'MOOCs', target: 'points', sub: 'moocs', icon: 'ph-graduation-cap', desc: 'Online certification courses' },
+    { title: 'Batch Feed', target: 'community', sub: 'batchFeed', icon: 'ph-chat-circle-dots', desc: 'Social community updates' },
+    { title: 'Memories', target: 'community', sub: 'memories', icon: 'ph-images', desc: 'Photos & gallery' },
+    { title: 'Upload Documents', target: 'community', sub: 'upload', icon: 'ph-upload-simple', desc: 'Contribute notes to the community' },
+    { title: 'Contributors', target: 'community', sub: 'contributors', icon: 'ph-users-three', desc: 'Our document uploaders' },
+    { title: 'Donations', target: 'support', sub: 'donate', icon: 'ph-heart', desc: 'Contribute to the project' },
+    { title: 'Profile Settings', target: 'profile', sub: null, icon: 'ph-user-gear', desc: 'Account & appearance' }
+];
+
+function setupSearch() {
+    const input = document.getElementById('global-search-input');
+    const dropdown = document.getElementById('search-results-dropdown');
+    if (!input || !dropdown) return;
+
+    input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length < 2) {
+            dropdown.classList.remove('active');
+            return;
+        }
+
+        const featureResults = SEARCHABLE_FEATURES.filter(f =>
+            f.title.toLowerCase().includes(query) || f.desc.toLowerCase().includes(query)
+        );
+
+        let docResults = [];
+        if (currentData && currentData.studyMaterials) {
+            docResults = currentData.studyMaterials.filter(m =>
+                m.name.toLowerCase().includes(query) || (m.chapter && m.chapter.toLowerCase().includes(query))
+            ).slice(0, 10);
+        }
+
+        renderSearchResults(featureResults, docResults);
+    });
+
+    input.addEventListener('focus', () => {
+        if (input.value.trim().length >= 2) dropdown.classList.add('active');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+}
+
+function renderSearchResults(features, docs) {
+    const dropdown = document.getElementById('search-results-dropdown');
+    if (features.length === 0 && docs.length === 0) {
+        dropdown.innerHTML = '<div class="search-empty-state"><i class="ph ph-magnifying-glass" style="font-size: 2rem; opacity: 0.2; display: block; margin-bottom: 0.5rem;"></i>No results found</div>';
+    } else {
+        let html = '';
+
+        if (features.length > 0) {
+            html += '<div class="search-section-label">Features & Sections</div>';
+            features.forEach((f, idx) => {
+                const fIndex = SEARCHABLE_FEATURES.indexOf(f);
+                html += `
+                    <div class="search-result-item" onclick="handleSearchAction('feature', ${fIndex})">
+                        <div class="search-result-icon"><i class="ph ${f.icon}"></i></div>
+                        <div class="search-result-info">
+                            <span class="search-result-title">${f.title}</span>
+                            <span class="search-result-subtitle">${f.desc}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        if (docs.length > 0) {
+            html += '<div class="search-section-label">Study Documents</div>';
+            docs.forEach(d => {
+                const nameEsc = d.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                const docLink = d.link.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                html += `
+                    <div class="search-result-item" onclick="handleSearchAction('doc', '${nameEsc}', '${docLink}')">
+                        <div class="search-result-icon"><i class="ph ph-file-pdf"></i></div>
+                        <div class="search-result-info">
+                            <span class="search-result-title">${escapeHTML(d.name)}</span>
+                            <span class="search-result-subtitle">${d.chapter || 'Material'} • ${d.category}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        dropdown.innerHTML = html;
+    }
+    dropdown.classList.add('active');
+}
+
+window.handleSearchAction = function (type, p1, p2) {
+    const dropdown = document.getElementById('search-results-dropdown');
+    const input = document.getElementById('global-search-input');
+    dropdown.classList.remove('active');
+    input.value = '';
+
+    if (type === 'feature') {
+        const feature = SEARCHABLE_FEATURES[p1];
+        if (feature) {
+            if (feature.sub) activeSubTabs[feature.target] = feature.sub;
+            navigateTo(feature.target);
+        }
+    } else if (type === 'doc') {
+        if (typeof openPdfModal === 'function') openPdfModal(p1, p2);
+    }
+}
+
 /**
  * HELPER: Automatic Retry for Database Operations
  * Attempts to run an async function up to 'maxAttempts' times with a delay.
@@ -1150,6 +1270,7 @@ function renderDonationProgress() {
 /* ================= INTERACTIONS / AUTH ================= */
 
 function setupInteractions() {
+    setupSearch();
     // Semester Switch
     const semSelect = document.getElementById('semester-select');
     if (semSelect) {

@@ -482,6 +482,173 @@ ol {
   gap: 0.75rem;
 }
 
+/* Header Search Styles */
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  margin: 0 1.5rem;
+  max-width: 500px;
+}
+
+.header-search-container {
+  width: 100%;
+  position: relative;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-wrapper i.search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+#global-search-input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+#global-search-input:focus {
+  outline: none;
+  border-color: var(--electric-blue);
+  background: var(--bg-hover);
+  box-shadow: 0 0 0 4px rgba(var(--theme-color-rgb), 0.1);
+}
+
+.search-results-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  max-height: 420px;
+  overflow-y: auto;
+  z-index: 2000;
+  display: none;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-results-dropdown.active {
+  display: block;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+  transition: var(--transition);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: var(--bg-hover);
+}
+
+.search-result-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(var(--theme-color-rgb), 0.1);
+  color: var(--theme-color);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.search-result-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-result-title {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-subtitle {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.search-section-label {
+  padding: 0.75rem 1.25rem 0.4rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--electric-blue);
+  font-weight: 700;
+  background: rgba(var(--theme-color-rgb), 0.03);
+}
+
+@media (max-width: 900px) {
+  .header-center {
+    margin: 0 0.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-center {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    max-width: none;
+    background: var(--bg-panel);
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: none;
+    /* Toggle this via JS for mobile search search */
+  }
+
+  /* We'll keep it visible for now as requested but maybe add a toggle later */
+  .header-center.active {
+    display: flex;
+  }
+}
+
 .semester-switch,
 .semester-switch-profile {
   position: relative;
