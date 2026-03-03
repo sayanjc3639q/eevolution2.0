@@ -69,36 +69,45 @@ async function fetchFeed() {
         return;
     }
 
-    // Fetch posts
-    const { data: posts, error: postError } = await supabaseClient
-        .from('batch_feed')
-        .select('*')
-        .order('created_at', { ascending: false });
+    container.innerHTML = `<p class="text-center text-muted"><i class="ph ph-spinner ph-spin"></i> Fetching posts...</p>`;
 
-    if (postError) {
-        console.error("Error fetching feed:", postError);
-        container.innerHTML = `<p class="text-muted">Unable to load feed. Please check Supabase connection.</p>`;
-        return;
-    }
-
-    // Fetch profiles to get names and avatars for the roll numbers
-    const { data: profiles } = await supabaseClient.from('profiles').select('roll_number, name, avatar_url');
-    if (profiles) {
-        profiles.forEach(p => {
-            globalProfileMap[p.roll_number] = { name: p.name, avatar: p.avatar_url };
+    try {
+        const posts = await window.callWithRetry(async () => {
+            const { data, error } = await supabaseClient
+                .from('batch_feed')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data;
         });
-    }
 
-    if (!posts || posts.length === 0) {
-        container.innerHTML = `<p id="no-posts-msg" class="text-muted">No posts yet. Be the first to share an update!</p>`;
-    } else {
-        container.innerHTML = '';
-        for (const post of posts) {
-            await renderSinglePost(post, false);
+        // Fetch profiles to get names and avatars
+        const { data: profiles } = await supabaseClient.from('profiles').select('roll_number, name, avatar_url');
+        if (profiles) {
+            profiles.forEach(p => {
+                globalProfileMap[p.roll_number] = { name: p.name, avatar: p.avatar_url };
+            });
         }
-    }
 
-    setupRealtimeFeed();
+        if (!posts || posts.length === 0) {
+            container.innerHTML = `<p id="no-posts-msg" class="text-muted">No posts yet. Be the first to share an update!</p>`;
+        } else {
+            container.innerHTML = '';
+            for (const post of posts) {
+                await renderSinglePost(post, false);
+            }
+        }
+
+        setupRealtimeFeed();
+    } catch (err) {
+        console.error("Feed Fetch Failed:", err);
+        container.innerHTML = `
+            <div class="text-center p-4">
+                <p class="text-muted mb-3">Unable to load feed after multiple attempts.</p>
+                <button class="btn-outline btn-small" onclick="fetchFeed()">Try Again <i class="ph ph-arrows-clockwise"></i></button>
+            </div>
+        `;
+    }
 }
 
 function formatRelativeTime(dateString) {
@@ -426,84 +435,90 @@ window.renderMemories = async function () {
 
     if (!window.supabaseClient) return;
 
-    // Fetch memories from DB
-    const { data: memoriesArray, error: fetchErr } = await supabaseClient
-        .from('memories')
-        .select('*')
-        .order('created_at', { ascending: false });
+    try {
+        // Fetch memories from DB with retry
+        const memoriesArray = await window.callWithRetry(async () => {
+            const { data, error } = await supabaseClient
+                .from('memories')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data;
+        });
 
-    if (fetchErr) {
-        console.error("Error fetching memories:", fetchErr);
+        const likedMemories = JSON.parse(localStorage.getItem('likedMemories') || '[]');
+
+        // Fetch memory likes from DB
+        let likesMap = {};
+        const { data: metaData, error } = await supabaseClient.from('memories_data').select('*');
+        if (metaData && !error) {
+            metaData.forEach(m => { likesMap[m.photo_id] = m.like_count || 0; });
+        }
+
+        // Fetch avatars mapping
+        const { data: allProfiles } = await supabaseClient.from('profiles').select('roll_number, avatar_url');
+        const avatarMap = {};
+        if (allProfiles) {
+            allProfiles.forEach(p => avatarMap[p.roll_number] = p.avatar_url);
+        }
+
+        const postsHtml = (memoriesArray || []).map(m => {
+            const hasLiked = likedMemories.includes(m.id);
+            const lCount = likesMap[m.id] || 0;
+            let posterName = m.student_name || 'Unknown User';
+            const userAvatar = avatarMap[m.roll_number] || `https://api.dicebear.com/9.x/avataaars/svg?seed=${m.roll_number || 'default'}`;
+
+            const timeString = m.created_at ? formatRelativeTime(m.created_at) : '';
+
+            return `
+            <div class="gallery-item card" style="padding: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-surface);">
+                <div class="memory-header" style="display:flex; justify-content:space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <div style="display: flex; align-items: center; gap: 0.8rem;">
+                        <div style="width: 38px; height: 38px; border-radius: 50%; overflow: hidden; background: #334155; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">
+                            <img src="${userAvatar}" class="avatar-img" style="width: 100%; height: 100%;" alt="Avatar">
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <strong style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;">${escapeHTML(posterName)} (${escapeHTML(m.roll_number || 'N/A')})</strong>
+                            ${timeString ? `<span class="text-muted" style="font-size:0.75rem; margin-top: 2px;">${timeString}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <img src="${escapeHTML(m.image_url)}" alt="${escapeHTML(m.caption)}" style="width: 100%; display: block; object-fit: cover; max-height: 400px;">
+                <div class="gallery-item-content" style="padding: 1rem;">
+                    <p style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--text-main);"><strong>${escapeHTML(m.caption)}</strong></p>
+
+                    <div class="gallery-actions" style="display:flex; gap:0.5rem; justify-content: space-between;">
+                        <button class="btn-outline btn-small ${hasLiked ? 'liked' : ''}" onclick="likeMemory('${m.id}')" ${hasLiked ? 'disabled' : ''} style="flex: 1; justify-content: center;">
+                            <i class="${hasLiked ? 'ph-fill' : 'ph'} ph-heart"></i> ${lCount} Likes
+                        </button>
+                        <button class="btn-outline btn-small" onclick="toggleComments('${m.id}')" style="flex: 1; justify-content: center;">Comments <i class="ph ph-chat-centered-text"></i></button>
+                    </div>
+                    <div id="comments-section-${m.id}" class="comments-section hidden mt-3">
+                         <button class="btn-outline btn-small w-100" onclick="fetchComments('${m.id}')">Load Comments <i class="ph ph-arrows-clockwise"></i></button>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+
+        // Remove loading text but keep banner
         const loadingText = container.querySelector('p.text-muted');
-        if (loadingText) loadingText.innerHTML = "Error loading memories.";
-        return;
-    }
+        if (loadingText) loadingText.remove();
 
-    const likedMemories = JSON.parse(localStorage.getItem('likedMemories') || '[]');
+        // Remove existing memory cards to prevent duplicates when rendering multiple times
+        const existingCards = container.querySelectorAll('.gallery-item');
+        existingCards.forEach(card => card.remove());
 
-    // Fetch memory likes from DB
-    let likesMap = {};
-    const { data: metaData, error } = await supabaseClient.from('memories_data').select('*');
-    if (metaData && !error) {
-        metaData.forEach(m => { likesMap[m.photo_id] = m.like_count || 0; });
-    }
-
-    // Fetch avatars mapping
-    const { data: allProfiles } = await supabaseClient.from('profiles').select('roll_number, avatar_url');
-    const avatarMap = {};
-    if (allProfiles) {
-        allProfiles.forEach(p => avatarMap[p.roll_number] = p.avatar_url);
-    }
-
-    const postsHtml = (memoriesArray || []).map(m => {
-        const hasLiked = likedMemories.includes(m.id);
-        const lCount = likesMap[m.id] || 0;
-        let posterName = m.student_name || 'Unknown User';
-        const userAvatar = avatarMap[m.roll_number] || `https://api.dicebear.com/9.x/avataaars/svg?seed=${m.roll_number || 'default'}`;
-
-        const timeString = m.created_at ? formatRelativeTime(m.created_at) : '';
-
-        return `
-        <div class="gallery-item card" style="padding: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-surface);">
-            <div class="memory-header" style="display:flex; justify-content:space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color);">
-                <div style="display: flex; align-items: center; gap: 0.8rem;">
-                    <div style="width: 38px; height: 38px; border-radius: 50%; overflow: hidden; background: #334155; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">
-                        <img src="${userAvatar}" class="avatar-img" style="width: 100%; height: 100%;" alt="Avatar">
-                    </div>
-                    <div style="display: flex; flex-direction: column;">
-                        <strong style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;">${escapeHTML(posterName)} (${escapeHTML(m.roll_number || 'N/A')})</strong>
-                        ${timeString ? `<span class="text-muted" style="font-size:0.75rem; margin-top: 2px;">${timeString}</span>` : ''}
-                    </div>
-
-                </div>
+        container.insertAdjacentHTML('beforeend', postsHtml || '<p class="text-muted" style="grid-column: 1 / -1;">No memories found.</p>');
+    } catch (err) {
+        console.error("Memories Fetch Failed:", err);
+        container.innerHTML = `
+            <div class="text-center p-4" style="grid-column: 1 / -1;">
+                <p class="text-muted mb-3">Unable to load memories after multiple attempts.</p>
+                <button class="btn-outline btn-small" onclick="renderMemories()">Try Again <i class="ph ph-arrows-clockwise"></i></button>
             </div>
-            <img src="${escapeHTML(m.image_url)}" alt="${escapeHTML(m.caption)}" style="width: 100%; display: block; object-fit: cover; max-height: 400px;">
-            <div class="gallery-item-content" style="padding: 1rem;">
-                <p style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--text-main);"><strong>${escapeHTML(m.caption)}</strong></p>
-
-                <div class="gallery-actions" style="display:flex; gap:0.5rem; justify-content: space-between;">
-                    <button class="btn-outline btn-small ${hasLiked ? 'liked' : ''}" onclick="likeMemory('${m.id}')" ${hasLiked ? 'disabled' : ''} style="flex: 1; justify-content: center;">
-                        <i class="${hasLiked ? 'ph-fill' : 'ph'} ph-heart"></i> ${lCount} Likes
-                    </button>
-                    <button class="btn-outline btn-small" onclick="toggleComments('${m.id}')" style="flex: 1; justify-content: center;">Comments <i class="ph ph-chat-centered-text"></i></button>
-                </div>
-                <div id="comments-section-${m.id}" class="comments-section hidden mt-3">
-                     <button class="btn-outline btn-small w-100" onclick="fetchComments('${m.id}')">Load Comments <i class="ph ph-arrows-clockwise"></i></button>
-                </div>
-            </div>
-        </div>
         `;
-    }).join('');
-
-    // Remove loading text but keep banner
-    const loadingText = container.querySelector('p.text-muted');
-    if (loadingText) loadingText.remove();
-
-    // Remove existing memory cards to prevent duplicates when rendering multiple times
-    const existingCards = container.querySelectorAll('.gallery-item');
-    existingCards.forEach(card => card.remove());
-
-    container.insertAdjacentHTML('beforeend', postsHtml || '<p class="text-muted" style="grid-column: 1 / -1;">No memories found.</p>');
+    }
 };
 
 // Admin Check to toggle Admin panel

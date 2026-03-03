@@ -17,6 +17,26 @@ let studyScrollPositions = {
     chapters: 0
 };
 
+/**
+ * HELPER: Automatic Retry for Database Operations
+ * Attempts to run an async function up to 'maxAttempts' times with a delay.
+ */
+window.callWithRetry = async function (operation, maxAttempts = 3, delay = 2000) {
+    let lastError;
+    for (let i = 0; i < maxAttempts; i++) {
+        try {
+            return await operation();
+        } catch (err) {
+            lastError = err;
+            console.warn(`Attempt ${i + 1} failed. Retrying in ${delay}ms...`, err);
+            if (i < maxAttempts - 1) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+    }
+    throw lastError;
+};
+
 function formatFullDate(dateString) {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -981,20 +1001,21 @@ async function renderContributors() {
 
     tableBody.innerHTML = `<tr><td colspan="3" class="text-center text-muted"><i class="ph ph-spinner ph-spin"></i> Fetching contributors...</td></tr>`;
 
-    if (window.supabaseClient) {
-        const { data: profiles, error } = await supabaseClient
-            .from('profiles')
-            .select('name, roll_number, upload_count, avatar_url')
-            .order('upload_count', { ascending: false });
+    try {
+        if (!window.supabaseClient) throw new Error("Supabase client not initialized.");
 
-        if (error) {
-            console.error("Error fetching contributors:", error);
-            tableBody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">Failed to load contributors.</td></tr>`;
-            return;
-        }
+        const contributors = await window.callWithRetry(async () => {
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('name, roll_number, upload_count, avatar_url')
+                .order('upload_count', { ascending: false });
 
-        if (profiles) {
-            tableBody.innerHTML = profiles.map((s, i) => {
+            if (error) throw error;
+            return data;
+        });
+
+        if (contributors) {
+            tableBody.innerHTML = contributors.map((s, i) => {
                 const avatarUrl = s.avatar_url || `https://api.dicebear.com/9.x/avataaars/svg?seed=${s.roll_number || 'default'}`;
                 return `
                 <tr>
@@ -1012,7 +1033,19 @@ async function renderContributors() {
                 </tr>
             `;
             }).join('');
+        } else {
+            tableBody.innerHTML = `<tr><td colspan="3" class="text-center text-muted">No contributors found.</td></tr>`;
         }
+    } catch (error) {
+        console.error("Error fetching contributors:", error);
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="3" class="text-center">
+                    <p class="text-muted mb-2">Failed to load contributors after multiple attempts.</p>
+                    <button class="btn-outline btn-small" onclick="renderContributors()">Try Again <i class="ph ph-arrows-clockwise"></i></button>
+                </td>
+            </tr>
+        `;
     }
 }
 
