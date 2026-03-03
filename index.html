@@ -145,12 +145,27 @@
         <div id="unauth-navbar-area" class="hidden">
           <a href="auth.html" class="btn-primary btn-small">Sign In <i class="ph ph-sign-in"></i></a>
         </div>
-        <div id="auth-navbar-area" class="hidden" style="display:flex; align-items:center; gap: 0.75rem;">
-          <div class="user-avatar" id="nav-user-avatar"
-            style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 1px solid var(--border-color); background: var(--bg-surface);">
-            <!-- Avatar JS -->
+        <div id="auth-navbar-area" class="hidden">
+          <div class="user-profile-dropdown">
+            <div class="user-avatar" id="nav-user-avatar" onclick="toggleProfileDropdown(event)"
+              style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 1px solid var(--border-color); background: var(--bg-surface); cursor: pointer;">
+              <!-- Avatar JS -->
+            </div>
+
+            <div id="profile-dropdown-menu" class="profile-dropdown-menu">
+              <div class="dropdown-header">
+                <span id="nav-user-full-name" class="user-full-name">Member</span>
+                <span id="nav-user-email" class="user-email-text">student@eevolution.com</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="javascript:void(0)" onclick="navigateTo('profile')" class="dropdown-item">
+                <i class="ph ph-user"></i> My Profile
+              </a>
+              <a href="javascript:void(0)" id="nav-logout-btn-dropdown" class="dropdown-item logout">
+                <i class="ph ph-sign-out"></i> Sign Out
+              </a>
+            </div>
           </div>
-          <span id="nav-user-first-name" class="text-accent" style="font-weight: 600; font-size: 0.95rem;"></span>
         </div>
 
       </div>

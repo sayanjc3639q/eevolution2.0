@@ -74,11 +74,10 @@ async function checkAuth() {
                 window.currentProfile = profile;
 
                 // Header display
-                const headerName = document.getElementById('nav-user-first-name');
-                if (headerName) {
-                    const firstName = (profile.name || "Student").split(' ')[0];
-                    headerName.innerText = firstName;
-                }
+                const headerName = document.getElementById('nav-user-full-name');
+                const headerEmail = document.getElementById('nav-user-email');
+                if (headerName) headerName.innerText = profile.name || "Student";
+                if (headerEmail) headerEmail.innerText = session.user.email || "";
 
 
                 // GUEST MODE ENFORCEMENT logic
@@ -222,6 +221,26 @@ const handleLogout = async () => {
 
 if (logoutBtn) logoutBtn.onclick = handleLogout;
 if (mainLogoutBtn) mainLogoutBtn.onclick = handleLogout;
+
+// Dropdown logout button
+const dropdownLogoutBtn = document.getElementById('nav-logout-btn-dropdown');
+if (dropdownLogoutBtn) dropdownLogoutBtn.onclick = handleLogout;
+
+window.toggleProfileDropdown = function (event) {
+    if (event) event.stopPropagation();
+    const menu = document.getElementById('profile-dropdown-menu');
+    if (menu) menu.classList.toggle('active');
+};
+
+document.addEventListener('click', (e) => {
+    const menu = document.getElementById('profile-dropdown-menu');
+    const avatar = document.getElementById('nav-user-avatar');
+    if (menu && menu.classList.contains('active')) {
+        if (!menu.contains(e.target) && !avatar.contains(e.target)) {
+            menu.classList.remove('active');
+        }
+    }
+});
 
 // Also re-render Memories thread input if it was active
 if (window.renderMemories && document.getElementById('memories-content')) {
