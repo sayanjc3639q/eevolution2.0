@@ -46,16 +46,52 @@ async function initializeApp() {
     renderUpdates(activeSubTabs.updates);
     renderDonationProgress();
 
-    // Initial state setup for history API
-    if (!history.state) {
-        history.replaceState({ section: 'home', sub: null }, "", "#home");
-    } else if (history.state.section) {
-        // Handle direct load with hash or existing state
+    // Initial state setup for history API with Deep Linking support
+    const hash = window.location.hash.substring(1);
+    const parts = hash.split('/');
+
+    if (parts[0] === 'study' && parts.length >= 4) {
+        const category = parts[1];
+        const subjectId = parts[2];
+        const chapterName = decodeURIComponent(parts[3]);
+        const docName = parts[4] ? decodeURIComponent(parts[4]) : null;
+
+        activeSubTabs.study = category;
+        selectedSubject = subjectId;
+        selectedChapter = chapterName;
+
+        navigateTo('study', true);
+
+        // Wait for data to be ready before searching
+        if (docName) {
+            const checkData = setInterval(() => {
+                if (currentData && currentData.studyMaterials) {
+                    clearInterval(checkData);
+                    const item = currentData.studyMaterials.find(m =>
+                        m.category === category &&
+                        m.subjectId === subjectId &&
+                        (m.chapter || 'Uncategorized') === chapterName &&
+                        m.name === docName
+                    );
+                    if (item) setTimeout(() => openPdfModal(item.name, item.link), 500);
+                }
+            }, 100);
+            // Timeout after 5 seconds
+            setTimeout(() => clearInterval(checkData), 5000);
+        }
+    } else if (history.state && history.state.section) {
         const section = history.state.section;
         if (history.state.sub) {
             activeSubTabs[section] = history.state.sub;
         }
         navigateTo(section, true);
+    } else if (hash) {
+        const section = parts[0];
+        const sub = parts[1] || null;
+        if (sub) activeSubTabs[section] = sub;
+        navigateTo(section, true);
+    } else {
+        navigateTo('home', true);
     }
 
     // Refresh schedule timer every 60 seconds (local update, NO Supabase hits)
@@ -204,7 +240,12 @@ function navigateTo(sectionId, isPopState = false) {
     }
 
     if (!isPopState) {
-        const hash = sub ? `#${sectionId}/${sub}` : `#${sectionId}`;
+        let hash = `#${sectionId}`;
+        if (sectionId === 'study' && selectedSubject && selectedChapter) {
+            hash = `#study/${activeSubTabs.study}/${selectedSubject}/${encodeURIComponent(selectedChapter)}`;
+        } else if (sub) {
+            hash = `#${sectionId}/${sub}`;
+        }
         history.pushState({ section: sectionId, sub: sub }, "", hash);
     }
 
@@ -351,10 +392,15 @@ function renderChapterCards(category, subjectId) {
 
 function renderMaterialCards(category, subjectId, chapterName) {
     const container = document.getElementById('study-content');
+    if (!currentData || !currentData.studyMaterials) return;
+
+    // Ensure inputs are strings
+    const safeChapter = chapterName || 'Uncategorized';
+
     const items = currentData.studyMaterials.filter(m =>
         m.category === category &&
         m.subjectId === subjectId &&
-        (m.chapter || 'Uncategorized') === chapterName
+        (m.chapter || 'Uncategorized') === safeChapter
     );
 
     if (items.length === 0) {
@@ -362,16 +408,98 @@ function renderMaterialCards(category, subjectId, chapterName) {
         return;
     }
 
-    container.innerHTML = items.map(item => `
-    <div class="file-card">
-      <h4>${item.name}</h4>
-      <p>${item.desc}</p>
-      <div class="file-actions" style="margin-top: 1.5rem;">
-         <button onclick="openPdfModal('${item.name.replace(/'/g, "\\'")}', '${item.link}')" class="btn-outline file-view-btn">View Document <i class="ph ph-eye"></i></button>
-      </div>
-    </div>
-  `).join('');
+    container.innerHTML = items.map(item => {
+        // Safe strings for onclick attributes (manual escaping for simplicity)
+        const safeName = item.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        const safeChapterEsc = safeChapter.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
+        return `
+        <div class="file-card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+              <h4 style="margin: 0; line-height: 1.4;">${escapeHTML(item.name)}</h4>
+              <button onclick="event.stopPropagation(); shareDocument(this, '${safeName}', '${category}', '${subjectId}', '${safeChapterEsc}')" 
+                      style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 10px; display: flex; margin: -10px;" title="Share Link">
+                  <i class="ph ph-share-network" style="font-size: 1.25rem;"></i>
+              </button>
+          </div>
+          <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(item.desc || 'No description available')}</p>
+          <div class="file-actions" style="margin-top: 1.5rem;">
+             <button onclick="openPdfModal('${safeName}', '${item.link}')" class="btn-outline file-view-btn">View Document <i class="ph ph-eye"></i></button>
+          </div>
+        </div>
+      `;
+    }).join('');
 }
+
+window.shareDocument = async function (btn, name, category, subjectId, chapterName) {
+    try {
+        const encodedChapter = encodeURIComponent(chapterName);
+        const encodedName = encodeURIComponent(name);
+
+        // Use a more robust URL construction
+        const baseUrl = window.location.href.split('#')[0];
+        const shareUrl = `${baseUrl}#study/${category}/${subjectId}/${encodedChapter}/${encodedName}`;
+
+        const shareData = {
+            title: name,
+            text: `View "${name}" on EEvolution 2.0`,
+            url: shareUrl
+        };
+
+        // Visual feedback on button
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i>';
+
+        // 1. Try Native Web Share (Mobile)
+        if (navigator.share && /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent)) {
+            try {
+                await navigator.share(shareData);
+                btn.innerHTML = originalIcon;
+                return;
+            } catch (err) {
+                if (err.name === 'AbortError') { btn.innerHTML = originalIcon; return; }
+                console.warn('Native share failed, falling back to clipboard', err);
+            }
+        }
+
+        // 2. Try Clipboard API (Modern Browser)
+        if (navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                if (showToast) showToast("Link copied to clipboard!", "success");
+                else alert("Link copied to clipboard!");
+                btn.innerHTML = '<i class="ph ph-check" style="color: #22c55e;"></i>';
+                setTimeout(() => btn.innerHTML = originalIcon, 2000);
+                return;
+            } catch (err) {
+                console.warn('Clipboard API failed', err);
+            }
+        }
+
+        // 3. Last Resort Fallback (Old browsers or insecure context)
+        const dummy = document.createElement("input");
+        document.body.appendChild(dummy);
+        dummy.value = shareUrl;
+        dummy.select();
+        const success = document.execCommand("copy");
+        document.body.removeChild(dummy);
+
+        if (success) {
+            if (showToast) showToast("Link copied!", "success");
+            btn.innerHTML = '<i class="ph ph-check" style="color: #22c55e;"></i>';
+        } else {
+            // If even execCommand fails, show the URL in a prompt
+            prompt("Copy this link to share:", shareUrl);
+            btn.innerHTML = originalIcon;
+        }
+        setTimeout(() => btn.innerHTML = originalIcon, 2000);
+
+    } catch (err) {
+        console.error('Sharing totally failed', err);
+        btn.innerHTML = '<i class="ph ph-warning" style="color: #ef4444;"></i>';
+        setTimeout(() => btn.innerHTML = originalIcon, 2000);
+    }
+};
 
 /* ================= OTHER DATA ================= */
 
