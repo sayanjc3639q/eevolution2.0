@@ -1,4 +1,17 @@
-// Centralized data fetcher for EEvolution 2.0
+// Utility: Fetch with timeout to prevent hanging on slow networks
+async function fetchWithTimeout(url, options = {}, timeout = 8000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+    try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timer);
+        return response;
+    } catch (error) {
+        clearTimeout(timer);
+        throw error;
+    }
+}
+
 async function fetchJSONData() {
     try {
         const urls = {
@@ -10,7 +23,7 @@ async function fetchJSONData() {
         };
 
         const fetchPromises = Object.entries(urls).map(async ([key, url]) => {
-            const response = await fetch(url);
+            const response = await fetchWithTimeout(url);
             if (!response.ok) {
                 throw new Error(`Failed to fetch ${url}`);
             }
@@ -18,8 +31,6 @@ async function fetchJSONData() {
         });
 
         const results = await Promise.all(fetchPromises);
-
-        // Convert array of entries back into a single object
         const siteData = Object.fromEntries(results);
 
         // --- MIGRATION: Fetch from Supabase ---

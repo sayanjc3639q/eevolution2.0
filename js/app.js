@@ -269,6 +269,9 @@ async function initializeApp() {
         }
     }, 60000);
 
+    // Clear safety timeout as init success
+    if (window.preloaderTimeout) clearTimeout(window.preloaderTimeout);
+
     // Fade out preloader after init
     const preloader = document.getElementById('preloader');
     if (preloader) {

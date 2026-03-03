@@ -26,7 +26,17 @@
       if (savedColor && savedRGB) {
         document.documentElement.style.setProperty('--theme-color', savedColor);
         document.documentElement.style.setProperty('--theme-color-rgb', savedRGB);
+        if (savedColor === 'rainbow') document.documentElement.setAttribute('data-theme-color', 'rainbow');
       }
+
+      // Preloader Safety Guard: Auto-refresh if initialization hangs for > 10s
+      window.preloaderTimeout = setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        if (preloader && !preloader.classList.contains('fade-out')) {
+          console.warn("Initializing... taking too long. Auto-refreshing context.");
+          window.location.reload();
+        }
+      }, 10000);
     })();
   </script>
 </head>
