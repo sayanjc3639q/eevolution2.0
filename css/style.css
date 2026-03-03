@@ -1004,6 +1004,20 @@ input[type="text"]:focus {
   }
 }
 
+.user-greeting {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--theme-color);
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background: rgba(var(--theme-color-rgb), 0.1);
+  border: 1px solid rgba(var(--theme-color-rgb), 0.15);
+  border-radius: 30px;
+  animation: fadeIn 0.6s ease;
+}
+
 /* Hero Section */
 .hero {
   text-align: center;

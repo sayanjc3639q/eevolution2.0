@@ -48,6 +48,9 @@ async function checkAuth() {
 
             window.isLoggedIn = false;
             window.currentProfile = null;
+
+            const greetingEl = document.getElementById('user-greeting');
+            if (greetingEl) greetingEl.classList.add('hidden');
         } else {
             // Private State Context
             currentSessionUser = session.user;
@@ -78,6 +81,9 @@ async function checkAuth() {
                 const headerEmail = document.getElementById('nav-user-email');
                 if (headerName) headerName.innerText = profile.name || "Student";
                 if (headerEmail) headerEmail.innerText = session.user.email || "";
+
+                // Display Dynamic Greeting
+                displayUserGreeting(profile);
 
 
                 // GUEST MODE ENFORCEMENT logic
@@ -431,3 +437,41 @@ window.saveSelectedAvatar = async function () {
         btn.innerHTML = originalText;
     }
 };
+
+/**
+ * Daily Random Greeting Engine
+ * Selects a deterministic greeting based on date and user ID
+ */
+async function displayUserGreeting(profile) {
+    const greetingEl = document.getElementById('user-greeting');
+    if (!greetingEl) return;
+
+    try {
+        const response = await fetch('greetings.json');
+        const data = await response.json();
+        const greetings = data.greetings;
+
+        const dateStr = new Date().toISOString().split('T')[0];
+        const combined = (profile.id || 'guest') + dateStr;
+
+        // Basic hash for deterministic selection
+        let hash = 0;
+        for (let i = 0; i < combined.length; i++) {
+            hash = ((hash << 5) - hash) + combined.charCodeAt(i);
+            hash |= 0;
+        }
+
+        const index = Math.abs(hash) % greetings.length;
+        let greeting = greetings[index];
+
+        // Personalize with First Name
+        const nameParts = profile.name ? profile.name.split(' ') : ['Engineer'];
+        const firstName = nameParts[0];
+        greeting = greeting.replace(/{name}/g, firstName);
+
+        greetingEl.innerHTML = `<i class="ph-fill ph-sparkle"></i> ${greeting}`;
+        greetingEl.classList.remove('hidden');
+    } catch (e) {
+        console.warn("Greeting engine failed", e);
+    }
+}
