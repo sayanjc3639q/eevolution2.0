@@ -151,12 +151,14 @@ function updateTestUI(active, code) {
 window.showAdminTab = function (tabName) {
     document.querySelectorAll('.admin-pane').forEach(p => p.classList.add('hidden'));
     document.getElementById(`admin-pane-${tabName}`).classList.remove('hidden');
-    if (tabName === 'materials') loadAdminMaterials();
+    if (tabName === 'materials') {
+        materialsOffset = 0;
+        loadAdminMaterials(false);
+    }
     if (tabName === 'notices') loadAdminNotices();
     if (tabName === 'events') loadAdminEvents();
     if (tabName === 'holidays') loadAdminHolidays();
     if (tabName === 'donations') loadAdminDonations();
-
 };
 
 
@@ -331,36 +333,76 @@ async function loadAdminSubjects() {
     } catch (e) { console.error("Could not load subjects for admin selection", e); }
 }
 
-async function loadAdminMaterials() {
+let materialsOffset = 0;
+const MATERIALS_LIMIT = 20;
+
+async function loadAdminMaterials(isLoadMore = false) {
     const tbody = document.getElementById('materials-table-body');
+    const container = document.getElementById('load-more-materials-container');
+    const loadBtn = document.getElementById('btn-load-more');
     if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="3" class="text-center">Loading...</td></tr>`;
+    if (!isLoadMore) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center">Loading... <i class="ph ph-spinner ph-spin"></i></td></tr>`;
+        materialsOffset = 0;
+    } else {
+        if (loadBtn) {
+            loadBtn.disabled = true;
+            loadBtn.innerText = "Loading...";
+        }
+    }
 
     const { data, error } = await supabaseClient
         .from('study_materials')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(materialsOffset, materialsOffset + MATERIALS_LIMIT - 1);
 
     if (error) {
-        tbody.innerHTML = `<tr><td colspan="3" class="text-center">Error: ${error.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center">Error: ${error.message}</td></tr>`;
         return;
     }
 
-    if (!data.length) {
-        tbody.innerHTML = `<tr><td colspan="3" class="text-center">No materials in database yet.</td></tr>`;
+    if (!isLoadMore && (!data || !data.length)) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center">No materials in database yet.</td></tr>`;
+        if (container) container.classList.add('hidden');
         return;
     }
 
-    tbody.innerHTML = data.map(m => `
+    const html = data.map((m, i) => `
         <tr>
+            <td class="text-muted" style="font-weight: 700;">${materialsOffset + i + 1}</td>
             <td>${m.name}</td>
+            <td><span class="badge" style="background: var(--bg-hover); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid var(--border-color);">${m.chapter || '---'}</span></td>
             <td class="text-sm text-muted">${m.subject_id}</td>
             <td>
-                <button class="btn-outline btn-small" style="color: #ef4444;" onclick="handleDeleteMaterial(${m.id})"><i class="ph ph-trash"></i></button>
+                <button class="btn-outline btn-small" style="color: #ef4444;" onclick="handleDeleteMaterial(this, ${m.id})"><i class="ph ph-trash"></i></button>
             </td>
         </tr>
     `).join('');
+
+    if (isLoadMore) {
+        tbody.insertAdjacentHTML('beforeend', html);
+    } else {
+        tbody.innerHTML = html;
+    }
+
+    // Update state for next load
+    materialsOffset += data.length;
+
+    // Show/Hide Load More
+    if (container) {
+        if (data.length === MATERIALS_LIMIT) {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    if (loadBtn) {
+        loadBtn.disabled = false;
+        loadBtn.innerHTML = `Load Next ${MATERIALS_LIMIT} Materials <i class="ph ph-caret-double-down"></i>`;
+    }
 }
 
 window.handleAddMaterial = async function (e) {
@@ -393,16 +435,22 @@ window.handleAddMaterial = async function (e) {
     btn.innerHTML = originalText;
 };
 
-window.handleDeleteMaterial = async function (id) {
+window.handleDeleteMaterial = async function (btn, id) {
     if (!confirm("Are you sure you want to delete this material?")) return;
+
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i>`;
 
     const { error } = await supabaseClient.from('study_materials').delete().eq('id', id);
 
     if (error) {
         showToast(error.message, "error");
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
     } else {
         showToast("Deleted!", "success");
-        loadAdminMaterials();
+        loadAdminMaterials(false);
     }
 };
 
@@ -427,15 +475,19 @@ async function loadUsers() {
             <td><input type="number" id="coins-${u.id}" value="${u.evo_coins || 0}" min="0"></td>
             <td><input type="number" id="uploads-${u.id}" value="${u.upload_count || 0}" min="0"></td>
             <td>
-                <button class="btn-primary btn-small" onclick="saveUser('${u.id}')">Save <i class="ph ph-floppy-disk"></i></button>
+                <button class="btn-primary btn-small" onclick="saveUser(this, '${u.id}')">Save <i class="ph ph-floppy-disk"></i></button>
             </td>
         </tr>
     `).join('');
 }
 
-window.saveUser = async function (userId) {
+window.saveUser = async function (btn, userId) {
     const coins = document.getElementById(`coins-${userId}`).value;
     const uploads = document.getElementById(`uploads-${userId}`).value;
+
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i>`;
 
     const { error } = await supabaseClient
         .from('profiles')
@@ -447,6 +499,9 @@ window.saveUser = async function (userId) {
     } else {
         showToast("User updated successfully!", "success");
     }
+
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
 };
 
 /* ================= DONATION MANAGEMENT ================= */

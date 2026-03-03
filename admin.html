@@ -228,7 +228,9 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th style="width: 50px;">#</th>
                                 <th>Name</th>
+                                <th>Chapter</th>
                                 <th>Subject</th>
                                 <th>Action</th>
                             </tr>
@@ -237,6 +239,12 @@
                             <!-- Rendered by JS -->
                         </tbody>
                     </table>
+                    <div id="load-more-materials-container"
+                        style="text-align: center; margin-top: 1.5rem; padding-bottom: 1.5rem;" class="hidden">
+                        <button id="btn-load-more" class="btn-outline btn-small" onclick="loadAdminMaterials(true)">
+                            Load Next 20 Materials <i class="ph ph-caret-double-down"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
