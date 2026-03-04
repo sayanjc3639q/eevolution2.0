@@ -81,8 +81,13 @@ async function fetchFeed() {
             return data;
         });
 
-        // Fetch profiles to get names and avatars
-        const { data: profiles } = await supabaseClient.from('profiles').select('roll_number, name, avatar_url');
+        // Fetch only relevant profiles for the current posts to get names and avatars
+        const posterRolls = [...new Set(posts.map(p => p.roll_number))];
+        const { data: profiles } = await supabaseClient
+            .from('profiles')
+            .select('roll_number, name, avatar_url')
+            .in('roll_number', posterRolls);
+
         if (profiles) {
             profiles.forEach(p => {
                 globalProfileMap[p.roll_number] = { name: p.name, avatar: p.avatar_url };
@@ -448,18 +453,28 @@ window.renderMemories = async function () {
 
         const likedMemories = JSON.parse(localStorage.getItem('likedMemories') || '[]');
 
-        // Fetch memory likes from DB
+        // Fetch memory likes from DB only for displayed photos
         let likesMap = {};
-        const { data: metaData, error } = await supabaseClient.from('memories_data').select('*');
+        const photoIds = (memoriesArray || []).map(m => m.id);
+        const { data: metaData, error } = await supabaseClient
+            .from('memories_data')
+            .select('*')
+            .in('photo_id', photoIds);
+
         if (metaData && !error) {
             metaData.forEach(m => { likesMap[m.photo_id] = m.like_count || 0; });
         }
 
-        // Fetch avatars mapping
-        const { data: allProfiles } = await supabaseClient.from('profiles').select('roll_number, avatar_url');
+        // Fetch relevant avatars mapping
+        const memoryRolls = [...new Set((memoriesArray || []).map(m => m.roll_number).filter(r => !!r))];
+        const { data: profiles } = await supabaseClient
+            .from('profiles')
+            .select('roll_number, avatar_url')
+            .in('roll_number', memoryRolls);
+
         const avatarMap = {};
-        if (allProfiles) {
-            allProfiles.forEach(p => avatarMap[p.roll_number] = p.avatar_url);
+        if (profiles) {
+            profiles.forEach(p => avatarMap[p.roll_number] = p.avatar_url);
         }
 
         const postsHtml = (memoriesArray || []).map(m => {

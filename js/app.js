@@ -683,25 +683,20 @@ async function renderHomeData() {
 
     if (typeof renderLiveSchedule === 'function') renderLiveSchedule();
 
-    // Fetch top contributors and and potential donator avatars from Supabase
+    // Fetch Top 3 contributors and avatars for donators from Supabase
     let profileMap = {};
     if (window.supabaseClient) {
-        const { data: profiles } = await supabaseClient
+        // Fetch only Top 3 for home display
+        const { data: topContributors } = await supabaseClient
             .from('profiles')
             .select('name, roll_number, upload_count, avatar_url')
-            .order('upload_count', { ascending: false });
+            .order('upload_count', { ascending: false })
+            .limit(3);
 
-        if (profiles) {
-            // Render Top Contributors (Top 3)
-            const topContributors = profiles.slice(0, 3);
+        if (topContributors) {
             document.getElementById('top-contributors').innerHTML = topContributors.map((s, i) => `
                 <li><div><span class="primary-text">#${i + 1} ${s.name || 'Anonymous'}</span><span class="secondary-text">${s.roll_number}</span></div><div style="text-align:right"><span class="text-blue"><i class="ph ph-upload"></i> ${s.upload_count || 0}</span></div></li>
             `).join('');
-
-            // Build map for donators
-            profiles.forEach(p => {
-                if (p.name) profileMap[p.name.toUpperCase()] = p.avatar_url;
-            });
 
             // See more contributors link
             document.getElementById('top-contributors-footer').innerHTML = `
@@ -710,34 +705,48 @@ async function renderHomeData() {
                 </button>
             `;
         }
+
+        // Fetch Top 4 Donators for display
+        const donators = [...currentData.donators]
+            .filter(d => (parseFloat(d.amount.replace('₹', '')) || 0) > 0)
+            .sort((a, b) => {
+                const amtA = parseFloat(a.amount.replace('₹', '')) || 0;
+                const amtB = parseFloat(b.amount.replace('₹', '')) || 0;
+                if (amtB !== amtA) return amtB - amtA;
+                return new Date(b.lastDate || b.date) - new Date(a.lastDate || a.date);
+            })
+            .slice(0, 4);
+
+        // Fetch avatars for these specific donators
+        const donatorNames = donators.map(d => d.name);
+        const { data: donatorProfiles } = await supabaseClient
+            .from('profiles')
+            .select('name, avatar_url')
+            .in('name', donatorNames);
+
+        if (donatorProfiles) {
+            donatorProfiles.forEach(p => {
+                if (p.name) profileMap[p.name.toUpperCase()] = p.avatar_url;
+            });
+        }
+
+        document.getElementById('top-donators').innerHTML = donators.map((d) => {
+            const avatarUrl = profileMap[d.name.toUpperCase()];
+            const iconHtml = avatarUrl
+                ? `<img src="${avatarUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`
+                : `<i class="ph ph-heart text-accent"></i>`;
+
+            return `
+                <li>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        ${iconHtml}
+                        <span class="primary-text">${d.name}</span>
+                    </div>
+                    <div><span class="text-accent">${d.amount}</span></div>
+                </li>
+            `;
+        }).join('');
     }
-
-    const donators = [...currentData.donators]
-        .filter(d => (parseFloat(d.amount.replace('₹', '')) || 0) > 0)
-        .sort((a, b) => {
-            const amtA = parseFloat(a.amount.replace('₹', '')) || 0;
-            const amtB = parseFloat(b.amount.replace('₹', '')) || 0;
-            if (amtB !== amtA) return amtB - amtA;
-            return new Date(b.date) - new Date(a.date);
-        })
-        .slice(0, 4);
-
-    document.getElementById('top-donators').innerHTML = donators.map((d) => {
-        const avatarUrl = profileMap[d.name.toUpperCase()];
-        const iconHtml = avatarUrl
-            ? `<img src="${avatarUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`
-            : `<i class="ph ph-heart text-accent"></i>`;
-
-        return `
-            <li>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    ${iconHtml}
-                    <span class="primary-text">${d.name}</span>
-                </div>
-                <div><span class="text-accent">${d.amount}</span></div>
-            </li>
-        `;
-    }).join('');
 
     // See more donators link
     document.getElementById('top-donators-footer').innerHTML = `
@@ -1163,7 +1172,9 @@ async function renderContributors() {
             const { data, error } = await supabaseClient
                 .from('profiles')
                 .select('name, roll_number, upload_count, avatar_url')
-                .order('upload_count', { ascending: false });
+                .gt('upload_count', 0)
+                .order('upload_count', { ascending: false })
+                .limit(50);
 
             if (error) throw error;
             return data;
@@ -1229,12 +1240,14 @@ async function renderDonators() {
         return new Date(b.lastDate) - new Date(a.lastDate);
     });
 
-    // Fetch matching profiles to get avatars if they are registered
+    // Fetch matching profiles for specific donators only
     let profileMap = {};
     if (window.supabaseClient) {
+        const donatorNames = sortedDonators.map(d => d.name);
         const { data: profiles } = await supabaseClient
             .from('profiles')
-            .select('name, avatar_url');
+            .select('name, avatar_url')
+            .in('name', donatorNames);
 
         if (profiles) {
             profiles.forEach(p => {
