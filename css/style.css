@@ -292,8 +292,11 @@ ol {
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--border-color);
-  z-index: 1000;
-  transition: var(--transition);
+  z-index: 2000;
+  /* Ensure it's above almost everything */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .sidebar-header {
@@ -320,7 +323,7 @@ ol {
 
 .logo i {
   color: var(--electric-blue);
-  filter: drop-shadow(0 0 10px rgba(var(--theme-color-rgb), 0.5));
+  text-shadow: 0 0 10px rgba(var(--theme-color-rgb), 0.5);
 }
 
 .logo span {
@@ -351,7 +354,7 @@ ol {
   gap: 1rem;
   color: var(--text-main);
   opacity: 0.7;
-  transition: var(--transition);
+  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
   font-size: 0.95rem;
   font-weight: 500;
 }
@@ -482,7 +485,7 @@ ol {
   color: var(--text-main);
   font-size: 1.5rem;
   cursor: pointer;
-  transition: var(--transition);
+  transition: color 0.2s ease;
 }
 
 .mobile-toggle:hover {
@@ -2147,13 +2150,36 @@ input[type="email"]:focus {
 /* Responsive Media Queries */
 @media (max-width: 900px) {
   .sidebar {
-    transform: translateX(-100%);
+    transform: translate3d(-100%, 0, 0);
     box-shadow: none;
+    visibility: hidden;
   }
 
   .sidebar.open {
-    transform: translateX(0);
-    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.3);
+    transform: translate3d(0, 0, 0);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
+    /* Smaller blur for performance */
+    visibility: visible;
+  }
+
+  /* Sidebar Overlay for Mobile */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 1999;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+    opacity: 1;
   }
 
   .main-content {

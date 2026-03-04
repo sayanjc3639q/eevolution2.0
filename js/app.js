@@ -326,7 +326,9 @@ window.addEventListener('popstate', (event) => {
 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
     sidebar.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('active');
 }
 
 function setupNavigation() {
