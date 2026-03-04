@@ -261,11 +261,16 @@ async function initializeApp() {
         navigateTo('home', true);
     }
 
-    // Refresh schedule timer every 60 seconds (local update, NO Supabase hits)
+    // Refresh schedule timer and greeting every 60 seconds (local update, NO Supabase hits)
     setInterval(() => {
         const homeSection = document.getElementById('section-home');
         if (homeSection && !homeSection.classList.contains('hidden')) {
             if (typeof renderLiveSchedule === 'function') renderLiveSchedule();
+
+            // Periodically refresh greeting (it only updates UI if the "greeting day" changes)
+            if (window.displayUserGreeting && window.currentProfile) {
+                window.displayUserGreeting(window.currentProfile);
+            }
         }
     }, 60000);
 

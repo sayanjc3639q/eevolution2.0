@@ -442,27 +442,39 @@ window.saveSelectedAvatar = async function () {
  * Daily Random Greeting Engine
  * Selects a deterministic greeting based on date and user ID
  */
-async function displayUserGreeting(profile) {
+let greetingsCache = null;
+let lastGreetingKey = null;
+
+window.displayUserGreeting = async function (profile) {
     const greetingEl = document.getElementById('user-greeting');
     if (!greetingEl) return;
 
     try {
-        const response = await fetch('greetings.json');
-        const data = await response.json();
-        const greetings = data.greetings;
+        if (!greetingsCache) {
+            const response = await fetch('greetings.json');
+            const data = await response.json();
+            greetingsCache = data.greetings;
+        }
 
-        const dateStr = new Date().toISOString().split('T')[0];
-        const combined = (profile.id || 'guest') + dateStr;
+        // Shift time back by 6 hours so the "greeting day" resets at 6 AM local time
+        const now = new Date();
+        const shifted = new Date(now.getTime() - (6 * 60 * 60 * 1000));
+        const dateStr = shifted.getFullYear() + '-' + (shifted.getMonth() + 1) + '-' + shifted.getDate();
+
+        // Unique key for this user + day combination
+        const currentKey = (profile.id || 'guest') + dateStr;
+        if (lastGreetingKey === currentKey) return; // No change needed
+        lastGreetingKey = currentKey;
 
         // Basic hash for deterministic selection
         let hash = 0;
-        for (let i = 0; i < combined.length; i++) {
-            hash = ((hash << 5) - hash) + combined.charCodeAt(i);
+        for (let i = 0; i < currentKey.length; i++) {
+            hash = ((hash << 5) - hash) + currentKey.charCodeAt(i);
             hash |= 0;
         }
 
-        const index = Math.abs(hash) % greetings.length;
-        let greeting = greetings[index];
+        const index = Math.abs(hash) % greetingsCache.length;
+        let greeting = greetingsCache[index];
 
         // Personalize with First Name
         const nameParts = profile.name ? profile.name.split(' ') : ['Engineer'];
@@ -474,4 +486,4 @@ async function displayUserGreeting(profile) {
     } catch (e) {
         console.warn("Greeting engine failed", e);
     }
-}
+};
