@@ -1456,8 +1456,8 @@ function setupInteractions() {
 
     // Theme Color Switch
     const colorOptions = document.querySelectorAll('.color-option');
-    const defaultColor = '#00e1ff';
-    const defaultRGB = '0, 225, 255';
+    const defaultColor = '#4285F4';
+    const defaultRGB = '66, 133, 244';
 
     const savedColor = localStorage.getItem('theme-color') || defaultColor;
     const savedRGB = localStorage.getItem('theme-color-rgb') || defaultRGB;

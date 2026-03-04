@@ -9,8 +9,8 @@
   --text-muted: #94a3b8;
   --text-inverse: #000000;
 
-  --theme-color: #00e1ff;
-  --theme-color-rgb: 0, 225, 255;
+  --theme-color: #4285F4;
+  --theme-color-rgb: 66, 133, 244;
   --electric-blue: var(--theme-color);
   --electric-blue-hover: color-mix(in srgb, var(--theme-color), black 15%);
   --accent-color: var(--theme-color);
