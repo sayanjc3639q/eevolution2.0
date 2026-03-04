@@ -216,7 +216,9 @@
                             <option value="labs">Lab Notes</option>
                             <option value="resources">Resources</option>
                         </select>
-                        <input type="text" id="mat-chapter" placeholder="Chapter (Unit 1...)" class="form-input">
+                        <input type="text" id="mat-chapter" placeholder="Chapter (Unit 1...)" class="form-input"
+                            list="chapter-hints">
+                        <datalist id="chapter-hints"></datalist>
                         <input type="text" id="mat-desc" placeholder="Brief description..." class="form-input">
                         <input type="url" id="mat-link" placeholder="Gdrive/External Link" required class="form-input">
                         <button type="submit" class="btn-primary" style="grid-column: 1 / -1;">Add Material <i

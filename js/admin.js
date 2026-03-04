@@ -154,6 +154,7 @@ window.showAdminTab = function (tabName) {
     if (tabName === 'materials') {
         materialsOffset = 0;
         loadAdminMaterials(false);
+        loadChapterHints();
     }
     if (tabName === 'notices') loadAdminNotices();
     if (tabName === 'events') loadAdminEvents();
@@ -430,6 +431,7 @@ window.handleAddMaterial = async function (e) {
         showToast("Material added successfully!", "success");
         e.target.reset();
         loadAdminMaterials();
+        loadChapterHints();
     }
     btn.disabled = false;
     btn.innerHTML = originalText;
@@ -451,6 +453,7 @@ window.handleDeleteMaterial = async function (btn, id) {
     } else {
         showToast("Deleted!", "success");
         loadAdminMaterials(false);
+        loadChapterHints();
     }
 };
 
@@ -733,3 +736,24 @@ window.handleDeleteHoliday = async function (id) {
 
 const holDateInput = document.getElementById('hol-date');
 if (holDateInput) holDateInput.value = new Date().toISOString().split('T')[0];
+
+async function loadChapterHints() {
+    const datalist = document.getElementById('chapter-hints');
+    if (!datalist) return;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('study_materials')
+            .select('chapter');
+
+        if (error) throw error;
+
+        if (data) {
+            const chapters = [...new Set(data.map(m => m.chapter).filter(c => c && c.trim() !== ''))];
+            chapters.sort();
+            datalist.innerHTML = chapters.map(ch => `<option value="${ch}">`).join('');
+        }
+    } catch (e) {
+        console.warn("Failed to load chapter hints", e);
+    }
+}
