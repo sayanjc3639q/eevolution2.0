@@ -292,6 +292,16 @@ window.addEventListener('popstate', (event) => {
         if (event.state.sub) {
             activeSubTabs[event.state.section] = event.state.sub;
         }
+
+        // Restore study hierarchy from history state
+        if (event.state.section === 'study') {
+            selectedSubject = event.state.subject || null;
+            selectedChapter = event.state.chapter || null;
+        } else {
+            selectedSubject = null;
+            selectedChapter = null;
+        }
+
         navigateTo(event.state.section, true);
 
         // Ensure UI navigation reflects the back navigation
@@ -306,6 +316,8 @@ window.addEventListener('popstate', (event) => {
             }
         }
     } else {
+        selectedSubject = null;
+        selectedChapter = null;
         navigateTo('home', true);
     }
 });
@@ -382,6 +394,13 @@ const subTitleMap = {
     'donate': 'Donations', 'donators': 'Donators List'
 };
 
+const studyDescMap = {
+    'modules': 'Theory syllabuses and module guides',
+    'digest': 'Exam-ready summaries and short notes',
+    'labs': 'Lab manuals and experiment records',
+    'resources': 'Handwritten notes and digital books'
+};
+
 function navigateTo(sectionId, isPopState = false) {
     document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
     const targetSec = document.getElementById(`section-${sectionId}`);
@@ -401,6 +420,8 @@ function navigateTo(sectionId, isPopState = false) {
         subTitleElement.innerText = '';
     } else if (sectionId === 'profile') {
         subTitleElement.innerText = 'User Portal';
+    } else if (sectionId === 'study') {
+        updateStudyBreadcrumbs();
     } else if (sub) {
         subTitleElement.innerText = subTitleMap[sub] || '';
     } else {
@@ -416,12 +437,24 @@ function navigateTo(sectionId, isPopState = false) {
 
     if (!isPopState) {
         let hash = `#${sectionId}`;
-        if (sectionId === 'study' && selectedSubject && selectedChapter) {
-            hash = `#study/${activeSubTabs.study}/${selectedSubject}/${encodeURIComponent(selectedChapter)}`;
+        if (sectionId === 'study') {
+            const subPart = activeSubTabs.study || 'modules';
+            if (selectedSubject && selectedChapter) {
+                hash = `#study/${subPart}/${selectedSubject}/${encodeURIComponent(selectedChapter)}`;
+            } else if (selectedSubject) {
+                hash = `#study/${subPart}/${selectedSubject}`;
+            } else {
+                hash = `#study/${subPart}`;
+            }
         } else if (sub) {
             hash = `#${sectionId}/${sub}`;
         }
-        history.pushState({ section: sectionId, sub: sub }, "", hash);
+        history.pushState({
+            section: sectionId,
+            sub: sub,
+            subject: selectedSubject,
+            chapter: selectedChapter
+        }, "", hash);
     }
 
     // Smooth scroll to top for main section changes, except when internal state handles it
@@ -465,6 +498,9 @@ function renderStudySection() {
     const subCategory = activeSubTabs.study;
     const backBtn = document.getElementById('study-back-btn');
 
+    // Update path breadcrumbs whenever study section renders
+    updateStudyBreadcrumbs();
+
     if (selectedChapter) {
         backBtn.classList.remove('hidden');
         backBtn.querySelector('button').innerHTML = `<i class="ph ph-arrow-left"></i> Back to Chapters`;
@@ -479,6 +515,46 @@ function renderStudySection() {
         backBtn.classList.add('hidden');
         renderSubjectCards(subCategory);
     }
+}
+
+function updateStudyBreadcrumbs() {
+    const subId = activeSubTabs.study;
+    const subTitle = subTitleMap[subId] || 'Modules';
+    const subTitleElement = document.getElementById('sub-page-title');
+    if (!subTitleElement) return;
+
+    if (!selectedSubject) {
+        // Flat view: Show name and a single line tagline
+        const tagline = studyDescMap[subId] || 'Access study materials';
+        subTitleElement.innerHTML = `
+            <div class="breadcrumb-root">
+                <span class="root-name">${subTitle}</span>
+                <span class="root-tagline">${tagline}</span>
+            </div>
+        `;
+        return;
+    }
+
+    let breadcrumbHTML = `<span title="${subTitle}">${subTitle}</span>`;
+
+    if (selectedSubject) {
+        let subjectName = selectedSubject;
+        if (currentData) {
+            const allSubs = [
+                ...(currentData.subjects.theory || []),
+                ...(currentData.subjects.lab || [])
+            ];
+            const found = allSubs.find(s => s.id === selectedSubject);
+            if (found) subjectName = found.name;
+        }
+        breadcrumbHTML += ` <i class="ph ph-caret-right"></i> <span title="${subjectName}">${subjectName}</span>`;
+    }
+
+    if (selectedChapter) {
+        breadcrumbHTML += ` <i class="ph ph-caret-right"></i> <span title="${selectedChapter}">${selectedChapter}</span>`;
+    }
+
+    subTitleElement.innerHTML = `<div class="breadcrumbs">${breadcrumbHTML}</div>`;
 }
 
 function renderSubjectCards(category) {
@@ -512,7 +588,7 @@ function selectSubject(id) {
     studyScrollPositions.subjects = window.scrollY;
     selectedSubject = id;
     selectedChapter = null;
-    renderStudySection();
+    navigateTo('study'); // Use navigateTo to push state
     window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
@@ -520,7 +596,7 @@ function selectChapter(chapterName) {
     // Save scroll position of the chapter list
     studyScrollPositions.chapters = window.scrollY;
     selectedChapter = chapterName;
-    renderStudySection();
+    navigateTo('study'); // Use navigateTo to push state
     window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
@@ -544,6 +620,8 @@ function studyGoBack() {
         });
     }, 10);
 }
+
+function backToSubjects() { studyGoBack(); }
 
 function renderChapterCards(category, subjectId) {
     const container = document.getElementById('study-content');

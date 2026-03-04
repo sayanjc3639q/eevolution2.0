@@ -1380,7 +1380,100 @@ input[type="email"]:focus {
   padding-bottom: 0.75rem;
   flex-wrap: wrap;
   gap: 1rem;
+  position: sticky;
+  top: 64px;
+  background-color: var(--bg-dark);
+  z-index: 100;
+  margin-top: -1rem;
+  /* Adjust for container padding */
+  padding-top: 1rem;
 }
+
+/* Ensure background covers scrolling text */
+[data-theme="light"] .section-nav {
+  background-color: var(--bg-dark);
+}
+
+/* Breadcrumbs UI - Single Line with Truncation */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+.breadcrumbs span {
+  transition: var(--transition);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Allow the last item (current page) to truncate if needed */
+.breadcrumbs span:last-child {
+  color: var(--electric-blue);
+  font-weight: 700;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Keep previous levels intact unless space is critical */
+.breadcrumbs span:not(:last-child) {
+  flex-shrink: 0;
+}
+
+.breadcrumbs i {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* Root Category Tagline (Stacked Layout) */
+.breadcrumb-root {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.root-name {
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.root-tagline {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+  .root-name {
+    font-size: 1.25rem;
+  }
+
+  .root-tagline {
+    font-size: 0.75rem;
+  }
+}
+
 
 .tabs {
   display: flex;
