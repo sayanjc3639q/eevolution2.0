@@ -1324,6 +1324,8 @@ input[type="email"]:focus {
 /* Reviews Section */
 .reviews-section {
   margin-top: 3rem;
+  padding: 0 1.25rem;
+  /* Increased separation from side walls */
 }
 
 .reviews-section h3 {
@@ -2023,6 +2025,210 @@ input[type="email"]:focus {
 
 .info-list li i {
   color: var(--accent-color);
+}
+
+/* Logo System - Prevents layout shifts */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-icon-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+  /* Reserve space to prevent layout jump */
+  background: rgba(var(--theme-color-rgb), 0.05);
+  border-radius: 6px;
+}
+
+.hero-partnership {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 1s ease;
+}
+
+.hero-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1.2);
+  /* Reserve space */
+  min-width: 48px;
+}
+
+.partnership-divider {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  opacity: 0.5;
+}
+
+.collaboration-card {
+  padding: 2.5rem !important;
+  background: linear-gradient(135deg, var(--bg-surface), var(--bg-panel));
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.collaboration-logos {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.collab-logo-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.collab-logo-img {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  /* Reserve space */
+  min-width: 80px;
+}
+
+.logo-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.disclaimer-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.disclaimer-title {
+  color: var(--text-main);
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.trademark-notice {
+  font-size: 0.8rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-color);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Global Footer */
+.global-footer {
+  margin-top: auto;
+  padding: 3rem 1.5rem;
+  /* Reduced horizontal padding */
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Center footer items */
+}
+
+.footer-disclaimer-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.footer-disclaimer-card p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.footer-trademark {
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-copyright {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Legacy Section Styling */
+.legacy-section {
+  margin-bottom: 3.5rem;
+  padding: 2.5rem;
+  border-left: 4px solid var(--theme-color);
+  background: linear-gradient(135deg, var(--bg-surface), var(--bg-panel));
+}
+
+.legacy-grid {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.legacy-main {
+  flex: 1;
+  min-width: 300px;
+}
+
+.legacy-feature-box {
+  flex: 0 0 220px;
+  padding: 2rem;
+  background: rgba(var(--theme-color-rgb), 0.05);
+  border-radius: 12px;
+  border: 1px dashed var(--border-color);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .legacy-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .legacy-main {
+    min-width: 100%;
+  }
+
+  .legacy-feature-box {
+    flex: 1 1 100%;
+  }
+
+  .global-footer {
+    padding: 2rem 1rem;
+  }
+
+  .footer-disclaimer-card {
+    padding: 1rem;
+    width: 100%;
+  }
 }
 
 .drop-zone {

@@ -60,7 +60,8 @@
 
     <div class="sidebar-header">
       <div class="logo">
-        <i class="ph ph-lightning"></i>
+        <img src="asstes/eevolution-2-electrical-engineering-logo.png" alt="EEvolution Logo" class="logo-icon-img"
+          loading="lazy">
         <span>EEvolution <span class="accent">2.0</span></span>
       </div>
       <button class="mobile-toggle" onclick="toggleSidebar()"><i class="ph ph-x"></i></button>
@@ -194,6 +195,12 @@
       <!-- HOME SECTION -->
       <section id="section-home" class="page-section active">
         <div class="hero">
+          <div class="hero-partnership">
+            <img src="asstes/haldia-insitute-of-technology-logo.png" alt="HIT Logo" class="hero-logo" loading="lazy">
+            <span class="partnership-divider">×</span>
+            <img src="asstes/eevolution-2-electrical-engineering-logo.png" alt="EEvolution Logo" class="hero-logo"
+              loading="lazy">
+          </div>
           <h1>Welcome to <span class="accent">EEvolution 2.0</span></h1>
           <div id="user-greeting" class="user-greeting hidden"></div>
           <p class="subtitle">The centralized digital hub for Batch 2 Electrical Engineering.</p>
@@ -303,10 +310,9 @@
         </div>
 
         <!-- PROJECT LEGACY SECTION -->
-        <div class="legacy-section card"
-          style="margin-bottom: 3.5rem; padding: 2.5rem; border-left: 4px solid var(--theme-color); background: linear-gradient(135deg, var(--bg-surface), var(--bg-panel));">
-          <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 300px;">
+        <div class="legacy-section card">
+          <div class="legacy-grid">
+            <div class="legacy-main">
               <h3 style="color: var(--theme-color); margin-bottom: 0.75rem;"><i class="ph ph-rocket-launch"></i> The
                 EEvolution Legacy</h3>
               <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-main); margin-bottom: 1rem;">Batch 2 |
@@ -335,8 +341,7 @@
                 <span class="tag"><i class="ph ph-coins"></i> Evo-System</span>
               </div>
             </div>
-            <div
-              style="flex: 0 0 220px; padding: 2rem; background: rgba(var(--theme-color-rgb), 0.05); border-radius: 12px; border: 1px dashed var(--border-color); text-align: center;">
+            <div class="legacy-feature-box">
               <i class="ph ph-medal" style="font-size: 3.5rem; color: var(--gold-color); margin-bottom: 1rem;"></i>
               <h4 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main);">
                 Pioneering Effort</h4>
@@ -898,6 +903,43 @@
           </div>
         </div>
 
+
+        <!-- BRAND IDENTITY & LEGAL SECTION -->
+        <div class="card collaboration-card mt-4">
+          <div class="collaboration-logos">
+            <div class="collab-logo-box">
+              <img src="asstes/haldia-insitute-of-technology-logo.png" alt="HIT Logo" class="collab-logo-img">
+              <span class="logo-desc">Haldia Institute of Technology</span>
+            </div>
+            <span class="partnership-divider" style="font-size: 3rem;">+</span>
+            <div class="collab-logo-box">
+              <img src="asstes/eevolution-2-electrical-engineering-logo.png" alt="EEvolution Logo"
+                class="collab-logo-img">
+              <span class="logo-desc">EEvolution 2.0 Official</span>
+            </div>
+          </div>
+
+          <div class="disclaimer-title">Identity & Non-Profit Mission</div>
+          <p class="disclaimer-text">
+            EEvolution 2.0 is not a business; it is a non-profit scheme created to allow college mates easy access to
+            notes, modules, and essential academic information. It is maintained and regulated through the decisions
+            of the Electrical Engineering Batch 2 community and its concerned administrators.
+          </p>
+
+          <div class="disclaimer-title">Institutional Relationship</div>
+          <p class="disclaimer-text">
+            <strong>Important Declaration:</strong> EEvolution 2.0 is <u>not</u> an official sub-branch of the Haldia
+            Institute of Technology (HIT). While we credit HIT for unifying these students under the EEvolution 2
+            collective, the institution is <u>not</u> responsible for any platform content, administration, or
+            misconduct. Full responsibility lies with the platform's administrators and owners.
+          </p>
+
+          <div class="trademark-notice">
+            The college logo is their trademark and our logo is our own trademark. All rights are reserved to the
+            respective owners.
+          </div>
+        </div>
+
         <div class="team-spotlight mt-4">
           <h3 style="margin-bottom: 1.5rem;"><i class="ph ph-users-three"></i> The <span class="accent">Core
               Engine</span></h3>
@@ -1085,6 +1127,23 @@
           <a href="#" class="btn-outline mt-3">Visit Legacy Site</a>
         </div>
       </div>
+
+      <!-- FOOTER SECTION -->
+      <footer class="global-footer">
+        <div class="footer-content">
+          <div class="footer-disclaimer-card">
+            <p><strong>EEvolution 2.0</strong> is not an official sub-branch of the Haldia Institute of Technology. All
+              content uploaded is regulated through concerned admins and Batch 2 Electrical Engineering decisions.</p>
+            <p>While we credit HIT for unifying students, they are not responsible for any misconduct; the admins and
+              owners take full responsibility. This is a non-profit scheme for easy academic access.</p>
+            <div class="footer-trademark">College logo & EEvolution logo are respective trademarks. All Rights Reserved.
+            </div>
+          </div>
+          <div class="footer-copyright">
+            &copy; 2026 EEvolution 2.0 Official | Powered by Batch 2 Developers
+          </div>
+        </div>
+      </footer>
 
     </div>
   </main>
