@@ -1534,35 +1534,78 @@ input[type="email"]:focus {
   text-align: center;
 }
 
-/* Subject Cards */
+/* Subject & Chapter Cards: Compact Row Layout */
 .subject-card {
   background-color: var(--bg-panel);
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  padding: 2.5rem 1.5rem;
-  text-align: center;
+  border-radius: 12px;
+  padding: 1rem;
   cursor: pointer;
   transition: var(--transition);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .subject-card:hover {
   border-color: var(--electric-blue);
   background-color: var(--bg-surface);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-icon-box {
+  width: 48px;
+  height: 48px;
+  background: rgba(var(--theme-color-rgb), 0.08);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.subject-card:hover .card-icon-box {
+  background: var(--electric-blue);
 }
 
 .subject-card i {
-  font-size: 3.5rem;
+  font-size: 1.8rem;
   color: var(--electric-blue);
+  transition: var(--transition);
+}
+
+.subject-card:hover i {
+  color: #000;
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .subject-card h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--text-main);
+  margin-bottom: 2px;
+  font-weight: 700;
+  line-height: 1.2;
 }
+
+.subject-card p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Chapter specificity */
+.chapter-card .card-icon-box {
+  background: rgba(var(--theme-color-rgb), 0.04);
+}
+
 
 .btn-small {
   padding: 0.5rem 1rem !important;

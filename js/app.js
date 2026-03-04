@@ -496,9 +496,13 @@ function renderSubjectCards(category) {
 
     container.innerHTML = subList.map(s => `
     <div class="subject-card" onclick="selectSubject('${s.id}')">
-      <i class="ph ${s.icon}"></i>
-      <h3>${s.name}</h3>
-      <p class="text-muted">Click to view documents</p>
+      <div class="card-icon-box">
+        <i class="ph ${s.icon}"></i>
+      </div>
+      <div class="card-info">
+        <h3>${s.name}</h3>
+        <p class="text-muted">Click to view documents</p>
+      </div>
     </div>
   `).join('');
 }
@@ -558,9 +562,13 @@ function renderChapterCards(category, subjectId) {
 
     container.innerHTML = chapters.map(ch => `
     <div class="subject-card chapter-card" onclick="selectChapter('${ch.replace(/'/g, "\\'")}')">
-      <i class="ph ph-folder-open"></i>
-      <h3>${ch}</h3>
-      <p class="text-muted">${items.filter(m => (m.chapter || 'Uncategorized') === ch).length} Documents</p>
+      <div class="card-icon-box">
+        <i class="ph ph-folder-open"></i>
+      </div>
+      <div class="card-info">
+        <h3>${ch}</h3>
+        <p class="text-muted">${items.filter(m => (m.chapter || 'Uncategorized') === ch).length} Documents</p>
+      </div>
     </div>
   `).join('');
 }
