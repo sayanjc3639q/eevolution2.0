@@ -396,11 +396,25 @@ const subTitleMap = {
     'donate': 'Donations', 'donators': 'Donators List'
 };
 
-const studyDescMap = {
+// Sub-header Taglines
+const subTaglineMap = {
     'modules': 'Theory syllabuses and module guides',
     'digest': 'Exam-ready summaries and short notes',
     'labs': 'Lab manuals and experiment records',
-    'resources': 'Handwritten notes and digital books'
+    'resources': 'Handwritten notes and digital books',
+    'notices': 'Latest department and college announcements',
+    'events': 'Workshops, seminars and batch gatherings',
+    'routine': 'Daily class schedules and lecture times',
+    'holidays': 'Upcoming college and unofficial breaks',
+    'exams': 'Internal and end-semester examination dates',
+    'mar': 'Track and manage your activity points',
+    'moocs': 'Online courses for academic credits',
+    'batchFeed': 'Real-time updates from your batch mates',
+    'memories': 'Relive the best moments of our college life',
+    'upload': 'Contribute study materials to the hub',
+    'contributors': 'Our dedicated community document uploaders',
+    'donate': 'Support the development and hosting of EEvolution',
+    'donators': 'Honoring the students who support us financially'
 };
 
 function navigateTo(sectionId, isPopState = false) {
@@ -419,15 +433,31 @@ function navigateTo(sectionId, isPopState = false) {
     const sub = activeSubTabs[sectionId];
     const subTitleElement = document.getElementById('sub-page-title');
     if (sectionId === 'home') {
-        subTitleElement.innerText = '';
+        subTitleElement.innerHTML = '';
     } else if (sectionId === 'profile') {
-        subTitleElement.innerText = 'User Portal';
+        subTitleElement.innerHTML = `
+            <div class="breadcrumb-root">
+                <span class="root-name">User Profile</span>
+                <span class="root-tagline">Account settings and preferences</span>
+            </div>
+        `;
     } else if (sectionId === 'study') {
         updateStudyBreadcrumbs();
     } else if (sub) {
-        subTitleElement.innerText = subTitleMap[sub] || '';
+        const subTitle = subTitleMap[sub] || '';
+        const tagline = subTaglineMap[sub] || '';
+        if (tagline) {
+            subTitleElement.innerHTML = `
+                <div class="breadcrumb-root">
+                    <span class="root-name">${subTitle}</span>
+                    <span class="root-tagline">${tagline}</span>
+                </div>
+            `;
+        } else {
+            subTitleElement.innerText = subTitle;
+        }
     } else {
-        subTitleElement.innerText = '';
+        subTitleElement.innerText = titleMap[sectionId] || '';
     }
 
     // If navigating back to a section, ensure its active subpane is shown
@@ -527,7 +557,7 @@ function updateStudyBreadcrumbs() {
 
     if (!selectedSubject) {
         // Flat view: Show name and a single line tagline
-        const tagline = studyDescMap[subId] || 'Access study materials';
+        const tagline = subTaglineMap[subId] || 'Access study materials';
         subTitleElement.innerHTML = `
             <div class="breadcrumb-root">
                 <span class="root-name">${subTitle}</span>
