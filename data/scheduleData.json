@@ -231,15 +231,8 @@
       "start": "10:00",
       "end": "12:00",
       "room": "A204",
-      "display": true
-    },
-    {
-      "date": "2026-04-09",
-      "title": "CT1 - Mathematics",
-      "start": "10:00",
-      "end": "12:00",
-      "room": "A204",
-      "display": true
+      "display": false
     }
+    
   ]
 }
