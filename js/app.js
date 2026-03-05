@@ -824,14 +824,24 @@ async function renderHomeData() {
             `;
         }
 
-        // Fetch Top 4 Donators for display
-        const donators = [...currentData.donators]
-            .filter(d => (parseFloat(d.amount.replace('₹', '')) || 0) > 0)
+        // Aggregate donations by name for home display (Top 4)
+        const totals = currentData.donators
+            .filter(d => (parseInt(d.amount.replace('₹', '').replace(',', '')) || 0) > 0)
+            .reduce((acc, d) => {
+                const amount = parseInt(d.amount.replace('₹', '').replace(',', '')) || 0;
+                if (acc[d.name]) {
+                    acc[d.name].amount += amount;
+                    acc[d.name].lastDate = d.date;
+                } else {
+                    acc[d.name] = { name: d.name, amount: amount, lastDate: d.date };
+                }
+                return acc;
+            }, {});
+
+        const donators = Object.values(totals)
             .sort((a, b) => {
-                const amtA = parseFloat(a.amount.replace('₹', '')) || 0;
-                const amtB = parseFloat(b.amount.replace('₹', '')) || 0;
-                if (amtB !== amtA) return amtB - amtA;
-                return new Date(b.lastDate || b.date) - new Date(a.lastDate || a.date);
+                if (b.amount !== a.amount) return b.amount - a.amount;
+                return new Date(b.lastDate) - new Date(a.lastDate);
             })
             .slice(0, 4);
 
@@ -860,7 +870,7 @@ async function renderHomeData() {
                         ${iconHtml}
                         <span class="primary-text">${d.name}</span>
                     </div>
-                    <div><span class="text-accent">${d.amount}</span></div>
+                    <div><span class="text-accent">₹${d.amount.toLocaleString()}</span></div>
                 </li>
             `;
         }).join('');
