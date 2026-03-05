@@ -226,12 +226,20 @@
   ],
   "exams": [
     {
-      "date": "2026-03-02",
-      "title": "Mid-Sem: BS-M 201",
+      "date": "2026-03-06",
+      "title": "CT1 - Chemistry",
       "start": "10:00",
       "end": "12:00",
       "room": "A204",
-      "display": false
+      "display": true
+    },
+    {
+      "date": "2026-04-09",
+      "title": "CT1 - Mathematics",
+      "start": "10:00",
+      "end": "12:00",
+      "room": "A204",
+      "display": true
     }
   ]
 }

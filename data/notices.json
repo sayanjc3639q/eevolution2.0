@@ -1,7 +1,36 @@
 [
-  { "id": 1, "title": "EE Batch 2 - Semester 2 Commencement Notice", "content": "For our EE Batch 2 (Group A), Semester 2 classes at Haldia Institute of Technology officially begin on March 2, 2026. Our refined curriculum includes theory in Mathematics-II, Chemistry-I, Programming for Problem Solving, Values & Ethics, and English, alongside labs for Engineering Drawing, Programming, Chemistry, and Language..", "hashtags": ["#EEBatch2","#Semester2"], "img":null, "pdf": "https://drive.google.com/file/d/1BFLgFrH-JhUqQwKAehCZIBbicpoZ28JX/view?usp=drive_link", "date": "2026-02-27" },
-
-  { "id": 2, "title": "Lab Manuals Updated", "content": "Basic Electrical Engineering lab manuals have been updated in the portal.", "hashtags": ["#Resources"], "img": null, "pdf": "#", "date": "2026-02-18" },
-
-  { "id": 3, "title": "Test Notice ", "content": "test notice", "hashtags": ["#Resources"], "img": null, "pdf": "#", "date": "2026-02-18" }
+  {
+    "id": 1,
+    "title": "EE Batch 2 - Semester 2 Commencement Notice",
+    "content": "For our EE Batch 2 (Group A), Semester 2 classes officially begin on March 2, 2026. Our refined curriculum includes theory in Mathematics-II, Chemistry-I, Programming for Problem Solving, Values & Ethics, and English, alongside labs for Engineering Drawing, Programming, Chemistry, and Language..",
+    "hashtags": [
+      "#EEBatch2",
+      "#Semester2"
+    ],
+    "img": null,
+    "pdf": "https://drive.google.com/file/d/1BFLgFrH-JhUqQwKAehCZIBbicpoZ28JX/view?usp=drive_link",
+    "date": "2026-02-27"
+  },
+  {
+    "id": 2,
+    "title": "Lab Manuals Updated",
+    "content": "Basic Electrical Engineering lab manuals have been updated in the portal.",
+    "hashtags": [
+      "#Resources"
+    ],
+    "img": null,
+    "pdf": "#",
+    "date": "2026-02-18"
+  },
+  {
+    "id": 3,
+    "title": "Test Notice ",
+    "content": "test notice",
+    "hashtags": [
+      "#Resources"
+    ],
+    "img": null,
+    "pdf": "#",
+    "date": "2026-02-18"
+  }
 ]
