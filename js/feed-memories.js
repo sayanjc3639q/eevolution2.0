@@ -83,7 +83,7 @@ async function fetchFeed() {
 
         // Fetch only relevant profiles for the current posts to get names and avatars
         const posterRolls = [...new Set(posts.map(p => p.roll_number))];
-        const { data: profiles } = await supabaseClient
+        const { data: profiles } = await window.supabaseClient
             .from('profiles')
             .select('roll_number, name, avatar_url')
             .in('roll_number', posterRolls);
@@ -149,7 +149,7 @@ async function renderSinglePost(post, prepend = false) {
 
     // Dynamically fetch missing profile info
     if (!globalProfileMap[post.roll_number] && window.supabaseClient) {
-        const { data: prof } = await supabaseClient.from('profiles').select('name, avatar_url').eq('roll_number', post.roll_number).single();
+        const { data: prof } = await window.supabaseClient.from('profiles').select('name, avatar_url').eq('roll_number', post.roll_number).single();
         if (prof) {
             globalProfileMap[post.roll_number] = { name: prof.name || post.roll_number, avatar: prof.avatar_url };
         }
@@ -262,7 +262,7 @@ window.submitFeedPost = async function () {
     btn.disabled = true;
     btn.innerHTML = `Posting... <i class="ph ph-spinner ph-spin"></i>`;
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
         .from('batch_feed')
         .insert([{
             roll_number: roll,
@@ -443,7 +443,7 @@ window.renderMemories = async function () {
     try {
         // Fetch memories from DB with retry
         const memoriesArray = await window.callWithRetry(async () => {
-            const { data, error } = await supabaseClient
+            const { data, error } = await window.supabaseClient
                 .from('memories')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -456,7 +456,7 @@ window.renderMemories = async function () {
         // Fetch memory likes from DB only for displayed photos
         let likesMap = {};
         const photoIds = (memoriesArray || []).map(m => m.id);
-        const { data: metaData, error } = await supabaseClient
+        const { data: metaData, error } = await window.supabaseClient
             .from('memories_data')
             .select('*')
             .in('photo_id', photoIds);
@@ -467,7 +467,7 @@ window.renderMemories = async function () {
 
         // Fetch relevant avatars mapping
         const memoryRolls = [...new Set((memoriesArray || []).map(m => m.roll_number).filter(r => !!r))];
-        const { data: profiles } = await supabaseClient
+        const { data: profiles } = await window.supabaseClient
             .from('profiles')
             .select('roll_number, avatar_url')
             .in('roll_number', memoryRolls);
@@ -543,9 +543,9 @@ window.checkAdminForMemories = async function () {
     // Use window.currentProfile if available to avoid redundant fetch
     let profile = window.currentProfile;
     if (!profile) {
-        const { data: { user } } = await supabaseClient.auth.getUser();
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
         if (!user) return;
-        const { data: fetchedProfile } = await supabaseClient.from('profiles').select('is_admin').eq('id', user.id).single();
+        const { data: fetchedProfile } = await window.supabaseClient.from('profiles').select('is_admin').eq('id', user.id).single();
         profile = fetchedProfile;
     }
 
@@ -558,8 +558,13 @@ window.checkAdminForMemories = async function () {
 // Global submit handler for the Memory Form
 window.submitAdminMemory = async function (e) {
     if (e) e.preventDefault();
+    if (!window.supabaseClient) return;
+
     const btn = document.getElementById('admin-memory-submit-btn');
-    if (btn) { btn.disabled = true; btn.innerHTML = "Uploading..."; }
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `Uploading... <i class="ph ph-spinner ph-spin"></i>`;
+    }
 
     const student_name = document.getElementById('mem-student-name').value.trim();
     const roll_number = document.getElementById('mem-roll-number').value.trim();
@@ -572,24 +577,35 @@ window.submitAdminMemory = async function (e) {
         return;
     }
 
-    const { error } = await supabaseClient.from('memories').insert([{
-        student_name,
-        roll_number,
-        image_url,
-        caption
-    }]);
+    try {
+        // We use callWithRetry to handle any temporary network glitches
+        await window.callWithRetry(async () => {
+            const { error } = await window.supabaseClient.from('memories').insert([{
+                student_name,
+                roll_number,
+                image_url,
+                caption,
+                // Optional: track which admin did the upload if schema allows it
+                // user_id: (await window.supabaseClient.auth.getUser()).data.user.id
+            }]);
+            if (error) throw error;
+        });
 
-    if (error) {
-        console.error("Upload Error:", error);
-        if (window.showToast) window.showToast("Upload failed: " + error.message, "error");
-    } else {
         if (window.showToast) window.showToast("Memory published!", "success");
         // Clear form
         document.getElementById('admin-memory-form').reset();
         // Refresh memories
         if (window.renderMemories) window.renderMemories();
+
+    } catch (error) {
+        console.error("Upload Error:", error);
+        if (window.showToast) window.showToast("Upload failed: " + (error.message || "Unknown error"), "error");
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = "Upload Memory";
+        }
     }
-    if (btn) { btn.disabled = false; btn.innerHTML = "Upload Memory"; }
 };
 
 window.likeMemory = async function (photoId) {
@@ -598,7 +614,7 @@ window.likeMemory = async function (photoId) {
     if (likedMemories.includes(photoId)) return;
 
     // fetch current like
-    let { data: currData, error: errFetch } = await supabaseClient
+    let { data: currData, error: errFetch } = await window.supabaseClient
         .from('memories_data')
         .select('*')
         .eq('photo_id', photoId)
@@ -606,10 +622,10 @@ window.likeMemory = async function (photoId) {
 
     // PGRST116 means zero rows found
     if (errFetch && errFetch.code === 'PGRST116') {
-        const { error: errInsert } = await supabaseClient.from('memories_data').insert([{ photo_id: photoId, like_count: 1 }]);
+        const { error: errInsert } = await window.supabaseClient.from('memories_data').insert([{ photo_id: photoId, like_count: 1 }]);
         if (!errInsert) pushLocalLike(photoId);
     } else if (currData) {
-        const { error: errUpdate } = await supabaseClient.from('memories_data').update({ like_count: (currData.like_count || 0) + 1 }).eq('photo_id', photoId);
+        const { error: errUpdate } = await window.supabaseClient.from('memories_data').update({ like_count: (currData.like_count || 0) + 1 }).eq('photo_id', photoId);
         if (!errUpdate) pushLocalLike(photoId);
     }
 };
@@ -637,13 +653,13 @@ window.fetchComments = async function (photoId) {
     sec.innerHTML = '<p class="text-muted" style="text-align:center;"><i class="ph ph-spinner ph-spin"></i> Loading comments...</p>';
 
     // Fetch comments and profile names for display
-    const { data: comments, error } = await supabaseClient
+    const { data: comments, error } = await window.supabaseClient
         .from('memories_comments')
         .select('*')
         .eq('photo_id', photoId)
         .order('created_at', { ascending: true });
 
-    const { data: profiles } = await supabaseClient.from('profiles').select('roll_number, name');
+    const { data: profiles } = await window.supabaseClient.from('profiles').select('roll_number, name');
     const profileMap = {};
     if (profiles) {
         profiles.forEach(p => { profileMap[p.roll_number] = p.name; });
@@ -706,7 +722,7 @@ window.addComment = async function (photoId) {
         return;
     }
 
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
         .from('memories_comments')
         .insert([{ photo_id: photoId, roll_number: roll, comment_text: text }]);
 
@@ -767,7 +783,7 @@ async function autoCleanupBatchFeed() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     // Perform delete on old records
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
         .from('batch_feed')
         .delete()
         .lt('created_at', thirtyDaysAgo.toISOString());

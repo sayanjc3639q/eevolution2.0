@@ -1514,9 +1514,9 @@ input[type="email"]:focus {
 }
 
 .gallery-grid {
-  display: grid;
+  display: grid !important;
   grid-template-columns: 1fr;
-  gap: 2.5rem;
+  gap: 1.5rem;
   width: 100%;
 }
 
@@ -1525,7 +1525,7 @@ input[type="email"]:focus {
     grid-template-columns: repeat(2, 1fr);
     max-width: 1000px;
     margin: 2.5rem auto;
-    gap: 4.5rem;
+    gap: 2.5rem;
     padding: 0;
   }
 }
