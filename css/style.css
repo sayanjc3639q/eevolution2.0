@@ -170,6 +170,46 @@ ol {
   display: none !important;
 }
 
+/* Page Transitions */
+.page-section {
+  display: none;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-section.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Syncing Animation for Title */
+@keyframes syncPulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+#page-title.syncing {
+  animation: syncPulse 1.5s infinite ease-in-out;
+  position: relative;
+}
+
+#page-title.syncing::after {
+  content: '...';
+  position: absolute;
+  margin-left: 4px;
+}
+
 /* Buttons */
 .btn-primary {
   background-color: var(--accent-color);

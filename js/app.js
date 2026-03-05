@@ -11,6 +11,8 @@ let activeSubTabs = {
     support: 'donate'
 };
 
+window.isRefreshingData = false;
+
 // PERSISTENCE: Track scroll positions for nested navigation
 let studyScrollPositions = {
     subjects: 0,
@@ -378,6 +380,9 @@ function setupNavigation() {
                 renderGenericTabPanes(target, sub);
             }
 
+            // Sub-navigation counts as entering a section/state change
+            autoRefreshSection(target);
+
             if (window.innerWidth <= 900) toggleSidebar();
         });
     });
@@ -492,6 +497,45 @@ function navigateTo(sectionId, isPopState = false) {
     // Smooth scroll to top for main section changes, except when internal state handles it
     if (sectionId !== 'study' || (!selectedSubject && !selectedChapter)) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // AUTO-REFRESH: Keep SPA data fresh when entering sections
+    autoRefreshSection(sectionId);
+}
+
+/**
+ * Background sync for dynamic data when entering sections
+ * Provides a "lived-in" feel to the SPA
+ */
+async function autoRefreshSection(sectionId) {
+    if (window.isRefreshingData) return;
+
+    // Only refresh for dynamic content sections
+    const dynamicSections = ['home', 'study', 'updates', 'community', 'points', 'support'];
+    if (!dynamicSections.includes(sectionId)) return;
+
+    window.isRefreshingData = true;
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle) pageTitle.classList.add('syncing');
+
+    try {
+        // Re-fetch only if Supabase is available
+        if (window.supabaseClient) {
+            const freshData = await fetchJSONData();
+            if (freshData) currentData = freshData;
+        }
+
+        // Re-render the section content with fresh data
+        if (sectionId === 'home') renderHomeData();
+        else if (sectionId === 'study') renderStudySection();
+        else if (sectionId === 'updates') renderUpdates(activeSubTabs.updates);
+        else renderGenericTabPanes(sectionId, activeSubTabs[sectionId]);
+
+    } catch (err) {
+        console.warn("Auto-sync background task failed:", err);
+    } finally {
+        window.isRefreshingData = false;
+        if (pageTitle) pageTitle.classList.remove('syncing');
     }
 }
 
