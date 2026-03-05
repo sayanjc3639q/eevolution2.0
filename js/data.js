@@ -37,7 +37,7 @@ async function fetchJSONData() {
         if (window.supabaseClient) {
             try {
                 // Fetch Study Materials
-                const { data: supabaseMaterials, error: matError } = await supabaseClient
+                const { data: supabaseMaterials, error: matError } = await window.supabaseClient
                     .from('study_materials')
                     .select('*');
 
@@ -52,7 +52,7 @@ async function fetchJSONData() {
                 }
 
                 // Fetch Notices
-                const { data: supabaseNotices, error: noticeError } = await supabaseClient
+                const { data: supabaseNotices, error: noticeError } = await window.supabaseClient
                     .from('notices')
                     .select('*')
                     .order('date', { ascending: false });
@@ -64,7 +64,7 @@ async function fetchJSONData() {
                 }
 
                 // Fetch Events
-                const { data: supabaseEvents, error: eventError } = await supabaseClient
+                const { data: supabaseEvents, error: eventError } = await window.supabaseClient
                     .from('events')
                     .select('*')
                     .order('date', { ascending: true });
@@ -83,9 +83,9 @@ async function fetchJSONData() {
                 try {
                     const todayStr = new Date().toISOString().split('T')[0];
                     // Auto-cleanup: Delete expired holidays from Supabase
-                    await supabaseClient.from('holidays').delete().lt('date', todayStr);
+                    await window.supabaseClient.from('holidays').delete().lt('date', todayStr);
 
-                    const { data: supabaseHolidays, error: holError } = await supabaseClient
+                    const { data: supabaseHolidays, error: holError } = await window.supabaseClient
                         .from('holidays')
                         .select('*');
 
@@ -102,7 +102,7 @@ async function fetchJSONData() {
 
 
                 // Fetch Donations
-                const { data: supabaseDonations, error: donError } = await supabaseClient
+                const { data: supabaseDonations, error: donError } = await window.supabaseClient
                     .from('donations')
                     .select('*')
                     .order('date', { ascending: false });

@@ -87,7 +87,7 @@ async function checkTestModeStatus() {
     const registerBtn = document.getElementById('btn-register');
 
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await window.supabaseClient
             .from('system_config')
             .select('value')
             .eq('key', 'test_mode_code')
@@ -101,7 +101,7 @@ async function checkTestModeStatus() {
             testArea.classList.remove('hidden');
 
             // Fetch next test user number
-            const { count } = await supabaseClient
+            const { count } = await window.supabaseClient
                 .from('profiles')
                 .select('*', { count: 'exact', head: true })
                 .ilike('name', 'Test User %');
@@ -137,7 +137,7 @@ async function handleLogin(e) {
     btn.disabled = true;
     btn.innerHTML = 'Logging In... <i class="ph ph-spinner ph-spin"></i>';
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+    const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
 
     if (error) {
         showToast(error.message, "error");
@@ -179,7 +179,7 @@ async function handleRegister(e) {
 
     // 1. Check if roll number is already registered (skip for test users to allow infinite testing)
     if (rollLast3 !== '000') {
-        const { data: existingUser, error: checkError } = await supabaseClient
+        const { data: existingUser, error: checkError } = await window.supabaseClient
             .from('profiles')
             .select('id')
             .eq('roll_number', fullRoll)
@@ -211,7 +211,7 @@ async function handleRegister(e) {
     // For test users, we append a timestamp to allow multiple '000' registrations in the DB
     const finalRoll = rollLast3 === '000' ? `${fullRoll}-${Date.now()}` : fullRoll;
 
-    const { data, error } = await supabaseClient.auth.signUp({
+    const { data, error } = await window.supabaseClient.auth.signUp({
         email: email,
         password: pass,
         options: {
@@ -244,7 +244,7 @@ async function handleForgot(e) {
     btn.disabled = true;
     btn.innerHTML = 'Sending... <i class="ph ph-spinner ph-spin"></i>';
 
-    const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    const { data, error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/reset-password.html'
     });
 

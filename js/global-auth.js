@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await checkAuth();
 
         // 2. Setup background listener to handle token refreshes (important for long sessions)
-        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
             console.log("Auth State Event:", event);
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
                 await checkAuth();
@@ -24,7 +24,7 @@ async function checkAuth() {
     isCheckingAuth = true;
 
     try {
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        const { data: { session }, error } = await window.supabaseClient.auth.getSession();
 
         const navUnauth = document.getElementById('unauth-navbar-area');
         const navAuth = document.getElementById('auth-navbar-area');
@@ -67,7 +67,7 @@ async function checkAuth() {
             if (profileSectionAuth) profileSectionAuth.classList.remove('hidden');
 
             // Fetch User Profile Mapping
-            const { data: profile } = await supabaseClient
+            const { data: profile } = await window.supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', session.user.id)
@@ -214,7 +214,7 @@ const handleLogout = async () => {
         }
 
         // 3. Await the official sign out to revoke the token on the server
-        await supabaseClient.auth.signOut();
+        await window.supabaseClient.auth.signOut();
     } catch (err) {
         console.error("Sign out error:", err);
     } finally {
@@ -394,10 +394,10 @@ window.saveSelectedAvatar = async function () {
     btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> Saving...`;
 
     try {
-        const { data: { user } } = await supabaseClient.auth.getUser();
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
         if (!user) throw new Error("No user found");
 
-        const { error } = await supabaseClient
+        const { error } = await window.supabaseClient
             .from('profiles')
             .update({ avatar_url: selectedAvatarUrl })
             .eq('id', user.id);

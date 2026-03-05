@@ -7,7 +7,7 @@ async function initAdmin() {
         return;
     }
 
-    const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+    const { data: { session }, error: sessionError } = await window.supabaseClient.auth.getSession();
 
     if (sessionError || !session) {
         window.location.href = "index.html";
@@ -15,7 +15,7 @@ async function initAdmin() {
     }
 
     // fetch profile
-    const { data: profile, error: err } = await supabaseClient
+    const { data: profile, error: err } = await window.supabaseClient
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
@@ -49,7 +49,7 @@ async function loadStudentsForDonations() {
 let testModeActive = false;
 async function loadSystemSettings() {
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await window.supabaseClient
             .from('system_config')
             .select('value')
             .eq('key', 'test_mode_code')
@@ -81,7 +81,7 @@ window.toggleTestMode = async function () {
         updateTestUI(true, codeToSave);
 
         // Upsert into secure system_config table
-        const { error } = await supabaseClient
+        const { error } = await window.supabaseClient
             .from('system_config')
             .upsert({ key: 'test_mode_code', value: codeToSave });
 
@@ -96,7 +96,7 @@ window.toggleTestMode = async function () {
         // Optimistic UI
         updateTestUI(false, 'NOT_GENERATED');
 
-        const { error } = await supabaseClient
+        const { error } = await window.supabaseClient
             .from('system_config')
             .upsert({ key: 'test_mode_code', value: 'DISABLED' });
 
@@ -115,7 +115,7 @@ window.generateTestCode = async function () {
     const newCode = Math.random().toString(36).substring(2, 8).toUpperCase();
     document.getElementById('current-test-code').innerText = newCode;
 
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
         .from('notices')
         .update({ content: newCode })
         .eq('title', '[SYSTEM_CONFIG_TEST_MODE]');
@@ -169,7 +169,7 @@ async function loadAdminEvents() {
 
     tbody.innerHTML = `<tr><td colspan="3" class="text-center">Loading...</td></tr>`;
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
         .from('events')
         .select('*')
         .order('date', { ascending: true });
@@ -210,7 +210,7 @@ window.handleAddEvent = async function (e) {
     btn.disabled = true;
     btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> Adding...`;
 
-    const { error } = await supabaseClient.from('events').insert([payload]);
+    const { error } = await window.supabaseClient.from('events').insert([payload]);
 
     if (error) {
         showToast(error.message, "error");
@@ -226,7 +226,7 @@ window.handleAddEvent = async function (e) {
 window.handleDeleteEvent = async function (id) {
     if (!confirm("Are you sure you want to delete this event?")) return;
 
-    const { error } = await supabaseClient.from('events').delete().eq('id', id);
+    const { error } = await window.supabaseClient.from('events').delete().eq('id', id);
 
     if (error) {
         showToast(error.message, "error");
@@ -242,7 +242,7 @@ async function loadAdminNotices() {
 
     tbody.innerHTML = `<tr><td colspan="3" class="text-center">Loading...</td></tr>`;
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
         .from('notices')
         .select('*')
         .order('date', { ascending: false });
@@ -294,7 +294,7 @@ window.handleAddNotice = async function (e) {
     btn.disabled = true;
     btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> Posting...`;
 
-    const { error } = await supabaseClient.from('notices').insert([payload]);
+    const { error } = await window.supabaseClient.from('notices').insert([payload]);
 
     if (error) {
         showToast(error.message, "error");
@@ -310,7 +310,7 @@ window.handleAddNotice = async function (e) {
 window.handleDeleteNotice = async function (id) {
     if (!confirm("Are you sure you want to delete this notice?")) return;
 
-    const { error } = await supabaseClient.from('notices').delete().eq('id', id);
+    const { error } = await window.supabaseClient.from('notices').delete().eq('id', id);
 
     if (error) {
         showToast(error.message, "error");
@@ -353,7 +353,7 @@ async function loadAdminMaterials(isLoadMore = false) {
         }
     }
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
         .from('study_materials')
         .select('*')
         .order('created_at', { ascending: false })
@@ -423,7 +423,7 @@ window.handleAddMaterial = async function (e) {
     btn.disabled = true;
     btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> Adding...`;
 
-    const { error } = await supabaseClient.from('study_materials').insert([payload]);
+    const { error } = await window.supabaseClient.from('study_materials').insert([payload]);
 
     if (error) {
         showToast(error.message, "error");
@@ -444,7 +444,7 @@ window.handleDeleteMaterial = async function (btn, id) {
     btn.disabled = true;
     btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i>`;
 
-    const { error } = await supabaseClient.from('study_materials').delete().eq('id', id);
+    const { error } = await window.supabaseClient.from('study_materials').delete().eq('id', id);
 
     if (error) {
         showToast(error.message, "error");
@@ -459,7 +459,7 @@ window.handleDeleteMaterial = async function (btn, id) {
 
 async function loadUsers() {
     const tbody = document.getElementById('users-table-body');
-    const { data: users, error } = await supabaseClient.from('profiles').select('*');
+    const { data: users, error } = await window.supabaseClient.from('profiles').select('*');
 
     if (error) {
         console.error("Error loading users", error);
@@ -492,7 +492,7 @@ window.saveUser = async function (btn, userId) {
     btn.disabled = true;
     btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i>`;
 
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
         .from('profiles')
         .update({ evo_coins: parseInt(coins), upload_count: parseInt(uploads) })
         .eq('id', userId);
@@ -549,7 +549,7 @@ async function loadAdminDonations() {
 
     tbody.innerHTML = `<tr><td colspan="4" class="text-center">Loading...</td></tr>`;
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
         .from('donations')
         .select('*')
         .order('date', { ascending: false });
@@ -596,7 +596,7 @@ window.handleAddDonation = async function (e) {
     btn.disabled = true;
     btn.innerHTML = `Adding... <i class="ph ph-spinner ph-spin"></i>`;
 
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
         .from('donations')
         .insert([{
             name: name,
@@ -621,7 +621,7 @@ window.handleAddDonation = async function (e) {
 window.handleDeleteDonation = async function (id) {
     if (!confirm("Are you sure you want to delete this donation record?")) return;
 
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
         .from('donations')
         .delete()
         .eq('id', id);
@@ -650,12 +650,12 @@ async function loadAdminHolidays() {
 
     // --- Cleanup: Auto-delete past dates ---
     const todayStr = new Date().toISOString().split('T')[0];
-    await supabaseClient
+    await window.supabaseClient
         .from('holidays')
         .delete()
         .lt('date', todayStr);
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
         .from('holidays')
         .select('*')
         .order('date', { ascending: true });
@@ -699,7 +699,7 @@ window.handleAddHoliday = async function (e) {
     btn.disabled = true;
     btn.innerHTML = `Adding... <i class="ph ph-spinner ph-spin"></i>`;
 
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
         .from('holidays')
         .insert([{
             date: date,
@@ -721,7 +721,7 @@ window.handleAddHoliday = async function (e) {
 window.handleDeleteHoliday = async function (id) {
     if (!confirm("Are you sure you want to delete this holiday?")) return;
 
-    const { error } = await supabaseClient
+    const { error } = await window.supabaseClient
         .from('holidays')
         .delete()
         .eq('id', id);
@@ -742,7 +742,7 @@ async function loadChapterHints() {
     if (!datalist) return;
 
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await window.supabaseClient
             .from('study_materials')
             .select('chapter');
 
