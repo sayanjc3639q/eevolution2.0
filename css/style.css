@@ -1514,10 +1514,15 @@ input[type="email"]:focus {
 }
 
 .gallery-grid {
-  display: grid !important;
+  display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
   width: 100%;
+}
+
+/* Force grid layout only when visible (not hidden by JS inline style) */
+.tab-pane.gallery-grid:not([style*="display: none"]) {
+  display: grid !important;
 }
 
 @media (min-width: 769px) {

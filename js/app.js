@@ -348,7 +348,7 @@ function setupNavigation() {
 
             e.preventDefault();
             const target = link.getAttribute('data-target');
-            activeSubTabs[target] = null; // Clear sub-tab if navigating to main target directly
+            // Do not clear sub-tab here to preserve correct sub-navigation display
             navigateTo(target);
             updateActiveNav(link);
             document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('expanded'));
