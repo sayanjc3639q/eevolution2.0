@@ -219,7 +219,7 @@ const handleLogout = async () => {
         console.error("Sign out error:", err);
     } finally {
         // 4. Force a hard reload to a clean state
-        window.location.href = 'index.html';
+        window.location.href = './';
     }
 };
 

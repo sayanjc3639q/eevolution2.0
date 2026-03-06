@@ -144,7 +144,7 @@ async function handleLogin(e) {
         btn.disabled = false;
         btn.innerHTML = 'Log In <i class="ph ph-sign-in"></i>';
     } else {
-        window.location.href = "index.html";
+        window.location.href = "./";
     }
 }
 

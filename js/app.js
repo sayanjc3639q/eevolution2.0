@@ -207,6 +207,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function initializeApp() {
+    // URL Cleanup: Remove index.html from path for cleaner aesthetic
+    if (window.location.pathname.endsWith('index.html')) {
+        const cleanPath = window.location.pathname.replace('index.html', '');
+        window.history.replaceState(null, '', cleanPath + window.location.hash);
+    }
+
     setupNavigation();
     setupInteractions();
 
@@ -774,7 +780,7 @@ window.shareDocument = async function (btn, name, category, subjectId, chapterNa
         const encodedName = encodeURIComponent(name);
 
         // Use a more robust URL construction
-        const baseUrl = window.location.href.split('#')[0];
+        const baseUrl = window.location.href.split('#')[0].replace('index.html', '');
         const shareUrl = `${baseUrl}#study/${category}/${subjectId}/${encodedChapter}/${encodedName}`;
 
         const shareData = {
