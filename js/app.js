@@ -221,9 +221,14 @@ async function initializeApp() {
     renderUpdates(activeSubTabs.updates);
     renderDonationProgress();
 
-    // Initial state setup for history API with Deep Linking support
-    const hash = window.location.hash.substring(1);
-    const parts = hash.split('/');
+    // Initial state setup for history API with Deep Linking support (Prefers Hash for stability)
+    let parts = [];
+    if (window.location.hash) {
+        parts = window.location.hash.substring(1).split('/');
+    } else {
+        // Fallback for clean paths if the server supports it
+        parts = window.location.pathname.replace('index.html', '').split('/').filter(p => p !== '');
+    }
 
     if (parts[0] === 'study' && parts.length >= 4) {
         const category = parts[1];
@@ -260,7 +265,7 @@ async function initializeApp() {
             activeSubTabs[section] = history.state.sub;
         }
         navigateTo(section, true);
-    } else if (hash) {
+    } else if (parts.length > 0) {
         const section = parts[0];
         const sub = parts[1] || null;
         if (sub) activeSubTabs[section] = sub;
@@ -492,12 +497,16 @@ function navigateTo(sectionId, isPopState = false) {
         } else if (sub) {
             hash = `#${sectionId}/${sub}`;
         }
+
+        // Clean URL Path: Ensure index.html is still hidden
+        const cleanPath = window.location.pathname.replace('index.html', '');
+
         history.pushState({
             section: sectionId,
             sub: sub,
             subject: selectedSubject,
             chapter: selectedChapter
-        }, "", hash);
+        }, "", cleanPath + hash);
     }
 
     // Smooth scroll to top for main section changes, except when internal state handles it
@@ -779,8 +788,8 @@ window.shareDocument = async function (btn, name, category, subjectId, chapterNa
         const encodedChapter = encodeURIComponent(chapterName);
         const encodedName = encodeURIComponent(name);
 
-        // Use a more robust URL construction
-        const baseUrl = window.location.href.split('#')[0].replace('index.html', '');
+        // Use a more robust URL construction (Stable Hash style)
+        const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
         const shareUrl = `${baseUrl}#study/${category}/${subjectId}/${encodedChapter}/${encodedName}`;
 
         const shareData = {
